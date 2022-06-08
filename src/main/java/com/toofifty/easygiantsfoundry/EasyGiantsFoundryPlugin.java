@@ -1,17 +1,17 @@
 package com.toofifty.easygiantsfoundry;
 
-import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.InventoryID;
-import net.runelite.api.ItemContainer;
-import net.runelite.api.ItemID;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.ScriptPostFired;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+
+import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -34,6 +34,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Inject
 	private EasyGiantsFoundryOverlay overlay;
+
+	@Inject
+	private MouldHelper mouldHelper;
 
 	@Override
 	protected void startUp()
@@ -72,6 +75,18 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		 	&& event.getItemContainer().count(PREFORM) == 0)
 		{
 			state.reset();
+		}
+	}
+
+	@Subscribe
+	public void onScriptPostFired(ScriptPostFired event)
+	{
+		if (event.getScriptId() == MouldHelper.DRAW_MOULD_LIST_SCRIPT
+			|| event.getScriptId() == MouldHelper.REDRAW_MOULD_LIST_SCRIPT
+			|| event.getScriptId() == MouldHelper.SELECT_MOULD_SCRIPT
+			|| event.getScriptId() == MouldHelper.RESET_MOULD_SCRIPT)
+		{
+			mouldHelper.selectBest(event.getScriptId());
 		}
 	}
 }
