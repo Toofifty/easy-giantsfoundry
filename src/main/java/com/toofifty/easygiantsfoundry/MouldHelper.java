@@ -1,6 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
-import com.toofifty.easygiantsfoundry.enums.CommisionType;
+import com.toofifty.easygiantsfoundry.enums.CommissionType;
 import com.toofifty.easygiantsfoundry.enums.Mould;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
@@ -40,8 +40,8 @@ public class MouldHelper
 
         int bestScore = -1;
         Widget bestWidget = null;
-        CommisionType type1 = CommisionType.forVarbit(client.getVarbitValue(SWORD_TYPE_1_VARBIT));
-        CommisionType type2 = CommisionType.forVarbit(client.getVarbitValue(SWORD_TYPE_2_VARBIT));
+        CommissionType type1 = CommissionType.forVarbit(client.getVarbitValue(SWORD_TYPE_1_VARBIT));
+        CommissionType type2 = CommissionType.forVarbit(client.getVarbitValue(SWORD_TYPE_2_VARBIT));
         for (Map.Entry<Mould, Widget> entry : mouldToChild.entrySet()) {
             Mould mould = entry.getKey();
             int score = mould.getScore(type1, type2);

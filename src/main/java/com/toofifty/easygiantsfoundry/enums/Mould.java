@@ -5,7 +5,7 @@ import lombok.AllArgsConstructor;
 
 import java.util.Map;
 
-import static com.toofifty.easygiantsfoundry.enums.CommisionType.*;
+import static com.toofifty.easygiantsfoundry.enums.CommissionType.*;
 import static com.toofifty.easygiantsfoundry.enums.MouldType.*;
 
 @AllArgsConstructor
@@ -47,7 +47,7 @@ public enum Mould {
 
     private final String name;
     private final MouldType mouldType;
-    private final Map<CommisionType, Integer> typeToScore;
+    private final Map<CommissionType, Integer> typeToScore;
 
     public static final Mould[] values = Mould.values();
 
@@ -60,7 +60,7 @@ public enum Mould {
         return null;
     }
 
-    public int getScore(CommisionType type1, CommisionType type2) {
+    public int getScore(CommissionType type1, CommissionType type2) {
         int score = 0;
         score += typeToScore.getOrDefault(type1, 0);
         score += typeToScore.getOrDefault(type2, 0);

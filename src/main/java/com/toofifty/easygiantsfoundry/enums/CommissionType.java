@@ -1,6 +1,6 @@
 package com.toofifty.easygiantsfoundry.enums;
 
-public enum CommisionType {
+public enum CommissionType {
     NONE,
     NARROW, // 1
     LIGHT, // 2
@@ -10,12 +10,12 @@ public enum CommisionType {
     SPIKED, // 6
     ;
 
-    public static final CommisionType[] values = CommisionType.values();
+    public static final CommissionType[] values = CommissionType.values();
 
-    public static CommisionType forVarbit(int varbitValue) {
+    public static CommissionType forVarbit(int varbitValue) {
         if (varbitValue < 0 || varbitValue >= values.length) {
             return NONE;
         }
-        return CommisionType.values[varbitValue];
+        return CommissionType.values[varbitValue];
     }
 }
