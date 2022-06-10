@@ -66,7 +66,7 @@ public class EasyGiantsFoundryHelper
 	{
 		Heat heatStage = state.getCurrentHeat();
 		Stage stage = state.getCurrentStage();
-		if (heatStage.getColor() != stage.getColor())
+		if (heatStage != stage.getHeat())
 		{
 			// not the right heat to start with
 			return 0;

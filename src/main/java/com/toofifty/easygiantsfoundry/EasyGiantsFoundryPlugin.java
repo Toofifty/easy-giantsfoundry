@@ -1,6 +1,7 @@
 package com.toofifty.easygiantsfoundry;
 
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.GameObject;
 import net.runelite.api.InventoryID;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
@@ -20,7 +21,11 @@ import javax.inject.Inject;
 )
 public class EasyGiantsFoundryPlugin extends Plugin
 {
+	private static final int TRIP_HAMMER = 44619;
+	private static final int GRINDSTONE = 44620;
 	private static final int POLISHING_WHEEL = 44621;
+	private static final int LAVA_POOL = 44631;
+	private static final int WATERFALL = 44632;
 	private static final int PREFORM = 27010;
 
 	@Inject
@@ -33,7 +38,10 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private OverlayManager overlayManager;
 
 	@Inject
-	private EasyGiantsFoundryOverlay overlay;
+	private FoundryOverlay2D overlay2d;
+
+	@Inject
+	private FoundryOverlay3D overlay3d;
 
 	@Inject
 	private MouldHelper mouldHelper;
@@ -41,30 +49,64 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Override
 	protected void startUp()
 	{
-		overlayManager.add(overlay);
+		overlayManager.add(overlay2d);
+		overlayManager.add(overlay3d);
 	}
 
 	@Override
 	protected void shutDown()
 	{
-		overlayManager.remove(overlay);
+		overlayManager.remove(overlay2d);
+		overlayManager.remove(overlay3d);
 	}
 
 	@Subscribe
 	public void onGameObjectSpawned(GameObjectSpawned event)
 	{
-		if (event.getGameObject().getId() == POLISHING_WHEEL)
+		GameObject gameObject = event.getGameObject();
+		switch (gameObject.getId())
 		{
-			state.setEnabled(true);
+			case POLISHING_WHEEL:
+				state.setEnabled(true);
+				overlay3d.polishingWheel = gameObject;
+				break;
+			case GRINDSTONE:
+				overlay3d.grindstone = gameObject;
+				break;
+			case LAVA_POOL:
+				overlay3d.lavaPool = gameObject;
+				break;
+			case WATERFALL:
+				overlay3d.waterfall = gameObject;
+				break;
+			case TRIP_HAMMER:
+				overlay3d.tripHammer = gameObject;
+				break;
 		}
 	}
 
 	@Subscribe
 	public void onGameObjectDespawned(GameObjectDespawned event)
 	{
-		if (event.getGameObject().getId() == POLISHING_WHEEL)
+		GameObject gameObject = event.getGameObject();
+		switch (gameObject.getId())
 		{
-			state.setEnabled(false);
+			case POLISHING_WHEEL:
+				state.setEnabled(false);
+				overlay3d.polishingWheel = null;
+				break;
+			case GRINDSTONE:
+				overlay3d.grindstone = null;
+				break;
+			case LAVA_POOL:
+				overlay3d.lavaPool = null;
+				break;
+			case WATERFALL:
+				overlay3d.waterfall = null;
+				break;
+			case TRIP_HAMMER:
+				overlay3d.tripHammer = null;
+				break;
 		}
 	}
 

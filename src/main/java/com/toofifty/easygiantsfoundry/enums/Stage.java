@@ -9,12 +9,12 @@ import net.runelite.client.ui.ColorScheme;
 @AllArgsConstructor
 public enum Stage
 {
-	TRIP_HAMMER("Hammer", ColorScheme.PROGRESS_ERROR_COLOR, 20, -25),
-	GRINDSTONE("Grind", ColorScheme.PROGRESS_INPROGRESS_COLOR, 10, 15),
-	POLISHING_WHEEL("Polish", ColorScheme.PROGRESS_COMPLETE_COLOR, 10, -17);
+	TRIP_HAMMER("Hammer", Heat.HIGH, 20, -25),
+	GRINDSTONE("Grind", Heat.MED, 10, 15),
+	POLISHING_WHEEL("Polish", Heat.LOW, 10, -17);
 
 	private final String name;
-	private final Color color;
+	private final Heat heat;
 	private final int progressPerAction;
 	private final int heatChange;
 }
