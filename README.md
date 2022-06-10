@@ -13,10 +13,11 @@ Helpful overlays for the Giant's Foundry minigame
     * Green = Right temperature
     * Orange = one action or temperature change remaining
     * Cyan = Click tool again for bonus progress
-
+- Highlights Kovac, Crucible, and Mould Jig when relevant
 
 ## Contributors
 
 - [Patrick](https://github.com/pwatts6060 "Patrick's github")
     * Best moulds interface feature
     * Highlight relevant tools with status colors
+    * Kovac, Crucible, and Mould Jig highlights
