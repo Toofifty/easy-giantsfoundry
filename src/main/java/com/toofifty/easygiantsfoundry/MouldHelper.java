@@ -8,7 +8,8 @@ import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
 
 import javax.inject.Inject;
-import java.util.*;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 public class MouldHelper
 {
@@ -17,8 +18,8 @@ public class MouldHelper
     static final int REDRAW_MOULD_LIST_SCRIPT = 6095;
     static final int RESET_MOULD_SCRIPT = 6108;
     public static final int SELECT_MOULD_SCRIPT = 6098;
-    private static final int SWORD_TYPE_1_VARBIT = 13907; // 4=Broad
-    private static final int SWORD_TYPE_2_VARBIT = 13908; // 3=Flat
+    static final int SWORD_TYPE_1_VARBIT = 13907; // 4=Broad
+    static final int SWORD_TYPE_2_VARBIT = 13908; // 3=Flat
     private static final int DISABLED_TEXT_COLOR = 0x9f9f9f;
     private static final int GREEN = 0xdc10d;
 

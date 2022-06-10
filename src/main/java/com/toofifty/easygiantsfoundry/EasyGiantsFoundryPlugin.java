@@ -2,11 +2,9 @@ package com.toofifty.easygiantsfoundry;
 
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
+import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.*;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
@@ -24,8 +22,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private static final int TRIP_HAMMER = 44619;
 	private static final int GRINDSTONE = 44620;
 	private static final int POLISHING_WHEEL = 44621;
+
 	private static final int LAVA_POOL = 44631;
 	private static final int WATERFALL = 44632;
+
+	private static final int CRUCIBLE = 44776;
+	private static final int MOULD_JIG = 44777;
+
+	private static final int KOVAC_NPC = 11472;
+
 	private static final int PREFORM = 27010;
 
 	@Inject
@@ -82,6 +87,21 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			case TRIP_HAMMER:
 				overlay3d.tripHammer = gameObject;
 				break;
+			case MOULD_JIG:
+				overlay3d.mouldJig = gameObject;
+				break;
+			case CRUCIBLE:
+				overlay3d.crucible = gameObject;
+				break;
+		}
+	}
+
+	@Subscribe
+	public void onGameStateChanged(GameStateChanged event)
+	{
+		if (event.getGameState().equals(GameState.LOADING))
+		{
+			state.setEnabled(false);
 		}
 	}
 
@@ -107,6 +127,30 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			case TRIP_HAMMER:
 				overlay3d.tripHammer = null;
 				break;
+			case MOULD_JIG:
+				overlay3d.mouldJig = null;
+				break;
+			case CRUCIBLE:
+				overlay3d.crucible = null;
+				break;
+		}
+	}
+
+	@Subscribe
+	public void onNpcSpawned(NpcSpawned event)
+	{
+		if (event.getNpc().getId() == KOVAC_NPC)
+		{
+			overlay3d.kovac = event.getNpc();
+		}
+	}
+
+	@Subscribe
+	public void onNpcDespawned(NpcDespawned event)
+	{
+		if (event.getNpc().getId() == KOVAC_NPC)
+		{
+			overlay3d.kovac = null;
 		}
 	}
 

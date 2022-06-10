@@ -4,6 +4,7 @@ import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.NPC;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.ui.ColorScheme;
@@ -18,11 +19,17 @@ public class FoundryOverlay3D extends Overlay {
     private static final int BONUS_COLOR = 0xfcd703;
     private static final int BONUS_WIDGET = 49414148;
 
+    private static final int HAND_IN_WIDGET = 49414221;
+    private static final int FINISH_ANIM = 9457;
+
     GameObject tripHammer;
     GameObject grindstone;
     GameObject polishingWheel;
     GameObject lavaPool;
     GameObject waterfall;
+    GameObject mouldJig;
+    GameObject crucible;
+    NPC kovac;
 
     private final Client client;
     private final EasyGiantsFoundryState state;
@@ -37,7 +44,8 @@ public class FoundryOverlay3D extends Overlay {
         this.helper = helper;
     }
 
-    private Color getObjectColor(Stage stage, Heat heat) {
+    private Color getObjectColor(Stage stage, Heat heat)
+    {
         if (stage.getHeat() != heat)
         {
             return ColorScheme.PROGRESS_ERROR_COLOR;
@@ -77,9 +85,19 @@ public class FoundryOverlay3D extends Overlay {
     }
 
     @Override
-    public Dimension render(Graphics2D graphics) {
-        if (!state.isEnabled() || state.getCurrentStage() == null)
+    public Dimension render(Graphics2D graphics)
+    {
+        if (!state.isEnabled())
         {
+            return null;
+        }
+
+        drawKovacIfHandIn(graphics);
+
+        if (state.getCurrentStage() == null)
+        {
+            drawMouldIfNotSet(graphics);
+            drawCrucibleIfMouldSet(graphics);
             return null;
         }
 
@@ -109,5 +127,64 @@ public class FoundryOverlay3D extends Overlay {
         }
 
         return null;
+    }
+
+    private void drawCrucibleIfMouldSet(Graphics2D graphics)
+    {
+        if (client.getVarbitValue(MouldHelper.SWORD_TYPE_1_VARBIT) == 0)
+        {
+            return;
+        }
+        if (client.getVarbitValue(EasyGiantsFoundryState.VARBIT_GAME_STAGE) != 1)
+        {
+            return;
+        }
+        Shape shape = crucible.getConvexHull();
+        if (shape != null)
+        {
+            Color color = Color.CYAN;
+            graphics.setColor(color);
+            graphics.draw(shape);
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+            graphics.fill(shape);
+        }
+    }
+
+    private void drawMouldIfNotSet(Graphics2D graphics)
+    {
+        if (client.getWidget(EasyGiantsFoundryState.WIDGET_PROGRESS_PARENT) != null
+            || client.getVarbitValue(MouldHelper.SWORD_TYPE_1_VARBIT) == 0
+            || (client.getVarbitValue(EasyGiantsFoundryState.VARBIT_GAME_STAGE) != 0
+                && client.getVarbitValue(EasyGiantsFoundryState.VARBIT_GAME_STAGE) != 2))
+        {
+            return;
+        }
+        Shape shape = mouldJig.getConvexHull();
+        if (shape != null)
+        {
+            Color color = Color.CYAN;
+            graphics.setColor(color);
+            graphics.draw(shape);
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+            graphics.fill(shape);
+        }
+    }
+
+    private void drawKovacIfHandIn(Graphics2D graphics)
+    {
+        Widget handInWidget = client.getWidget(HAND_IN_WIDGET);
+        if (handInWidget != null && !handInWidget.isHidden()
+            && client.getLocalPlayer().getAnimation() != FINISH_ANIM)
+        {
+            Shape shape = kovac.getConvexHull();
+            if (shape != null)
+            {
+                Color color = Color.CYAN;
+                graphics.setColor(color);
+                graphics.draw(shape);
+                graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+                graphics.fill(shape);
+            }
+        }
     }
 }

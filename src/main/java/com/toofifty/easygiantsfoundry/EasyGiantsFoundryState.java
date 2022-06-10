@@ -2,16 +2,15 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-import java.util.ArrayList;
-import java.util.List;
-import javax.inject.Inject;
-import javax.inject.Singleton;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
-import net.runelite.api.Player;
-import net.runelite.api.coords.WorldPoint;
 import net.runelite.api.widgets.Widget;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.util.ArrayList;
+import java.util.List;
 
 @Singleton
 public class EasyGiantsFoundryState
@@ -29,14 +28,14 @@ public class EasyGiantsFoundryState
 	// 1 - set mould
 	// 2 - collect preform
 	// 3 -
-	private static final int VARBIT_GAME_STAGE = 13914;
+	static final int VARBIT_GAME_STAGE = 13914;
 
 	private static final int WIDGET_HEAT_PARENT = 49414153;
 	private static final int WIDGET_LOW_HEAT_PARENT = 49414163;
 	private static final int WIDGET_MED_HEAT_PARENT = 49414164;
 	private static final int WIDGET_HIGH_HEAT_PARENT = 49414165;
 
-	private static final int WIDGET_PROGRESS_PARENT = 49414219;
+	static final int WIDGET_PROGRESS_PARENT = 49414219;
 	// children with type 3 are stage boxes
 	// every 11th child is a sprite
 
