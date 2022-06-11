@@ -14,6 +14,7 @@ Helpful overlays for the Giant's Foundry minigame
     * Orange = one action or temperature change remaining
     * Cyan = Click tool again for bonus progress
 - Highlights Kovac, Crucible, and Mould Jig when relevant
+- Highlights waterfall/lava pool when temperature is wrong
 
 ## Contributors
 
@@ -21,3 +22,4 @@ Helpful overlays for the Giant's Foundry minigame
     * Best moulds interface feature
     * Highlight relevant tools with status colors
     * Kovac, Crucible, and Mould Jig highlights
+    * Highlight waterfall/lava pool when temperature is wrong
