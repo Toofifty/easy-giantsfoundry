@@ -175,4 +175,33 @@ public class EasyGiantsFoundryState
 
 		return Heat.NONE;
 	}
+
+	public int getHeatChangeNeeded()
+	{
+		Heat requiredHeat = getCurrentStage().getHeat();
+		int heat = getHeatAmount();
+
+		int[] range;
+		switch (requiredHeat)
+		{
+			case LOW:
+				range = getLowHeatRange();
+				break;
+			case MED:
+				range = getMedHeatRange();
+				break;
+			case HIGH:
+				range = getHighHeatRange();
+				break;
+			default:
+				return 0;
+		}
+
+		if (heat < range[0])
+			return range[0] - heat;
+		else if (heat > range[1])
+			return range[1] - heat;
+		else
+			return 0;
+	}
 }

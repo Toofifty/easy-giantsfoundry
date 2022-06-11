@@ -105,28 +105,64 @@ public class FoundryOverlay3D extends Overlay {
         Stage stage = state.getCurrentStage();
 
         GameObject stageObject = getStageObject(stage);
-        if (stageObject != null)
+        if (stageObject == null)
         {
-            Color color = getObjectColor(stage, heat);
-            Shape objectClickbox = stageObject.getClickbox();
-            if (objectClickbox != null)
+            return null;
+        }
+
+        Color color = getObjectColor(stage, heat);
+        Shape objectClickbox = stageObject.getClickbox();
+        if (objectClickbox != null)
+        {
+            Point mousePosition = client.getMouseCanvasPosition();
+            if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
             {
-                Point mousePosition = client.getMouseCanvasPosition();
-                if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
-                {
-                    graphics.setColor(color.darker());
-                }
-                else
-                {
-                    graphics.setColor(color);
-                }
-                graphics.draw(objectClickbox);
-                graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
-                graphics.fill(objectClickbox);
+                graphics.setColor(color.darker());
             }
+            else
+            {
+                graphics.setColor(color);
+            }
+            graphics.draw(objectClickbox);
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+            graphics.fill(objectClickbox);
+        }
+
+        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR))
+        {
+            drawHeatChangers(graphics);
         }
 
         return null;
+    }
+
+    private void drawHeatChangers(Graphics2D graphics)
+    {
+        int change = state.getHeatChangeNeeded();
+        Shape shape = null;
+        if (change < 0)
+        {
+            shape = waterfall.getClickbox();
+        } else if (change > 0)
+        {
+            shape = lavaPool.getClickbox();
+        }
+        if (shape != null)
+        {
+            Point mousePosition = client.getMouseCanvasPosition();
+            Color color = ColorScheme.PROGRESS_COMPLETE_COLOR;
+            if (shape.contains(mousePosition.getX(), mousePosition.getY()))
+            {
+                graphics.setColor(color.darker());
+            }
+            else
+            {
+                graphics.setColor(color);
+            }
+            graphics.draw(shape);
+            graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+            graphics.fill(shape);
+        }
     }
 
     private void drawCrucibleIfMouldSet(Graphics2D graphics)
