@@ -2,18 +2,22 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
+
+import java.awt.*;
 import javax.inject.Inject;
 import javax.inject.Singleton;
+
+import net.runelite.api.Client;
+import net.runelite.api.GameObject;
+import net.runelite.api.Point;
 import net.runelite.client.ui.ColorScheme;
+import net.runelite.client.ui.components.ProgressBar;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
 
 @Singleton
-public class EasyGiantsFoundryOverlay extends OverlayPanel
+public class FoundryOverlay2D extends OverlayPanel
 {
 	@Inject
 	private EasyGiantsFoundryState state;
@@ -52,7 +56,7 @@ public class EasyGiantsFoundryOverlay extends OverlayPanel
 			LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
 		);
 		panelComponent.getChildren().add(
-			LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getColor()).build()
+			LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
 		);
 
 		int actionsLeft = helper.getActionsLeftInStage();
