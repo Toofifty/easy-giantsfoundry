@@ -40,7 +40,7 @@ public enum Mould {
     SAW_TIP("Saw Tip", TIP, ImmutableMap.of(BROAD, 6, HEAVY, 8, SPIKED, 8)),
     CORRUPTED_POINT("Corrupted Point", TIP, ImmutableMap.of(NARROW, 8, LIGHT, 10, SPIKED, 8)),
     DEFENDERS_TIP("Defenders Tip", TIP, ImmutableMap.of(BROAD, 10, HEAVY, 8, SPIKED, 8)),
-    SERRATED_TIPS("Serrated Tips", TIP, ImmutableMap.of(NARROW, 4, LIGHT, 16, SPIKED, 4)),
+    SERRATED_TIP("Serrated Tip", TIP, ImmutableMap.of(NARROW, 4, LIGHT, 16, SPIKED, 4)),
     NEEDLE_POINT("Needle Point", TIP, ImmutableMap.of(NARROW, 18, LIGHT, 3, FLAT, 4)),
     THE_POINT("The Point!", TIP, ImmutableMap.of(BROAD, 2, LIGHT, 1, FLAT, 22)),
     ;
