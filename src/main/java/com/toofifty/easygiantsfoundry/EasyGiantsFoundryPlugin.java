@@ -1,14 +1,19 @@
 package com.toofifty.easygiantsfoundry;
 
+import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.events.*;
+import net.runelite.client.Notifier;
 import net.runelite.client.eventbus.Subscribe;
+import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+import net.runelite.client.config.ConfigManager;
+import com.toofifty.easygiantsfoundry.enums.Stage;
 
 import javax.inject.Inject;
 
@@ -33,6 +38,10 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private static final int PREFORM = 27010;
 
+	private Stage oldStage;
+
+	private boolean enableStageNotifications;
+
 	@Inject
 	private EasyGiantsFoundryState state;
 
@@ -51,11 +60,18 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Inject
 	private MouldHelper mouldHelper;
 
+	@Inject
+	private EasyGiantsFoundryConfig config;
+
+	@Inject
+	private Notifier notifier;
+
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
+		enableStageNotifications = config.showGiantsFoundryNotifications();
 	}
 
 	@Override
@@ -102,6 +118,20 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		if (event.getGameState().equals(GameState.LOADING))
 		{
 			state.setEnabled(false);
+		}
+	}
+
+	@Subscribe
+	public void onStatChanged(StatChanged statChanged)
+	{
+		if (state.isEnabled() &&
+			enableStageNotifications &&
+			state.getCurrentStage() != null &&
+			helper.getActionsLeftInStage() == 1 &&
+			(oldStage == null || oldStage != state.getCurrentStage()))
+		{
+			notifier.notify("About to finish the current stage!");
+			oldStage = state.getCurrentStage();
 		}
 	}
 
@@ -161,6 +191,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		 	&& event.getItemContainer().count(PREFORM) == 0)
 		{
 			state.reset();
+			oldStage = null;
 		}
 	}
 
@@ -174,5 +205,25 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		{
 			mouldHelper.selectBest(event.getScriptId());
 		}
+	}
+
+	@Subscribe
+	public void onConfigChanged(ConfigChanged event)
+	{
+		if (!event.getGroup().equals(EasyGiantsFoundryConfig.GROUP))
+		{
+			return;
+		}
+
+		if (config.showGiantsFoundryNotifications() != enableStageNotifications)
+		{
+			enableStageNotifications = config.showGiantsFoundryNotifications();
+		}
+	}
+
+	@Provides
+	EasyGiantsFoundryConfig provideConfig(ConfigManager configManager)
+	{
+		return configManager.getConfig(EasyGiantsFoundryConfig.class);
 	}
 }
