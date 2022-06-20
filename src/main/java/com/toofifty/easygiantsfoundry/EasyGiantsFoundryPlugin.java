@@ -42,6 +42,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private boolean enableStageNotifications;
 
+	private boolean enableHeatNotifications;
+
 	@Inject
 	private EasyGiantsFoundryState state;
 
@@ -71,7 +73,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
-		enableStageNotifications = config.showGiantsFoundryNotifications();
+		enableStageNotifications = config.showGiantsFoundryStageNotifications();
+		enableHeatNotifications = config.showGiantsFoundryHeatNotifications();
 	}
 
 	@Override
@@ -124,14 +127,17 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged statChanged)
 	{
-		if (state.isEnabled() &&
-			enableStageNotifications &&
-			state.getCurrentStage() != null &&
-			helper.getActionsLeftInStage() == 1 &&
-			(oldStage == null || oldStage != state.getCurrentStage()))
+		if (state.isEnabled() && state.getCurrentStage() != null)
 		{
-			notifier.notify("About to finish the current stage!");
-			oldStage = state.getCurrentStage();
+			if (enableStageNotifications && helper.getActionsLeftInStage() == 1 && (oldStage == null || oldStage != state.getCurrentStage()))
+			{
+				notifier.notify("About to finish the current stage!");
+				oldStage = state.getCurrentStage();
+			}
+			else if (enableHeatNotifications && helper.getActionsForHeatLevel() == 1)
+			{
+				notifier.notify("About to run out of heat!");
+			}
 		}
 	}
 
@@ -215,9 +221,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			return;
 		}
 
-		if (config.showGiantsFoundryNotifications() != enableStageNotifications)
+		if (config.showGiantsFoundryStageNotifications() != enableStageNotifications)
 		{
-			enableStageNotifications = config.showGiantsFoundryNotifications();
+			enableStageNotifications = config.showGiantsFoundryStageNotifications();
+		}
+
+		if (config.showGiantsFoundryHeatNotifications() != enableHeatNotifications)
+		{
+			enableHeatNotifications = config.showGiantsFoundryHeatNotifications();
 		}
 	}
 
