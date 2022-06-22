@@ -16,7 +16,7 @@ public interface EasyGiantsFoundryConfig extends Config {
     )
     default boolean showGiantsFoundryStageNotifications()
     {
-        return true;
+        return false;
     }
 
     @ConfigItem(
@@ -27,7 +27,7 @@ public interface EasyGiantsFoundryConfig extends Config {
     )
     default boolean showGiantsFoundryHeatNotifications()
     {
-        return true;
+        return false;
     }
 
 }

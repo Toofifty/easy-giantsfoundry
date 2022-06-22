@@ -5,6 +5,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
+import net.runelite.api.Skill;
 import net.runelite.api.events.*;
 import net.runelite.client.Notifier;
 import net.runelite.client.eventbus.Subscribe;
@@ -40,9 +41,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private Stage oldStage;
 
-	private boolean enableStageNotifications;
-
-	private boolean enableHeatNotifications;
+	private int lastBoost;
 
 	@Inject
 	private EasyGiantsFoundryState state;
@@ -73,8 +72,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
-		enableStageNotifications = config.showGiantsFoundryStageNotifications();
-		enableHeatNotifications = config.showGiantsFoundryHeatNotifications();
 	}
 
 	@Override
@@ -127,17 +124,27 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged statChanged)
 	{
-		if (state.isEnabled() && state.getCurrentStage() != null)
+		final int currBoost = statChanged.getBoostedLevel();
+		// if the difference between current and last boost is != 0 then a stat boost (or drop) change occurred
+		if (!statChanged.getSkill().equals(Skill.SMITHING) ||
+			currBoost - lastBoost != 0 ||
+			!state.isEnabled() ||
+			state.getCurrentStage() == null)
 		{
-			if (enableStageNotifications && helper.getActionsLeftInStage() == 1 && (oldStage == null || oldStage != state.getCurrentStage()))
-			{
-				notifier.notify("About to finish the current stage!");
-				oldStage = state.getCurrentStage();
-			}
-			else if (enableHeatNotifications && helper.getActionsForHeatLevel() == 1)
-			{
-				notifier.notify("About to run out of heat!");
-			}
+			lastBoost = currBoost;
+			return;
+		}
+
+		if (config.showGiantsFoundryStageNotifications() &&
+			helper.getActionsLeftInStage() == 1 &&
+			(oldStage == null || oldStage != state.getCurrentStage()))
+		{
+			notifier.notify("About to finish the current stage!");
+			oldStage = state.getCurrentStage();
+		}
+		else if (config.showGiantsFoundryHeatNotifications() && helper.getActionsForHeatLevel() == 1)
+		{
+			notifier.notify("About to run out of heat!");
 		}
 	}
 
@@ -213,24 +220,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	public void onConfigChanged(ConfigChanged event)
-	{
-		if (!event.getGroup().equals(EasyGiantsFoundryConfig.GROUP))
-		{
-			return;
-		}
-
-		if (config.showGiantsFoundryStageNotifications() != enableStageNotifications)
-		{
-			enableStageNotifications = config.showGiantsFoundryStageNotifications();
-		}
-
-		if (config.showGiantsFoundryHeatNotifications() != enableHeatNotifications)
-		{
-			enableHeatNotifications = config.showGiantsFoundryHeatNotifications();
-		}
-	}
 
 	@Provides
 	EasyGiantsFoundryConfig provideConfig(ConfigManager configManager)
