@@ -100,4 +100,78 @@ public interface EasyGiantsFoundryConfig extends Config {
     default boolean highlightKovac() {
         return true;
     }
+
+
+    @ConfigSection(
+            name = "Info Panel",
+            description = "Settings for the Info Panel overlay",
+            position = 1
+    )
+    String infoPanelList = "infoPanelList";
+
+    @ConfigItem(
+            keyName = "infoPanel",
+            name = "Draw Info Panel",
+            description = "Toggle for drawing the information panel",
+            position = 0,
+            section = infoPanelList
+    )
+    default boolean drawInfoPanel() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "infoPanel",
+            name = "Title",
+            description = "Toggle for \"Easy Giant's Foundry\" text",
+            position = 1,
+            section = infoPanelList
+    )
+    default boolean drawTitle() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "heatInfo",
+            name = "Heat",
+            description = "Toggle for Heat text",
+            position = 2,
+            section = infoPanelList
+    )
+    default boolean drawHeatInfo() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "stageInfo",
+            name = "Stage",
+            description = "Toggle for Stage text",
+            position = 3,
+            section = infoPanelList
+    )
+    default boolean drawStageInfo() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "actionsLeft",
+            name = "Actions Left",
+            description = "Toggle for Actions left text",
+            position = 4,
+            section = infoPanelList
+    )
+    default boolean drawActionsLeft() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = "heatLeft",
+            name = "Heat Left",
+            description = "Toggle for Heat left text",
+            position = 5,
+            section = infoPanelList
+    )
+    default boolean drawHeatLeft() {
+        return true;
+    }
 }

@@ -19,11 +19,17 @@ import net.runelite.client.ui.overlay.components.TitleComponent;
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
 {
-	@Inject
 	private EasyGiantsFoundryState state;
+	private EasyGiantsFoundryHelper helper;
+	private EasyGiantsFoundryConfig config;
 
 	@Inject
-	private EasyGiantsFoundryHelper helper;
+	private FoundryOverlay2D(EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
+	{
+		this.state = state;
+		this.helper = helper;
+		this.config = config;
+	}
 
 	private Color getHeatColor(int actions, int heat)
 	{
@@ -43,7 +49,7 @@ public class FoundryOverlay2D extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!state.isEnabled() || state.getCurrentStage() == null)
+		if (!state.isEnabled() || state.getCurrentStage() == null || !config.drawInfoPanel())
 		{
 			return null;
 		}
@@ -51,23 +57,38 @@ public class FoundryOverlay2D extends OverlayPanel
 		Heat heat = state.getCurrentHeat();
 		Stage stage = state.getCurrentStage();
 
-		panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
-		);
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
-		);
+		if (config.drawTitle())
+		{
+			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
+		}
+		if (config.drawHeatInfo())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
+			);
+		}
+		if (config.drawStageInfo())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
+			);
+		}
 
 		int actionsLeft = helper.getActionsLeftInStage();
 		int heatLeft = helper.getActionsForHeatLevel();
 
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Actions left").right(actionsLeft + "").build()
-		);
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
-		);
+		if (config.drawActionsLeft())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Actions left").right(actionsLeft + "").build()
+			);
+		}
+		if (config.drawHeatLeft())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+			);
+		}
 
 		return super.render(graphics);
 	}
