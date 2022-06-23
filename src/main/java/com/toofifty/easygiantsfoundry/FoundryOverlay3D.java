@@ -17,7 +17,6 @@ import java.awt.*;
 public class FoundryOverlay3D extends Overlay {
 
     private static final int HAND_IN_WIDGET = 49414221;
-    private static final int FINISH_ANIM = 9457;
 
     GameObject tripHammer;
     GameObject grindstone;
@@ -213,8 +212,7 @@ public class FoundryOverlay3D extends Overlay {
     private void drawKovacIfHandIn(Graphics2D graphics)
     {
         Widget handInWidget = client.getWidget(HAND_IN_WIDGET);
-        if (handInWidget != null && !handInWidget.isHidden()
-            && client.getLocalPlayer().getAnimation() != FINISH_ANIM)
+        if (handInWidget != null && !handInWidget.isHidden())
         {
             Shape shape = kovac.getConvexHull();
             if (shape != null)
