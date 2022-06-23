@@ -8,6 +8,7 @@ import net.runelite.client.config.ConfigSection;
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
 public interface EasyGiantsFoundryConfig extends Config {
     String GROUP = "easygiantsfoundry";
+    String SOUND_ID = "soundID";
 
     @ConfigSection(
             name = "Notifications",
@@ -36,6 +37,39 @@ public interface EasyGiantsFoundryConfig extends Config {
     )
     default boolean showGiantsFoundryHeatNotifications() {
         return true;
+    }
+
+    @ConfigItem(
+            keyName = "bonusNotification",
+            name = "Notify bonus",
+            description = "Notifies when bonus appears",
+            position = 2,
+            section = notificationList
+    )
+    default boolean bonusNotification() {
+        return false;
+    }
+
+    @ConfigItem(
+            keyName = "bonusSound",
+            name = "Bonus sound",
+            description = "Plays a sound when bonus appears",
+            position = 3,
+            section = notificationList
+    )
+    default boolean bonusSoundNotify() {
+        return true;
+    }
+
+    @ConfigItem(
+            keyName = SOUND_ID,
+            name = "Bonus sound ID",
+            description = "Sound Effect ID to play when bonus appears",
+            position = 4,
+            section = notificationList
+    )
+    default int soundId() {
+        return 4212;
     }
 
 
