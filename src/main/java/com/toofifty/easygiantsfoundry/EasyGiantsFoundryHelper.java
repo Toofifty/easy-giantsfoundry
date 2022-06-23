@@ -2,9 +2,6 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
