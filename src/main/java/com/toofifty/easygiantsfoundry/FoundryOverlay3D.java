@@ -16,9 +16,6 @@ import java.awt.*;
 
 public class FoundryOverlay3D extends Overlay {
 
-    private static final int BONUS_COLOR = 0xfcd703;
-    private static final int BONUS_WIDGET = 49414148;
-
     private static final int HAND_IN_WIDGET = 49414221;
     private static final int FINISH_ANIM = 9457;
 
@@ -54,14 +51,10 @@ public class FoundryOverlay3D extends Overlay {
             return ColorScheme.PROGRESS_ERROR_COLOR;
         }
 
-        Widget bonusWidget = client.getWidget(BONUS_WIDGET);
-        if (bonusWidget != null
-                && bonusWidget.getChildren() != null
-                && bonusWidget.getChildren().length != 0
-                && bonusWidget.getChild(0).getTextColor() == BONUS_COLOR) {
+        if (BonusWidget.isActive(client))
+        {
             return Color.CYAN;
         }
-
 
         int actionsLeft = helper.getActionsLeftInStage();
         int heatLeft = helper.getActionsForHeatLevel();
