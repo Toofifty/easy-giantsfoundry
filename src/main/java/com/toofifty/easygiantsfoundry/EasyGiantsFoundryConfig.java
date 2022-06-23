@@ -24,7 +24,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             section = notificationList
     )
     default boolean showGiantsFoundryStageNotifications() {
-        return false;
+        return true;
     }
 
     @ConfigItem(
@@ -35,7 +35,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             section = notificationList
     )
     default boolean showGiantsFoundryHeatNotifications() {
-        return false;
+        return true;
     }
 
 
