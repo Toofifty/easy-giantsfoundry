@@ -95,27 +95,35 @@ public class FoundryOverlay3D extends Overlay {
             return null;
         }
 
-        drawKovacIfHandIn(graphics);
+        if (config.highlightKovac())
+        {
+            drawKovacIfHandIn(graphics);
+        }
 
         if (state.getCurrentStage() == null)
         {
-            drawMouldIfNotSet(graphics);
-            drawCrucibleIfMouldSet(graphics);
+            if (config.highlightMould())
+            {
+                drawMouldIfNotSet(graphics);
+            }
+            if (config.highlightCrucible())
+            {
+                drawCrucibleIfMouldSet(graphics);
+            }
             return null;
         }
 
-        Heat heat = state.getCurrentHeat();
         Stage stage = state.getCurrentStage();
-
         GameObject stageObject = getStageObject(stage);
         if (stageObject == null)
         {
             return null;
         }
 
+        Heat heat = state.getCurrentHeat();
         Color color = getObjectColor(stage, heat);
         Shape objectClickbox = stageObject.getClickbox();
-        if (objectClickbox != null)
+        if (objectClickbox != null && config.highlightTools())
         {
             Point mousePosition = client.getMouseCanvasPosition();
             if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
@@ -131,7 +139,7 @@ public class FoundryOverlay3D extends Overlay {
             graphics.fill(objectClickbox);
         }
 
-        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR))
+        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR) && config.highlightWaterAndLava())
         {
             drawHeatChangers(graphics);
         }
