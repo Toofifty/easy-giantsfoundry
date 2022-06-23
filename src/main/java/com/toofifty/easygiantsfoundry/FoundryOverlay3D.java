@@ -34,14 +34,17 @@ public class FoundryOverlay3D extends Overlay {
     private final Client client;
     private final EasyGiantsFoundryState state;
     private final EasyGiantsFoundryHelper helper;
+    private final EasyGiantsFoundryConfig config;
 
     @Inject
-    private FoundryOverlay3D(Client client, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper)
+    private FoundryOverlay3D(Client client, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper,
+                             EasyGiantsFoundryConfig config)
     {
         setPosition(OverlayPosition.DYNAMIC);
         this.client = client;
         this.state = state;
         this.helper = helper;
+        this.config = config;
     }
 
     private Color getObjectColor(Stage stage, Heat heat)
