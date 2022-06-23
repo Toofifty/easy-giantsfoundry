@@ -124,14 +124,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged statChanged)
 	{
-		final int currBoost = statChanged.getBoostedLevel();
+		final int curBoost = statChanged.getBoostedLevel();
 		// if the difference between current and last boost is != 0 then a stat boost (or drop) change occurred
 		if (!statChanged.getSkill().equals(Skill.SMITHING) ||
-			currBoost - lastBoost != 0 ||
+			curBoost != lastBoost ||
 			!state.isEnabled() ||
 			state.getCurrentStage() == null)
 		{
-			lastBoost = currBoost;
+			lastBoost = curBoost;
 			return;
 		}
 
