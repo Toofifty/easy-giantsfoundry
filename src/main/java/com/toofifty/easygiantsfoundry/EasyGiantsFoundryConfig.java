@@ -110,21 +110,10 @@ public interface EasyGiantsFoundryConfig extends Config {
     String infoPanelList = "infoPanelList";
 
     @ConfigItem(
-            keyName = "infoPanel",
-            name = "Draw Info Panel",
-            description = "Toggle for drawing the information panel",
-            position = 0,
-            section = infoPanelList
-    )
-    default boolean drawInfoPanel() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "infoPanel",
+            keyName = "infoTitle",
             name = "Title",
             description = "Toggle for \"Easy Giant's Foundry\" text",
-            position = 1,
+            position = 0,
             section = infoPanelList
     )
     default boolean drawTitle() {
@@ -135,7 +124,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "heatInfo",
             name = "Heat",
             description = "Toggle for Heat text",
-            position = 2,
+            position = 1,
             section = infoPanelList
     )
     default boolean drawHeatInfo() {
@@ -146,7 +135,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "stageInfo",
             name = "Stage",
             description = "Toggle for Stage text",
-            position = 3,
+            position = 2,
             section = infoPanelList
     )
     default boolean drawStageInfo() {
@@ -157,7 +146,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "actionsLeft",
             name = "Actions Left",
             description = "Toggle for Actions left text",
-            position = 4,
+            position = 3,
             section = infoPanelList
     )
     default boolean drawActionsLeft() {
@@ -168,7 +157,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "heatLeft",
             name = "Heat Left",
             description = "Toggle for Heat left text",
-            position = 5,
+            position = 4,
             section = infoPanelList
     )
     default boolean drawHeatLeft() {

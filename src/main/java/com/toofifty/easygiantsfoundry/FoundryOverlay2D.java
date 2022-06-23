@@ -49,7 +49,7 @@ public class FoundryOverlay2D extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!state.isEnabled() || state.getCurrentStage() == null || !config.drawInfoPanel())
+		if (!state.isEnabled() || state.getCurrentStage() == null)
 		{
 			return null;
 		}
