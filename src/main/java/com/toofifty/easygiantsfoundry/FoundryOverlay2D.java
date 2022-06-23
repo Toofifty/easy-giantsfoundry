@@ -2,26 +2,24 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-
-import java.awt.*;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.Point;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.components.ProgressBar;
 import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
 {
-	private EasyGiantsFoundryState state;
-	private EasyGiantsFoundryHelper helper;
-	private EasyGiantsFoundryConfig config;
+	private final EasyGiantsFoundryState state;
+	private final EasyGiantsFoundryHelper helper;
+	private final EasyGiantsFoundryConfig config;
 
 	@Inject
 	private FoundryOverlay2D(EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
@@ -29,6 +27,7 @@ public class FoundryOverlay2D extends OverlayPanel
 		this.state = state;
 		this.helper = helper;
 		this.config = config;
+		this.setPosition(OverlayPosition.BOTTOM_LEFT);
 	}
 
 	private Color getHeatColor(int actions, int heat)
