@@ -10,8 +10,8 @@ public interface EasyGiantsFoundryConfig extends Config {
 
     @ConfigItem(
             keyName = "giantsFoundryStageNotification",
-            name = "Enable stage notifications",
-            description = "Configures whether to notify you when you are about to finish a stage.",
+            name = "Notify stage changes",
+            description = "Notifies just before completing a stage",
             position = 0
     )
     default boolean showGiantsFoundryStageNotifications()
@@ -21,8 +21,8 @@ public interface EasyGiantsFoundryConfig extends Config {
 
     @ConfigItem(
             keyName = "giantsFoundryHeatNotification",
-            name = "Enable heat notifications",
-            description = "Configures whether to notify you when you are about to run out of heat.",
+            name = "Notify heat changes",
+            description = "Notifies just before overheating/cooling when using tools",
             position = 1
     )
     default boolean showGiantsFoundryHeatNotifications()
