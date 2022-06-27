@@ -16,11 +16,7 @@ import java.awt.*;
 
 public class FoundryOverlay3D extends Overlay {
 
-    private static final int BONUS_COLOR = 0xfcd703;
-    private static final int BONUS_WIDGET = 49414148;
-
     private static final int HAND_IN_WIDGET = 49414221;
-    private static final int FINISH_ANIM = 9457;
 
     GameObject tripHammer;
     GameObject grindstone;
@@ -34,14 +30,17 @@ public class FoundryOverlay3D extends Overlay {
     private final Client client;
     private final EasyGiantsFoundryState state;
     private final EasyGiantsFoundryHelper helper;
+    private final EasyGiantsFoundryConfig config;
 
     @Inject
-    private FoundryOverlay3D(Client client, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper)
+    private FoundryOverlay3D(Client client, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper,
+                             EasyGiantsFoundryConfig config)
     {
         setPosition(OverlayPosition.DYNAMIC);
         this.client = client;
         this.state = state;
         this.helper = helper;
+        this.config = config;
     }
 
     private Color getObjectColor(Stage stage, Heat heat)
@@ -51,14 +50,10 @@ public class FoundryOverlay3D extends Overlay {
             return ColorScheme.PROGRESS_ERROR_COLOR;
         }
 
-        Widget bonusWidget = client.getWidget(BONUS_WIDGET);
-        if (bonusWidget != null
-                && bonusWidget.getChildren() != null
-                && bonusWidget.getChildren().length != 0
-                && bonusWidget.getChild(0).getTextColor() == BONUS_COLOR) {
+        if (BonusWidget.isActive(client))
+        {
             return Color.CYAN;
         }
-
 
         int actionsLeft = helper.getActionsLeftInStage();
         int heatLeft = helper.getActionsForHeatLevel();
@@ -92,27 +87,35 @@ public class FoundryOverlay3D extends Overlay {
             return null;
         }
 
-        drawKovacIfHandIn(graphics);
+        if (config.highlightKovac())
+        {
+            drawKovacIfHandIn(graphics);
+        }
 
         if (state.getCurrentStage() == null)
         {
-            drawMouldIfNotSet(graphics);
-            drawCrucibleIfMouldSet(graphics);
+            if (config.highlightMould())
+            {
+                drawMouldIfNotSet(graphics);
+            }
+            if (config.highlightCrucible())
+            {
+                drawCrucibleIfMouldSet(graphics);
+            }
             return null;
         }
 
-        Heat heat = state.getCurrentHeat();
         Stage stage = state.getCurrentStage();
-
         GameObject stageObject = getStageObject(stage);
         if (stageObject == null)
         {
             return null;
         }
 
+        Heat heat = state.getCurrentHeat();
         Color color = getObjectColor(stage, heat);
         Shape objectClickbox = stageObject.getClickbox();
-        if (objectClickbox != null)
+        if (objectClickbox != null && config.highlightTools())
         {
             Point mousePosition = client.getMouseCanvasPosition();
             if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
@@ -128,7 +131,7 @@ public class FoundryOverlay3D extends Overlay {
             graphics.fill(objectClickbox);
         }
 
-        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR))
+        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR) && config.highlightWaterAndLava())
         {
             drawHeatChangers(graphics);
         }
@@ -209,8 +212,7 @@ public class FoundryOverlay3D extends Overlay {
     private void drawKovacIfHandIn(Graphics2D graphics)
     {
         Widget handInWidget = client.getWidget(HAND_IN_WIDGET);
-        if (handInWidget != null && !handInWidget.isHidden()
-            && client.getLocalPlayer().getAnimation() != FINISH_ANIM)
+        if (handInWidget != null && !handInWidget.isHidden())
         {
             Shape shape = kovac.getConvexHull();
             if (shape != null)

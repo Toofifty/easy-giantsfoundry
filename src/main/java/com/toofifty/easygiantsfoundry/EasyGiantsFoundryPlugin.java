@@ -2,12 +2,22 @@ package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Skill;
-import net.runelite.api.events.*;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.StatChanged;
 import net.runelite.client.Notifier;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
@@ -43,6 +53,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private int lastBoost;
 
+	private boolean bonusNotified = false;
+
 	@Inject
 	private EasyGiantsFoundryState state;
 
@@ -66,6 +78,12 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Inject
 	private Notifier notifier;
+
+	@Inject
+	private Client client;
+
+	@Inject
+	private ClientThread clientThread;
 
 	@Override
 	protected void startUp()
@@ -124,14 +142,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onStatChanged(StatChanged statChanged)
 	{
-		final int currBoost = statChanged.getBoostedLevel();
+		final int curBoost = statChanged.getBoostedLevel();
 		// if the difference between current and last boost is != 0 then a stat boost (or drop) change occurred
 		if (!statChanged.getSkill().equals(Skill.SMITHING) ||
-			currBoost - lastBoost != 0 ||
+			curBoost != lastBoost ||
 			!state.isEnabled() ||
 			state.getCurrentStage() == null)
 		{
-			lastBoost = currBoost;
+			lastBoost = curBoost;
 			return;
 		}
 
@@ -220,6 +238,52 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
+	@Subscribe
+	protected void onConfigChanged(ConfigChanged configChanged)
+	{
+		if (!EasyGiantsFoundryConfig.GROUP.equals(configChanged.getGroup()))
+		{
+			return;
+		}
+
+		if (EasyGiantsFoundryConfig.SOUND_ID.equals(configChanged.getKey()))
+		{
+			clientThread.invoke(() -> client.playSoundEffect(config.soundId()));
+		}
+	}
+
+	@Subscribe
+	public void onGameTick(GameTick event)
+	{
+		checkBonus();
+	}
+
+	private void checkBonus()
+	{
+		if (!state.isEnabled() || state.getCurrentStage() == null
+				|| state.getCurrentStage().getHeat() != state.getCurrentHeat()
+				|| !BonusWidget.isActive(client))
+		{
+			bonusNotified = false;
+			return;
+		}
+
+		if (bonusNotified)
+		{
+			return;
+		}
+
+		if (config.bonusNotification())
+		{
+			notifier.notify("Bonus - Click tool");
+		}
+		if (config.bonusSoundNotify())
+		{
+			client.playSoundEffect(config.soundId());
+		}
+
+		bonusNotified = true;
+	}
 
 	@Provides
 	EasyGiantsFoundryConfig provideConfig(ConfigManager configManager)

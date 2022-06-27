@@ -23,3 +23,9 @@ Helpful overlays for the Giant's Foundry minigame
     * Highlight relevant tools with status colors
     * Kovac, Crucible, and Mould Jig highlights
     * Highlight waterfall/lava pool when temperature is wrong
+    * Added Bonus sound/notifications
+    * Added overlay configs
+    * Added info panel configs
+- [Vanillj](https://github.com/Vanillj "Vanillj's github")
+  * Added config
+  * Added notifications for heat/stage changes

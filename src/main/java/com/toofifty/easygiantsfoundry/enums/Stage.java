@@ -1,9 +1,7 @@
 package com.toofifty.easygiantsfoundry.enums;
 
-import java.awt.Color;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
-import net.runelite.client.ui.ColorScheme;
 
 @Getter
 @AllArgsConstructor

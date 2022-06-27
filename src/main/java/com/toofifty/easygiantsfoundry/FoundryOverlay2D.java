@@ -2,28 +2,33 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-
-import java.awt.*;
-import javax.inject.Inject;
-import javax.inject.Singleton;
-
-import net.runelite.api.Client;
-import net.runelite.api.GameObject;
-import net.runelite.api.Point;
 import net.runelite.client.ui.ColorScheme;
-import net.runelite.client.ui.components.ProgressBar;
 import net.runelite.client.ui.overlay.OverlayPanel;
+import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
+
+import javax.inject.Inject;
+import javax.inject.Singleton;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
 
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
 {
-	@Inject
-	private EasyGiantsFoundryState state;
+	private final EasyGiantsFoundryState state;
+	private final EasyGiantsFoundryHelper helper;
+	private final EasyGiantsFoundryConfig config;
 
 	@Inject
-	private EasyGiantsFoundryHelper helper;
+	private FoundryOverlay2D(EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
+	{
+		this.state = state;
+		this.helper = helper;
+		this.config = config;
+		this.setPosition(OverlayPosition.BOTTOM_LEFT);
+	}
 
 	private Color getHeatColor(int actions, int heat)
 	{
@@ -51,23 +56,38 @@ public class FoundryOverlay2D extends OverlayPanel
 		Heat heat = state.getCurrentHeat();
 		Stage stage = state.getCurrentStage();
 
-		panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
-		);
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
-		);
+		if (config.drawTitle())
+		{
+			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
+		}
+		if (config.drawHeatInfo())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
+			);
+		}
+		if (config.drawStageInfo())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
+			);
+		}
 
 		int actionsLeft = helper.getActionsLeftInStage();
 		int heatLeft = helper.getActionsForHeatLevel();
 
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Actions left").right(actionsLeft + "").build()
-		);
-		panelComponent.getChildren().add(
-			LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
-		);
+		if (config.drawActionsLeft())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Actions left").right(actionsLeft + "").build()
+			);
+		}
+		if (config.drawHeatLeft())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+			);
+		}
 
 		return super.render(graphics);
 	}
