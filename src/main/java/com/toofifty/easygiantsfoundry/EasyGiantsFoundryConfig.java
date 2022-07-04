@@ -40,10 +40,32 @@ public interface EasyGiantsFoundryConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "giantsFoundryStageThreshold",
+            name = "Stage threshold notification",
+            description = "The number of actions left required for the notification.",
+            position = 2,
+            section = notificationList
+    )
+    default int StageNotificationsThreshold() {
+        return 1;
+    }
+
+    @ConfigItem(
+            keyName = "giantsFoundryHeatThreshold",
+            name = "Heat threshold notification",
+            description = "The heat level left required for the notification.",
+            position = 3,
+            section = notificationList
+    )
+    default int HeatNotificationsThreshold() {
+        return 1;
+    }
+
+    @ConfigItem(
             keyName = "bonusNotification",
             name = "Notify bonus",
             description = "Notifies when bonus appears",
-            position = 2,
+            position = 4,
             section = notificationList
     )
     default boolean bonusNotification() {
@@ -54,7 +76,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "bonusSound",
             name = "Bonus sound",
             description = "Plays a sound when bonus appears",
-            position = 3,
+            position = 5,
             section = notificationList
     )
     default boolean bonusSoundNotify() {
@@ -65,7 +87,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = SOUND_ID,
             name = "Bonus sound ID",
             description = "Sound Effect ID to play when bonus appears",
-            position = 4,
+            position = 6,
             section = notificationList
     )
     default int soundId() {

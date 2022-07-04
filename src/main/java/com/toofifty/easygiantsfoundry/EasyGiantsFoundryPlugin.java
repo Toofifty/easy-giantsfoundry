@@ -154,13 +154,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 
 		if (config.showGiantsFoundryStageNotifications() &&
-			helper.getActionsLeftInStage() == 1 &&
+			helper.getActionsLeftInStage() == config.StageNotificationsThreshold() &&
 			(oldStage == null || oldStage != state.getCurrentStage()))
 		{
 			notifier.notify("About to finish the current stage!");
 			oldStage = state.getCurrentStage();
 		}
-		else if (config.showGiantsFoundryHeatNotifications() && helper.getActionsForHeatLevel() == 1)
+		else if (config.showGiantsFoundryHeatNotifications() &&
+				 helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
 		{
 			notifier.notify("About to run out of heat!");
 		}
