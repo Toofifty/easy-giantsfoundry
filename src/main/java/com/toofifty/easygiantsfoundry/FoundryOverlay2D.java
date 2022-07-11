@@ -17,13 +17,15 @@ import java.awt.Graphics2D;
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
 {
+	private final EasyGiantsFoundryPlugin plugin;
 	private final EasyGiantsFoundryState state;
 	private final EasyGiantsFoundryHelper helper;
 	private final EasyGiantsFoundryConfig config;
 
 	@Inject
-	private FoundryOverlay2D(EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
+	private FoundryOverlay2D(EasyGiantsFoundryPlugin plugin, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
 	{
+		this.plugin = plugin;
 		this.state = state;
 		this.helper = helper;
 		this.config = config;
@@ -86,6 +88,14 @@ public class FoundryOverlay2D extends OverlayPanel
 		{
 			panelComponent.getChildren().add(
 					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+			);
+		}
+
+		int points = plugin.getShopPoints();
+		if (config.drawShopPoints())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder().left("Points").right(points + "").build()
 			);
 		}
 

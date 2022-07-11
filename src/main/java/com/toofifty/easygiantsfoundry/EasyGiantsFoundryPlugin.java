@@ -1,6 +1,7 @@
 package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
@@ -16,6 +17,7 @@ import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.StatChanged;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
@@ -25,8 +27,11 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.config.ConfigManager;
 import com.toofifty.easygiantsfoundry.enums.Stage;
+import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 @Slf4j
 @PluginDescriptor(
@@ -48,6 +53,21 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private static final int KOVAC_NPC = 11472;
 
 	private static final int PREFORM = 27010;
+
+	private static final int SHOP_WIDGET = 753;
+
+	private static final int CHAT_WIDGET = 229;
+
+	private static final int SHOP_POINTS_TEXT = 13;
+
+	private static final int CHAT_POINTS_TEXT = 1;
+
+	private static final Pattern pattern = Pattern.compile("quality: (?<points>\\d+) Best");
+
+	@Getter
+	private int shopPoints;
+
+	private boolean increasePoints = false;
 
 	private Stage oldStage;
 
@@ -84,6 +104,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Inject
 	private ClientThread clientThread;
+
+	@Inject
+	private ConfigManager configManager;
 
 	@Override
 	protected void startUp()
@@ -136,6 +159,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		if (event.getGameState().equals(GameState.LOADING))
 		{
 			state.setEnabled(false);
+		}
+
+		if (event.getGameState().equals(GameState.LOGGED_IN))
+		{
+			Integer points = configManager.getRSProfileConfiguration(config.GROUP, config.POINTS_KEY, int.class);
+			if (points != null)
+			{
+				shopPoints = points;
+			}
 		}
 	}
 
@@ -257,6 +289,37 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	public void onGameTick(GameTick event)
 	{
 		checkBonus();
+
+		Widget chat = client.getWidget(CHAT_WIDGET, CHAT_POINTS_TEXT);
+
+		Widget shop = client.getWidget(SHOP_WIDGET, SHOP_POINTS_TEXT);
+
+		if (shop != null && shop.getText() != null && Integer.parseInt(shop.getText()) != shopPoints)
+		{
+			shopPoints = Integer.parseInt(shop.getText());
+			storePoints();
+			return;
+		}
+
+		if (chat == null)
+		{
+			increasePoints = true;
+			return;
+		}
+
+		String chatText = Text.sanitizeMultilineText(chat.getText());
+		final Matcher matcher = pattern.matcher(chatText);
+		if (increasePoints && matcher.find())
+		{
+			shopPoints += Integer.parseInt(matcher.group("points"));
+			storePoints();
+			increasePoints = false;
+		}
+	}
+
+	private void storePoints()
+	{
+		configManager.setRSProfileConfiguration(config.GROUP, config.POINTS_KEY, shopPoints);
 	}
 
 	private void checkBonus()
