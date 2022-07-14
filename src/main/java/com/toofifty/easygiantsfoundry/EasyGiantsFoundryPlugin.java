@@ -1,21 +1,14 @@
 package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
+import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Skill;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.*;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
@@ -85,6 +78,13 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Inject
 	private ClientThread clientThread;
 
+	@Inject
+	private ConfigManager configManager;
+
+	@Getter
+	@Inject
+	private PointsTracker pointsTracker;
+
 	@Override
 	protected void startUp()
 	{
@@ -137,6 +137,11 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		{
 			state.setEnabled(false);
 		}
+
+		if (event.getGameState().equals(GameState.LOGGED_IN))
+		{
+			pointsTracker.load();
+		}
 	}
 
 	@Subscribe
@@ -161,7 +166,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			oldStage = state.getCurrentStage();
 		}
 		else if (config.showGiantsFoundryHeatNotifications() &&
-				 helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
+			helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
 		{
 			notifier.notify("About to run out of heat!");
 		}
@@ -220,7 +225,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
 		if (event.getContainerId() == InventoryID.EQUIPMENT.getId()
-		 	&& event.getItemContainer().count(PREFORM) == 0)
+			&& event.getItemContainer().count(PREFORM) == 0)
 		{
 			state.reset();
 			oldStage = null;
@@ -259,11 +264,17 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		checkBonus();
 	}
 
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
+	{
+		pointsTracker.onWidgetLoaded(event.getGroupId());
+	}
+
 	private void checkBonus()
 	{
 		if (!state.isEnabled() || state.getCurrentStage() == null
-				|| state.getCurrentStage().getHeat() != state.getCurrentHeat()
-				|| !BonusWidget.isActive(client))
+			|| state.getCurrentStage().getHeat() != state.getCurrentHeat()
+			|| !BonusWidget.isActive(client))
 		{
 			bonusNotified = false;
 			return;

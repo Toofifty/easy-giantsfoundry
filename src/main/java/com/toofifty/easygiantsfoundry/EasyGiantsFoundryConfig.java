@@ -9,6 +9,7 @@ import net.runelite.client.config.ConfigSection;
 public interface EasyGiantsFoundryConfig extends Config {
     String GROUP = "easygiantsfoundry";
     String SOUND_ID = "soundID";
+    String POINTS_KEY = "easygiantsfoundrypoints";
 
     @ConfigSection(
             name = "Notifications",
@@ -218,5 +219,17 @@ public interface EasyGiantsFoundryConfig extends Config {
     )
     default boolean drawHeatLeft() {
         return true;
+    }
+
+    @ConfigItem(
+            keyName = "shopPoints",
+            name = "Reputation",
+            description = "Toggle for reputation text",
+            position = 5,
+            section = infoPanelList
+    )
+    default boolean drawShopPoints()
+    {
+        return false;
     }
 }
