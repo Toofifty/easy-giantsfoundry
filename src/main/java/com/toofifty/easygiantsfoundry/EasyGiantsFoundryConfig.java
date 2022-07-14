@@ -223,8 +223,8 @@ public interface EasyGiantsFoundryConfig extends Config {
 
     @ConfigItem(
             keyName = "shopPoints",
-            name = "Shop points",
-            description = "Toggle for shop points",
+            name = "Reputation",
+            description = "Toggle for reputation text",
             position = 5,
             section = infoPanelList
     )

@@ -9,7 +9,6 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Skill;
 import net.runelite.api.events.*;
-import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.eventbus.Subscribe;
@@ -19,11 +18,8 @@ import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 import net.runelite.client.config.ConfigManager;
 import com.toofifty.easygiantsfoundry.enums.Stage;
-import net.runelite.client.util.Text;
 
 import javax.inject.Inject;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 @Slf4j
 @PluginDescriptor(
@@ -87,7 +83,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Getter
 	@Inject
-	private ReputationTracker reputationTracker;
+	private PointsTracker pointsTracker;
 
 	@Override
 	protected void startUp()
@@ -144,7 +140,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		if (event.getGameState().equals(GameState.LOGGED_IN))
 		{
-			reputationTracker.load();
+			pointsTracker.load();
 		}
 	}
 
@@ -271,7 +267,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onWidgetLoaded(WidgetLoaded event)
 	{
-		reputationTracker.onWidgetLoaded(event.getGroupId());
+		pointsTracker.onWidgetLoaded(event.getGroupId());
 	}
 
 	private void checkBonus()

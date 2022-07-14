@@ -10,7 +10,7 @@ import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class ReputationTracker
+public class PointsTracker
 {
 	private static final int SHOP_WIDGET = 753;
 	private static final int CHAT_WIDGET = 229;
