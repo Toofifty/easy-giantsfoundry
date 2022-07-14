@@ -13,13 +13,9 @@ import java.util.regex.Pattern;
 public class ReputationTracker
 {
 	private static final int SHOP_WIDGET = 753;
-
 	private static final int CHAT_WIDGET = 229;
-
 	private static final int SHOP_POINTS_TEXT = 13;
-
 	private static final int CHAT_POINTS_TEXT = 1;
-
 	private static final Pattern pattern = Pattern.compile("quality: (?<points>\\d+) Best");
 
 	@Getter
