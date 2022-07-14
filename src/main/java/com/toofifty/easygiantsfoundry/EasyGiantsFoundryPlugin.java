@@ -8,15 +8,7 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Skill;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
@@ -53,21 +45,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private static final int KOVAC_NPC = 11472;
 
 	private static final int PREFORM = 27010;
-
-	private static final int SHOP_WIDGET = 753;
-
-	private static final int CHAT_WIDGET = 229;
-
-	private static final int SHOP_POINTS_TEXT = 13;
-
-	private static final int CHAT_POINTS_TEXT = 1;
-
-	private static final Pattern pattern = Pattern.compile("quality: (?<points>\\d+) Best");
-
-	@Getter
-	private int shopPoints;
-
-	private boolean increasePoints = false;
 
 	private Stage oldStage;
 
@@ -107,6 +84,10 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Inject
 	private ConfigManager configManager;
+
+	@Getter
+	@Inject
+	private ReputationTracker reputationTracker;
 
 	@Override
 	protected void startUp()
@@ -163,11 +144,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		if (event.getGameState().equals(GameState.LOGGED_IN))
 		{
-			Integer points = configManager.getRSProfileConfiguration(config.GROUP, config.POINTS_KEY, int.class);
-			if (points != null)
-			{
-				shopPoints = points;
-			}
+			reputationTracker.load();
 		}
 	}
 
@@ -193,7 +170,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			oldStage = state.getCurrentStage();
 		}
 		else if (config.showGiantsFoundryHeatNotifications() &&
-				 helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
+			helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
 		{
 			notifier.notify("About to run out of heat!");
 		}
@@ -252,7 +229,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
 		if (event.getContainerId() == InventoryID.EQUIPMENT.getId()
-		 	&& event.getItemContainer().count(PREFORM) == 0)
+			&& event.getItemContainer().count(PREFORM) == 0)
 		{
 			state.reset();
 			oldStage = null;
@@ -289,44 +266,19 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	public void onGameTick(GameTick event)
 	{
 		checkBonus();
-
-		Widget chat = client.getWidget(CHAT_WIDGET, CHAT_POINTS_TEXT);
-
-		Widget shop = client.getWidget(SHOP_WIDGET, SHOP_POINTS_TEXT);
-
-		if (shop != null && shop.getText() != null && Integer.parseInt(shop.getText()) != shopPoints)
-		{
-			shopPoints = Integer.parseInt(shop.getText());
-			storePoints();
-			return;
-		}
-
-		if (chat == null)
-		{
-			increasePoints = true;
-			return;
-		}
-
-		String chatText = Text.sanitizeMultilineText(chat.getText());
-		final Matcher matcher = pattern.matcher(chatText);
-		if (increasePoints && matcher.find())
-		{
-			shopPoints += Integer.parseInt(matcher.group("points"));
-			storePoints();
-			increasePoints = false;
-		}
 	}
 
-	private void storePoints()
+	@Subscribe
+	public void onWidgetLoaded(WidgetLoaded event)
 	{
-		configManager.setRSProfileConfiguration(config.GROUP, config.POINTS_KEY, shopPoints);
+		reputationTracker.onWidgetLoaded(event.getGroupId());
 	}
 
 	private void checkBonus()
 	{
 		if (!state.isEnabled() || state.getCurrentStage() == null
-				|| state.getCurrentStage().getHeat() != state.getCurrentHeat()
-				|| !BonusWidget.isActive(client))
+			|| state.getCurrentStage().getHeat() != state.getCurrentHeat()
+			|| !BonusWidget.isActive(client))
 		{
 			bonusNotified = false;
 			return;

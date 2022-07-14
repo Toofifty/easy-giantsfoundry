@@ -91,7 +91,7 @@ public class FoundryOverlay2D extends OverlayPanel
 			);
 		}
 
-		int points = plugin.getShopPoints();
+		int points = plugin.getReputationTracker().getShopPoints();
 		if (config.drawShopPoints())
 		{
 			panelComponent.getChildren().add(
