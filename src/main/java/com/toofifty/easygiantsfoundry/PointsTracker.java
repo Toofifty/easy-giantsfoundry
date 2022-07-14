@@ -3,6 +3,7 @@ package com.toofifty.easygiantsfoundry;
 import lombok.Getter;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
+import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
 import net.runelite.client.util.Text;
 
@@ -27,6 +28,9 @@ public class PointsTracker
 	@Inject
 	private Client client;
 
+	@Inject
+	ClientThread clientThread;
+
 	public void load()
 	{
 		Integer points = configManager.getRSProfileConfiguration(EasyGiantsFoundryConfig.GROUP, EasyGiantsFoundryConfig.POINTS_KEY, int.class);
@@ -45,11 +49,11 @@ public class PointsTracker
 	{
 		if (groupId == SHOP_WIDGET)
 		{
-			shopOpened();
+			clientThread.invokeLater(this::shopOpened);
 		}
 		else if (groupId == CHAT_WIDGET)
 		{
-			chatBox();
+			clientThread.invokeLater(this::chatBox);
 		}
 	}
 
