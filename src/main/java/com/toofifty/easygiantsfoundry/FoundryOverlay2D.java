@@ -2,6 +2,7 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
+import net.runelite.api.Client;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
@@ -17,14 +18,17 @@ import java.awt.Graphics2D;
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
 {
+	private static final int REGION_ID = 13491;
+	private final Client client;
 	private final EasyGiantsFoundryPlugin plugin;
 	private final EasyGiantsFoundryState state;
 	private final EasyGiantsFoundryHelper helper;
 	private final EasyGiantsFoundryConfig config;
 
 	@Inject
-	private FoundryOverlay2D(EasyGiantsFoundryPlugin plugin, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
+	private FoundryOverlay2D(Client client, EasyGiantsFoundryPlugin plugin, EasyGiantsFoundryState state, EasyGiantsFoundryHelper helper, EasyGiantsFoundryConfig config)
 	{
+		this.client = client;
 		this.plugin = plugin;
 		this.state = state;
 		this.helper = helper;
@@ -50,45 +54,49 @@ public class FoundryOverlay2D extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (!state.isEnabled() || state.getCurrentStage() == null)
+		if (client.getLocalPlayer().getWorldLocation().getRegionID() != REGION_ID)
 		{
 			return null;
 		}
-
-		Heat heat = state.getCurrentHeat();
-		Stage stage = state.getCurrentStage();
+		boolean swordPickedUp = state.isEnabled() && state.getCurrentStage() != null;
 
 		if (config.drawTitle())
 		{
 			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
 		}
-		if (config.drawHeatInfo())
-		{
-			panelComponent.getChildren().add(
+
+		if (swordPickedUp) {
+			Heat heat = state.getCurrentHeat();
+			Stage stage = state.getCurrentStage();
+
+			if (config.drawHeatInfo())
+			{
+				panelComponent.getChildren().add(
 					LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
-			);
-		}
-		if (config.drawStageInfo())
-		{
-			panelComponent.getChildren().add(
+				);
+			}
+			if (config.drawStageInfo())
+			{
+				panelComponent.getChildren().add(
 					LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
-			);
-		}
+				);
+			}
 
-		int actionsLeft = helper.getActionsLeftInStage();
-		int heatLeft = helper.getActionsForHeatLevel();
+			int actionsLeft = helper.getActionsLeftInStage();
+			int heatLeft = helper.getActionsForHeatLevel();
 
-		if (config.drawActionsLeft())
-		{
-			panelComponent.getChildren().add(
+			if (config.drawActionsLeft())
+			{
+				panelComponent.getChildren().add(
 					LineComponent.builder().left("Actions left").right(actionsLeft + "").build()
-			);
-		}
-		if (config.drawHeatLeft())
-		{
-			panelComponent.getChildren().add(
+				);
+			}
+			if (config.drawHeatLeft())
+			{
+				panelComponent.getChildren().add(
 					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
-			);
+				);
+			}
 		}
 
 		int points = plugin.getPointsTracker().getShopPoints();
