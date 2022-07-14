@@ -29,3 +29,4 @@ Helpful overlays for the Giant's Foundry minigame
 - [Vanillj](https://github.com/Vanillj "Vanillj's github")
   * Added config
   * Added notifications for heat/stage changes
+  * Added config for actions/heat left for notifications
