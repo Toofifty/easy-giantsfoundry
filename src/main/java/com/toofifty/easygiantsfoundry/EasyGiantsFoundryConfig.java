@@ -5,6 +5,8 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 
+import java.awt.Color;
+
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
 public interface EasyGiantsFoundryConfig extends Config {
     String GROUP = "easygiantsfoundry";
@@ -137,10 +139,22 @@ public interface EasyGiantsFoundryConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "mouldHighlightColor",
+            name = "Highlighted Mould Color",
+            description = "Highlight color of the mould",
+            position = 3,
+            section = highlightList
+    )
+    default Color mouldHighlightColor() {
+        return new Color(13, 193, 13);
+    }
+
+
+    @ConfigItem(
             keyName = "crucibleHighlight",
             name = "Highlight Crucible",
             description = "Highlight Crucible when it should be filled/poured",
-            position = 3,
+            position = 4,
             section = highlightList
     )
     default boolean highlightCrucible() {
@@ -151,7 +165,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "kovacHighlight",
             name = "Highlight Kovac for hand in",
             description = "Highlight Kovac when sword can be handed in",
-            position = 4,
+            position = 5,
             section = highlightList
     )
     default boolean highlightKovac() {

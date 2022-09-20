@@ -21,10 +21,11 @@ public class MouldHelper
     static final int SWORD_TYPE_1_VARBIT = 13907; // 4=Broad
     static final int SWORD_TYPE_2_VARBIT = 13908; // 3=Flat
     private static final int DISABLED_TEXT_COLOR = 0x9f9f9f;
-    private static final int GREEN = 0xdc10d;
 
     @Inject
     private Client client;
+    @Inject
+    private EasyGiantsFoundryConfig config;
 
     @Inject
     private ClientThread clientThread;
@@ -52,7 +53,7 @@ public class MouldHelper
             }
         }
         if (bestWidget != null) {
-            bestWidget.setTextColor(GREEN);
+            bestWidget.setTextColor(config.mouldHighlightColor().getRGB());
         }
 
         if (scriptId == DRAW_MOULD_LIST_SCRIPT || scriptId == REDRAW_MOULD_LIST_SCRIPT)
