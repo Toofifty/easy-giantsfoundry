@@ -131,7 +131,7 @@ public class FoundryOverlay3D extends Overlay {
             graphics.fill(objectClickbox);
         }
 
-        if (color.equals(ColorScheme.PROGRESS_ERROR_COLOR) && config.highlightWaterAndLava())
+        if (stage.getHeat() != heat && config.highlightWaterAndLava())
         {
             drawHeatChangers(graphics);
         }
