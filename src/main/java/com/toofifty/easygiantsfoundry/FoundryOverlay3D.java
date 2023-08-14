@@ -2,17 +2,18 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
+import java.awt.Color;
+import java.awt.Dimension;
+import java.awt.Graphics2D;
+import java.awt.Shape;
+import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.NPC;
 import net.runelite.api.Point;
 import net.runelite.api.widgets.Widget;
-import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
-
-import javax.inject.Inject;
-import java.awt.*;
 
 public class FoundryOverlay3D extends Overlay {
 
@@ -47,22 +48,22 @@ public class FoundryOverlay3D extends Overlay {
     {
         if (stage.getHeat() != heat)
         {
-            return ColorScheme.PROGRESS_ERROR_COLOR;
+            return config.toolBad();
         }
 
         if (BonusWidget.isActive(client))
         {
-            return Color.CYAN;
+            return config.toolBonus();
         }
 
         int actionsLeft = helper.getActionsLeftInStage();
         int heatLeft = helper.getActionsForHeatLevel();
         if (actionsLeft <= 1 || heatLeft <= 1)
         {
-            return ColorScheme.PROGRESS_INPROGRESS_COLOR;
+            return config.toolCaution();
         }
 
-        return ColorScheme.PROGRESS_COMPLETE_COLOR;
+        return config.toolGood();
     }
 
     private GameObject getStageObject(Stage stage)
@@ -153,7 +154,7 @@ public class FoundryOverlay3D extends Overlay {
         if (shape != null)
         {
             Point mousePosition = client.getMouseCanvasPosition();
-            Color color = ColorScheme.PROGRESS_COMPLETE_COLOR;
+            Color color = config.lavaWaterfallColour();
             if (shape.contains(mousePosition.getX(), mousePosition.getY()))
             {
                 graphics.setColor(color.darker());
@@ -181,7 +182,7 @@ public class FoundryOverlay3D extends Overlay {
         Shape shape = crucible.getConvexHull();
         if (shape != null)
         {
-            Color color = Color.CYAN;
+            Color color = config.generalHighlight();
             graphics.setColor(color);
             graphics.draw(shape);
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
@@ -201,7 +202,7 @@ public class FoundryOverlay3D extends Overlay {
         Shape shape = mouldJig.getConvexHull();
         if (shape != null)
         {
-            Color color = Color.CYAN;
+            Color color = config.generalHighlight();
             graphics.setColor(color);
             graphics.draw(shape);
             graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
@@ -217,7 +218,7 @@ public class FoundryOverlay3D extends Overlay {
             Shape shape = kovac.getConvexHull();
             if (shape != null)
             {
-                Color color = Color.CYAN;
+                Color color = config.generalHighlight();
                 graphics.setColor(color);
                 graphics.draw(shape);
                 graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));

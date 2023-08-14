@@ -2,14 +2,13 @@ package com.toofifty.easygiantsfoundry;
 
 import com.toofifty.easygiantsfoundry.enums.CommissionType;
 import com.toofifty.easygiantsfoundry.enums.Mould;
+import java.util.LinkedHashMap;
+import java.util.Map;
+import javax.inject.Inject;
 import net.runelite.api.Client;
 import net.runelite.api.ScriptID;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.callback.ClientThread;
-
-import javax.inject.Inject;
-import java.util.LinkedHashMap;
-import java.util.Map;
 
 public class MouldHelper
 {
@@ -28,6 +27,9 @@ public class MouldHelper
 
     @Inject
     private ClientThread clientThread;
+
+	@Inject
+	private EasyGiantsFoundryConfig config;
 
     public void selectBest(int scriptId)
     {
@@ -52,7 +54,7 @@ public class MouldHelper
             }
         }
         if (bestWidget != null) {
-            bestWidget.setTextColor(GREEN);
+            bestWidget.setTextColor(config.mouldTextColour().getRGB());
         }
 
         if (scriptId == DRAW_MOULD_LIST_SCRIPT || scriptId == REDRAW_MOULD_LIST_SCRIPT)
