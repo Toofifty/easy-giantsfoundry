@@ -1,9 +1,11 @@
 package com.toofifty.easygiantsfoundry;
 
+import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.ui.ColorScheme;
 
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
 public interface EasyGiantsFoundryConfig extends Config {
@@ -162,7 +164,7 @@ public interface EasyGiantsFoundryConfig extends Config {
     @ConfigSection(
             name = "Info Panel",
             description = "Settings for the Info Panel overlay",
-            position = 1
+            position = 2
     )
     String infoPanelList = "infoPanelList";
 
@@ -232,4 +234,97 @@ public interface EasyGiantsFoundryConfig extends Config {
     {
         return false;
     }
+
+
+	@ConfigSection(
+		name = "Colour",
+		description = "Colours",
+		position = 3
+	)
+	String colourList = "colourList";
+
+	@ConfigItem(
+		keyName = "mouldText",
+		name = "Mould Text",
+		description = "Colour for optimal mould text",
+		position = 0,
+		section = colourList
+	)
+	default Color mouldTextColour()
+	{
+		return new Color(0xdc10d);
+	}
+
+
+	@ConfigItem(
+		keyName = "generalColour",
+		name = "General",
+		description = "Colour for highlighting objects/npcs in general",
+		position = 1,
+		section = colourList
+	)
+	default Color generalHighlight()
+	{
+		return Color.CYAN;
+	}
+
+	@ConfigItem(
+		keyName = "lavaWaterColour",
+		name = "Lava/Waterfall",
+		description = "Colour for highlighting lava/waterfall",
+		position = 2,
+		section = colourList
+	)
+	default Color lavaWaterfallColour()
+	{
+		return ColorScheme.PROGRESS_COMPLETE_COLOR;
+	}
+
+	@ConfigItem(
+		keyName = "toolGood",
+		name = "Tool Good",
+		description = "Colour for highlighting current tool when they are usable",
+		position = 3,
+		section = colourList
+	)
+	default Color toolGood()
+	{
+		return ColorScheme.PROGRESS_COMPLETE_COLOR;
+	}
+
+	@ConfigItem(
+		keyName = "toolBad",
+		name = "Tool Bad",
+		description = "Colour for highlighting current tool when they are not usable",
+		position = 4,
+		section = colourList
+	)
+	default Color toolBad()
+	{
+		return ColorScheme.PROGRESS_ERROR_COLOR;
+	}
+
+	@ConfigItem(
+		keyName = "toolCaution",
+		name = "Tool Caution",
+		description = "Colour for highlighting current tool when they are about to be not usable",
+		position = 5,
+		section = colourList
+	)
+	default Color toolCaution()
+	{
+		return ColorScheme.PROGRESS_INPROGRESS_COLOR;
+	}
+
+	@ConfigItem(
+		keyName = "toolBonus",
+		name = "Tool Bonus",
+		description = "Colour for highlighting current tool when they have a bonus to click on",
+		position = 6,
+		section = colourList
+	)
+	default Color toolBonus()
+	{
+		return Color.CYAN;
+	}
 }
