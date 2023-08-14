@@ -1,6 +1,8 @@
 package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
+import com.toofifty.easygiantsfoundry.enums.Stage;
+import javax.inject.Inject;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 import net.runelite.api.Client;
@@ -8,18 +10,24 @@ import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Skill;
-import net.runelite.api.events.*;
+import net.runelite.api.events.GameObjectDespawned;
+import net.runelite.api.events.GameObjectSpawned;
+import net.runelite.api.events.GameStateChanged;
+import net.runelite.api.events.GameTick;
+import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.NpcDespawned;
+import net.runelite.api.events.NpcSpawned;
+import net.runelite.api.events.ScriptPostFired;
+import net.runelite.api.events.StatChanged;
+import net.runelite.api.events.VarbitChanged;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
+import net.runelite.client.config.ConfigManager;
 import net.runelite.client.eventbus.Subscribe;
 import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
-import net.runelite.client.config.ConfigManager;
-import com.toofifty.easygiantsfoundry.enums.Stage;
-
-import javax.inject.Inject;
 
 @Slf4j
 @PluginDescriptor(
@@ -42,11 +50,16 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private static final int PREFORM = 27010;
 
+	private static final int REPUTATION_VARBIT = 3436;
+
 	private Stage oldStage;
 
 	private int lastBoost;
 
 	private boolean bonusNotified = false;
+
+	@Getter
+	private int reputation;
 
 	@Inject
 	private EasyGiantsFoundryState state;
@@ -81,15 +94,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Inject
 	private ConfigManager configManager;
 
-	@Getter
-	@Inject
-	private PointsTracker pointsTracker;
-
 	@Override
 	protected void startUp()
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
+		if (client.getGameState() == GameState.LOGGED_IN)
+		{
+			reputation = client.getVarpValue(REPUTATION_VARBIT);
+		}
 	}
 
 	@Override
@@ -140,7 +153,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		if (event.getGameState().equals(GameState.LOGGED_IN))
 		{
-			pointsTracker.load();
+			reputation = client.getVarpValue(REPUTATION_VARBIT);
 		}
 	}
 
@@ -245,6 +258,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onVarbitChanged(VarbitChanged event)
+	{
+		if (event.getVarpId() == REPUTATION_VARBIT)
+		{
+			reputation = client.getVarpValue(REPUTATION_VARBIT);
+		}
+	}
+
+	@Subscribe
 	protected void onConfigChanged(ConfigChanged configChanged)
 	{
 		if (!EasyGiantsFoundryConfig.GROUP.equals(configChanged.getGroup()))
@@ -262,12 +284,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	public void onGameTick(GameTick event)
 	{
 		checkBonus();
-	}
-
-	@Subscribe
-	public void onWidgetLoaded(WidgetLoaded event)
-	{
-		pointsTracker.onWidgetLoaded(event.getGroupId());
 	}
 
 	private void checkBonus()
