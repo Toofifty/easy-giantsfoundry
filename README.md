@@ -8,7 +8,7 @@ Helpful overlays for the Giant's Foundry minigame
 - Shows number of actions required to move to the next stage
 - Shows number of actions before gaining/losing too much heat
 - Shows best moulds to use
-- Highlights relevant tool with status colors
+- Highlights relevant tool with customizable status colors
     * Red = Wrong temperature
     * Green = Right temperature
     * Orange = one action or temperature change remaining
@@ -26,6 +26,7 @@ Helpful overlays for the Giant's Foundry minigame
     * Added Bonus sound/notifications
     * Added overlay configs
     * Added info panel configs
+    * Added color configuration
 - [Vanillj](https://github.com/Vanillj "Vanillj's github")
   * Added config
   * Added notifications for heat/stage changes
