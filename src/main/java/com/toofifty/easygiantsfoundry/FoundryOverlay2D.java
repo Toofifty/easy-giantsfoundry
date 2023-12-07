@@ -1,5 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
+import static com.toofifty.easygiantsfoundry.Util.format;
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 import java.awt.Color;
@@ -35,8 +36,12 @@ public class FoundryOverlay2D extends OverlayPanel
 		this.setPosition(OverlayPosition.BOTTOM_LEFT);
 	}
 
-	private Color getHeatColor(int actions, int heat)
+	private Color getHeatColor(int actions, double heat)
 	{
+		// rounding up is okay - 1.4 heat left means it's
+		// possible to perform two actions on the preform
+		heat = Math.ceil(heat);
+
 		if (heat >= actions)
 		{
 			return ColorScheme.PROGRESS_COMPLETE_COLOR;
@@ -71,18 +76,26 @@ public class FoundryOverlay2D extends OverlayPanel
 			if (config.drawHeatInfo())
 			{
 				panelComponent.getChildren().add(
-					LineComponent.builder().left("Heat").right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)").rightColor(heat.getColor()).build()
+					LineComponent.builder()
+						.left("Heat")
+						.right(heat.getName() + " (" + state.getHeatAmount() / 10 + "%)")
+						.rightColor(heat.getColor())
+						.build()
 				);
 			}
 			if (config.drawStageInfo())
 			{
 				panelComponent.getChildren().add(
-					LineComponent.builder().left("Stage").right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)").rightColor(stage.getHeat().getColor()).build()
+					LineComponent.builder()
+						.left("Stage")
+						.right(stage.getName() + " (" + state.getProgressAmount() / 10 + "%)")
+						.rightColor(stage.getHeat().getColor())
+						.build()
 				);
 			}
 
 			int actionsLeft = helper.getActionsLeftInStage();
-			int heatLeft = helper.getActionsForHeatLevel();
+			float heatLeft = helper.getActionsForHeatLevel();
 
 			if (config.drawActionsLeft())
 			{
@@ -93,7 +106,11 @@ public class FoundryOverlay2D extends OverlayPanel
 			if (config.drawHeatLeft())
 			{
 				panelComponent.getChildren().add(
-					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+					LineComponent.builder()
+						.left("Heat left")
+						.right(format(heatLeft, 2) + "")
+						.rightColor(getHeatColor(actionsLeft, heatLeft))
+						.build()
 				);
 			}
 		}

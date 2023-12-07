@@ -59,7 +59,7 @@ public class EasyGiantsFoundryHelper
 	 * performed before the heat drops too high or too low to
 	 * continue
 	 */
-	public int getActionsForHeatLevel()
+	public float getActionsForHeatLevel()
 	{
 		Heat heatStage = state.getCurrentHeat();
 		Stage stage = state.getCurrentStage();
@@ -70,7 +70,34 @@ public class EasyGiantsFoundryHelper
 		}
 
 		int[] range = getCurrentHeatRange();
-		int actions = 0;
+
+		int currentHeat = state.getHeatAmount();
+		boolean isLosingHeat = stage.getHeatChange() < 0;
+		int lowerBound = isLosingHeat ? range[0] : currentHeat;
+		int upperBound = isLosingHeat ? currentHeat : range[1];
+		int delta = upperBound - lowerBound;
+
+		return ((float) delta) / Math.abs(stage.getHeatChange());
+	}
+
+	public int getTargetTemperature()
+	{
+		switch (state.getCurrentStage())
+		{
+			case POLISHING_WHEEL:
+				return state.getLowHeatRange()[1];
+			case GRINDSTONE:
+				return state.getMedHeatRange()[0];
+			case TRIP_HAMMER:
+				return state.getHighHeatRange()[1];
+			default:
+				return 0;
+		}
+	}
+
+	private int getHeatActionsToTarget(HeatActionTracker.Action action)
+	{
+		int target = getTargetTemperature();
 		int heat = state.getHeatAmount();
 		while (heat > range[0] && heat < range[1])
 		{
