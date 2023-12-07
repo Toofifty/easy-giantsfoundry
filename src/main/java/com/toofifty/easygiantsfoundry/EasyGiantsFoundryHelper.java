@@ -21,6 +21,9 @@ public class EasyGiantsFoundryHelper
 	@Inject
 	private EasyGiantsFoundryState state;
 
+	@Inject
+	private HeatActionTracker heatActionTracker;
+
 	/**
 	 * Get the amount of progress each stage needs
 	 */
@@ -99,12 +102,46 @@ public class EasyGiantsFoundryHelper
 	{
 		int target = getTargetTemperature();
 		int heat = state.getHeatAmount();
-		while (heat > range[0] && heat < range[1])
+
+		int diff = target - heat;
+
+		// no need to calculate in the wrong direction
+		if (action.addsHeat() && diff < 0)
 		{
-			actions++;
-			heat += stage.getHeatChange();
+			return -1;
+		}
+		if (!action.addsHeat() && diff > 0)
+		{
+			return -1;
 		}
 
-		return actions;
+		int absDiff = Math.abs(diff);
+		int currentProgress = heatActionTracker.getCurrentAction() == action
+			? heatActionTracker.getTicksInAction()
+			: 0;
+
+		return action.isLargeAction()
+			? HeatActionCalculator.getLargeActionsRequired(absDiff, currentProgress)
+			: HeatActionCalculator.getSmallActionsRequired(absDiff, currentProgress);
+	}
+
+	public int getCoolsToTarget()
+	{
+		return getHeatActionsToTarget(HeatActionTracker.Action.COOL);
+	}
+
+	public int getQuenchesToTarget()
+	{
+		return getHeatActionsToTarget(HeatActionTracker.Action.QUENCH);
+	}
+
+	public int getHeatsToTarget()
+	{
+		return getHeatActionsToTarget(HeatActionTracker.Action.HEAT);
+	}
+
+	public int getDunksToTarget()
+	{
+		return getHeatActionsToTarget(HeatActionTracker.Action.DUNK);
 	}
 }

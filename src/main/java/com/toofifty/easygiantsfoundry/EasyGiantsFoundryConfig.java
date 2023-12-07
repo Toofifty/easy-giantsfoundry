@@ -1,5 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
+import com.toofifty.easygiantsfoundry.enums.HighlightMode;
 import java.awt.Color;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
@@ -105,11 +106,22 @@ public interface EasyGiantsFoundryConfig extends Config {
     )
     String highlightList = "highlightList";
 
+	@ConfigItem(
+		keyName = "highlightMode",
+		name = "Highlight Mode",
+		description = "Highlights current tool with symbolic colors",
+		position = 0,
+		section = highlightList
+	)
+	default HighlightMode highlightMode() {
+		return HighlightMode.CLICKBOX;
+	}
+
     @ConfigItem(
             keyName = "toolsHighlight",
             name = "Highlight Tools",
             description = "Highlights current tool with symbolic colors",
-            position = 0,
+            position = 1,
             section = highlightList
     )
     default boolean highlightTools() {
@@ -120,7 +132,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "waterLavaHighlight",
             name = "Highlight Waterfall/Lava Pool",
             description = "Highlight Lava Pool / Waterfall when heat change required",
-            position = 1,
+            position = 2,
             section = highlightList
     )
     default boolean highlightWaterAndLava() {
@@ -131,7 +143,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "mouldHighlight",
             name = "Highlight Mould",
             description = "Highlight Mould when it should be clicked",
-            position = 2,
+            position = 3,
             section = highlightList
     )
     default boolean highlightMould() {
@@ -142,7 +154,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "crucibleHighlight",
             name = "Highlight Crucible",
             description = "Highlight Crucible when it should be filled/poured",
-            position = 3,
+            position = 4,
             section = highlightList
     )
     default boolean highlightCrucible() {
@@ -153,7 +165,7 @@ public interface EasyGiantsFoundryConfig extends Config {
             keyName = "kovacHighlight",
             name = "Highlight Kovac for hand in",
             description = "Highlight Kovac when sword can be handed in",
-            position = 4,
+            position = 5,
             section = highlightList
     )
     default boolean highlightKovac() {

@@ -16,18 +16,12 @@ import java.util.List;
 public class EasyGiantsFoundryState
 {
 	// heat and progress are from 0-1000
-	private static final int VARBIT_HEAT = 13948;
+	public static final int VARBIT_HEAT = 13948;
 	private static final int VARBIT_PROGRESS = 13949;
 
-	private static final int VARBIT_ORE_COUNT = 13934;
-	private static final int VARBIT_FORTE_SELECTED = 13910;
-	private static final int VARBIT_BLADE_SELECTED = 13911;
-	private static final int VARBIT_TIP_SELECTED = 13912;
+	public static final int VARBIT_METAL_1 = 13935;
+	public static final int VARBIT_METAL_2 = 13936;
 
-	// 0 - load bars
-	// 1 - set mould
-	// 2 - collect preform
-	// 3 -
 	static final int VARBIT_GAME_STAGE = 13914;
 
 	private static final int WIDGET_HEAT_PARENT = 49414153;
@@ -42,6 +36,11 @@ public class EasyGiantsFoundryState
 	private static final int SPRITE_ID_TRIP_HAMMER = 4442;
 	private static final int SPRITE_ID_GRINDSTONE = 4443;
 	private static final int SPRITE_ID_POLISHING_WHEEL = 4444;
+
+	// if the last heat change (when cool/heat player animation starts)
+	// was greater than this value, we'll consider the player to be either
+	// quenching or dunking
+	private static final int MIN_LARGE_HEAT_CHANGE = 12;
 
 	@Inject
 	private Client client;
@@ -67,6 +66,16 @@ public class EasyGiantsFoundryState
 	public int getProgressAmount()
 	{
 		return client.getVarbitValue(VARBIT_PROGRESS);
+	}
+
+	public int getMetal1Amount()
+	{
+		return client.getVarbitValue(VARBIT_METAL_1);
+	}
+
+	public int getMetal2Amount()
+	{
+		return client.getVarbitValue(VARBIT_METAL_2);
 	}
 
 	public double getHeatRangeRatio()
