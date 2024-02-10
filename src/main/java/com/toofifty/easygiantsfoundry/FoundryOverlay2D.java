@@ -50,6 +50,16 @@ public class FoundryOverlay2D extends OverlayPanel
 		return ColorScheme.PROGRESS_ERROR_COLOR;
 	}
 
+	private Color getBonusActionsColor(int received, int expected)
+	{
+		if (received >= expected)
+		{
+			return ColorScheme.PROGRESS_COMPLETE_COLOR;
+		}
+
+		return ColorScheme.PROGRESS_INPROGRESS_COLOR;
+	}
+
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
@@ -94,6 +104,12 @@ public class FoundryOverlay2D extends OverlayPanel
 			{
 				panelComponent.getChildren().add(
 					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+				);
+			}
+			if (config.drawBonusActions())
+			{
+				panelComponent.getChildren().add(
+					LineComponent.builder().left("Bonus actions").right(state.getBonusActionsReceived() + "/" + state.getBonusActionsExpected()).rightColor(getBonusActionsColor(state.getBonusActionsReceived(), state.getBonusActionsExpected())).build()
 				);
 			}
 		}
