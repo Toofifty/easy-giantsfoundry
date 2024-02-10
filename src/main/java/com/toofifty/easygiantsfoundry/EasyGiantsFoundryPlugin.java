@@ -301,6 +301,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			return;
 		}
 
+		state.addBonusActionReceived();
+
 		if (config.bonusNotification())
 		{
 			notifier.notify("Bonus - Click tool");

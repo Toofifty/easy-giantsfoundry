@@ -50,6 +50,9 @@ public class EasyGiantsFoundryState
 	@Getter
 	private boolean enabled;
 
+	@Getter
+	private int bonusActionsReceived = 0;
+
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
 
@@ -57,6 +60,7 @@ public class EasyGiantsFoundryState
 	{
 		stages.clear();
 		heatRangeRatio = 0;
+		bonusActionsReceived = 0;
 	}
 
 	public int getHeatAmount()
@@ -203,5 +207,19 @@ public class EasyGiantsFoundryState
 			return range[1] - heat;
 		else
 			return 0;
+	}
+
+	public int getBonusActionsExpected()
+	{
+		if (getStages().size() >= 6) {
+			return 3;
+		}
+
+		return 2;
+	}
+
+	public void addBonusActionReceived()
+	{
+		++bonusActionsReceived;
 	}
 }

@@ -224,10 +224,21 @@ public interface EasyGiantsFoundryConfig extends Config {
     }
 
     @ConfigItem(
+            keyName = "bonusActions",
+            name = "Bonus Actions",
+            description = "Toggle for Bonus actions text",
+            position = 5,
+            section = infoPanelList
+    )
+    default boolean drawBonusActions() {
+        return true;
+    }
+
+    @ConfigItem(
             keyName = "shopPoints",
             name = "Reputation",
             description = "Toggle for reputation text",
-            position = 5,
+            position = 6,
             section = infoPanelList
     )
     default boolean drawShopPoints()
