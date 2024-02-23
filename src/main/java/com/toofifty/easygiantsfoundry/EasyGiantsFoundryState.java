@@ -1,7 +1,13 @@
 package com.toofifty.easygiantsfoundry;
 
+import static com.toofifty.easygiantsfoundry.MathUtil.max1;
+import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.*;
+
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
+import static com.toofifty.easygiantsfoundry.enums.Stage.GRINDSTONE;
+import static com.toofifty.easygiantsfoundry.enums.Stage.POLISHING_WHEEL;
+import static com.toofifty.easygiantsfoundry.enums.Stage.TRIP_HAMMER;
 import lombok.Getter;
 import lombok.Setter;
 import net.runelite.api.Client;
@@ -15,33 +21,6 @@ import java.util.List;
 @Singleton
 public class EasyGiantsFoundryState
 {
-	// heat and progress are from 0-1000
-	private static final int VARBIT_HEAT = 13948;
-	private static final int VARBIT_PROGRESS = 13949;
-
-	private static final int VARBIT_ORE_COUNT = 13934;
-	private static final int VARBIT_FORTE_SELECTED = 13910;
-	private static final int VARBIT_BLADE_SELECTED = 13911;
-	private static final int VARBIT_TIP_SELECTED = 13912;
-
-	// 0 - load bars
-	// 1 - set mould
-	// 2 - collect preform
-	// 3 -
-	static final int VARBIT_GAME_STAGE = 13914;
-
-	private static final int WIDGET_HEAT_PARENT = 49414153;
-	private static final int WIDGET_LOW_HEAT_PARENT = 49414163;
-	private static final int WIDGET_MED_HEAT_PARENT = 49414164;
-	private static final int WIDGET_HIGH_HEAT_PARENT = 49414165;
-
-	static final int WIDGET_PROGRESS_PARENT = 49414219;
-	// children with type 3 are stage boxes
-	// every 11th child is a sprite
-
-	private static final int SPRITE_ID_TRIP_HAMMER = 4442;
-	private static final int SPRITE_ID_GRINDSTONE = 4443;
-	private static final int SPRITE_ID_POLISHING_WHEEL = 4444;
 
 	@Inject
 	private Client client;
@@ -57,6 +36,11 @@ public class EasyGiantsFoundryState
 	{
 		stages.clear();
 		heatRangeRatio = 0;
+	}
+
+	public int getBarCount()
+	{
+		return client.getVarbitValue(VARBIT_STEEL_COUNT);
 	}
 
 	public int getHeatAmount()
@@ -80,7 +64,7 @@ public class EasyGiantsFoundryState
 				return 0;
 			}
 
-			heatRangeRatio = medHeat.getWidth() /(double) heatWidget.getWidth();
+			heatRangeRatio = medHeat.getWidth() / (double) heatWidget.getWidth();
 		}
 
 		return heatRangeRatio;
@@ -125,13 +109,13 @@ public class EasyGiantsFoundryState
 				switch (child.getSpriteId())
 				{
 					case SPRITE_ID_TRIP_HAMMER:
-						stages.add(Stage.TRIP_HAMMER);
+						stages.add(TRIP_HAMMER);
 						break;
 					case SPRITE_ID_GRINDSTONE:
-						stages.add(Stage.GRINDSTONE);
+						stages.add(GRINDSTONE);
 						break;
 					case SPRITE_ID_POLISHING_WHEEL:
-						stages.add(Stage.POLISHING_WHEEL);
+						stages.add(POLISHING_WHEEL);
 						break;
 				}
 			}
@@ -204,4 +188,149 @@ public class EasyGiantsFoundryState
 		else
 			return 0;
 	}
+
+
+//		boolean valid = false;
+//
+//		int bronze = 0;
+//		int iron = 0;
+//		int steel = 0;
+//		int mithril = 0;
+//		int adamant = 0;
+//		int rune = 0;
+//		// Currently 28, will prob always be 28, but I want to future-proof this
+//		int capacity = 28;
+//
+//		public boolean parseCrucibleText(String text)
+//		{
+//			if (!text.startsWith("The crucible currently contains"))
+//			{
+//				return false;
+//			}
+//			String[] parts = text.split("<br>");
+//			capacity = Integer.parseInt(parts[0].split(" / ")[1].split(" ")[0]);
+//
+//			String[] counts = (parts[1] + parts[2]).split(", ");
+//			bronze = Integer.parseInt(counts[0].split(" x ")[0]);
+//			iron = Integer.parseInt(counts[1].split(" x ")[0]);
+//			steel = Integer.parseInt(counts[2].split(" x ")[0]);
+//			mithril = Integer.parseInt(counts[3].split(" x ")[0]);
+//			adamant = Integer.parseInt(counts[4].split(" x ")[0]);
+//			rune = Integer.parseInt(counts[5].split(" x ")[0]);
+//
+//			valid = true;
+//			return true;
+//		}
+
+//		public String toString()
+//		{
+//			return String.format("[Capacity %d/%d. Total Value %d] Bronze: %d, Iron: %d, Steel: %d, Mithril: %d, Adamant: %d, Rune: %d.",
+//				bronze, iron, steel, mithril, adamant, rune, count(), capacity, value());
+//		}
+
+
+	public int getCrucibleCount()
+	{
+		int bronze = client.getVarbitValue(VARBIT_BRONZE_COUNT);
+		int iron = client.getVarbitValue(VARBIT_IRON_COUNT);
+		int steel = client.getVarbitValue(VARBIT_STEEL_COUNT);
+		int mithril = client.getVarbitValue(VARBIT_MITHRIL_COUNT);
+		int adamant = client.getVarbitValue(VARBIT_ADAMANT_COUNT);
+		int rune = client.getVarbitValue(VARBIT_RUNE_COUNT);
+
+		return bronze + iron + steel + mithril + adamant + rune;
+	}
+
+	public double getCrucibleQuality()
+	{
+		if (getCrucibleCount() == 0) return 0;
+
+		int bronze = client.getVarbitValue(VARBIT_BRONZE_COUNT);
+		int iron = client.getVarbitValue(VARBIT_IRON_COUNT);
+		int steel = client.getVarbitValue(VARBIT_STEEL_COUNT);
+		int mithril = client.getVarbitValue(VARBIT_MITHRIL_COUNT);
+		int adamant = client.getVarbitValue(VARBIT_ADAMANT_COUNT);
+		int rune = client.getVarbitValue(VARBIT_RUNE_COUNT);
+
+		final int BRONZE_VALUE = 1;
+		final int IRON_VALUE = 2;
+		final int STEEL_VALUE = 3;
+		final int MITHRIL_VALUE = 4;
+		final int ADAMANT_VALUE = 5;
+		final int RUNE_VALUE = 6;
+
+		final double vB = (10 * BRONZE_VALUE * bronze) / 28.0;
+		final double vI = (10 * IRON_VALUE * iron) / 28.0;
+		final double vS = (10 * STEEL_VALUE * steel) / 28.0;
+		final double vM = (10 * MITHRIL_VALUE * mithril) / 28.0;
+		final double vA = (10 * ADAMANT_VALUE * adamant) / 28.0;
+		final double vR = (10 * RUNE_VALUE * rune) / 28.0;
+
+		return
+			(10 * (vB + vI + vS + vM + vA + vR)
+				+ (max1(vB) * max1(vI) * max1(vS) * max1(vM) * max1(vA) * max1(vR))) / 10.0;
+	}
+
+	/**
+	 * Get the amount of progress each stage needs
+	 */
+	public double getProgressPerStage()
+	{
+		return 1000d / getStages().size();
+	}
+
+	public int getActionsLeftInStage()
+	{
+		int progress = getProgressAmount();
+		double progressPerStage = getProgressPerStage();
+		double progressTillNext = progressPerStage - progress % progressPerStage;
+
+		Stage current = getCurrentStage();
+		return (int) Math.ceil(progressTillNext / current.getProgressPerAction());
+	}
+
+	public int[] getCurrentHeatRange()
+	{
+		switch (getCurrentStage())
+		{
+			case POLISHING_WHEEL:
+				return getLowHeatRange();
+			case GRINDSTONE:
+				return getMedHeatRange();
+			case TRIP_HAMMER:
+				return getHighHeatRange();
+			default:
+				return new int[]{0, 0};
+		}
+	}
+
+	/**
+	 * Get the amount of current stage actions that can be
+	 * performed before the heat drops too high or too low to
+	 * continue
+	 */
+	public int getActionsForHeatLevel()
+	{
+		Heat heatStage = getCurrentHeat();
+		Stage stage = getCurrentStage();
+		if (heatStage != stage.getHeat())
+		{
+			// not the right heat to start with
+			return 0;
+		}
+
+		int[] range = getCurrentHeatRange();
+		int actions = 0;
+		int heat = getHeatAmount();
+		while (heat > range[0] && heat < range[1])
+		{
+			actions++;
+			heat += stage.getHeatChange();
+		}
+
+		return actions;
+	}
+
+	public HeatActionStateMachine heatingCoolingState = new HeatActionStateMachine();
+
 }
