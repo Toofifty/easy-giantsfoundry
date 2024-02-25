@@ -261,7 +261,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			if (event.getMenuOption().equals("Pour"))
 			{
 				// add persistent game message of the alloy value so user can reference later.
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The quality of the alloy poured is " + state.getCrucibleQuality(), null);
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The quality of the alloy poured is " + (int) state.getCrucibleQuality(), null);
 			}
 		}
 
