@@ -38,11 +38,6 @@ public class EasyGiantsFoundryState
 		heatRangeRatio = 0;
 	}
 
-	public int getBarCount()
-	{
-		return client.getVarbitValue(VARBIT_STEEL_COUNT);
-	}
-
 	public int getHeatAmount()
 	{
 		return client.getVarbitValue(VARBIT_HEAT);
@@ -188,46 +183,6 @@ public class EasyGiantsFoundryState
 		else
 			return 0;
 	}
-
-
-//		boolean valid = false;
-//
-//		int bronze = 0;
-//		int iron = 0;
-//		int steel = 0;
-//		int mithril = 0;
-//		int adamant = 0;
-//		int rune = 0;
-//		// Currently 28, will prob always be 28, but I want to future-proof this
-//		int capacity = 28;
-//
-//		public boolean parseCrucibleText(String text)
-//		{
-//			if (!text.startsWith("The crucible currently contains"))
-//			{
-//				return false;
-//			}
-//			String[] parts = text.split("<br>");
-//			capacity = Integer.parseInt(parts[0].split(" / ")[1].split(" ")[0]);
-//
-//			String[] counts = (parts[1] + parts[2]).split(", ");
-//			bronze = Integer.parseInt(counts[0].split(" x ")[0]);
-//			iron = Integer.parseInt(counts[1].split(" x ")[0]);
-//			steel = Integer.parseInt(counts[2].split(" x ")[0]);
-//			mithril = Integer.parseInt(counts[3].split(" x ")[0]);
-//			adamant = Integer.parseInt(counts[4].split(" x ")[0]);
-//			rune = Integer.parseInt(counts[5].split(" x ")[0]);
-//
-//			valid = true;
-//			return true;
-//		}
-
-//		public String toString()
-//		{
-//			return String.format("[Capacity %d/%d. Total Value %d] Bronze: %d, Iron: %d, Steel: %d, Mithril: %d, Adamant: %d, Rune: %d.",
-//				bronze, iron, steel, mithril, adamant, rune, count(), capacity, value());
-//		}
-
 
 	public int getCrucibleCount()
 	{

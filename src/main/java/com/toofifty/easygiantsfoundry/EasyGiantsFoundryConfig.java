@@ -165,9 +165,9 @@ public interface EasyGiantsFoundryConfig extends Config
 		max = 255
 	)
 	@ConfigItem(
-		keyName = "highlightAlpha",
-		name = "Highlight Alpha",
-		description = "The alpha of the highlight",
+		keyName = "borderAlpha",
+		name = "Border Alpha",
+		description = "The alpha of the border highlight",
 		position = 3,
 		section = highlightList
 	)
