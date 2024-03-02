@@ -1,10 +1,14 @@
 package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
+import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.VARBIT_HEAT;
 import com.toofifty.easygiantsfoundry.enums.Stage;
+
 import javax.inject.Inject;
+
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
+import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
@@ -15,6 +19,7 @@ import net.runelite.api.events.GameObjectSpawned;
 import net.runelite.api.events.GameStateChanged;
 import net.runelite.api.events.GameTick;
 import net.runelite.api.events.ItemContainerChanged;
+import net.runelite.api.events.MenuOptionClicked;
 import net.runelite.api.events.NpcDespawned;
 import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ScriptPostFired;
@@ -143,6 +148,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
+
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
 	{
@@ -172,14 +178,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 
 		if (config.showGiantsFoundryStageNotifications() &&
-			helper.getActionsLeftInStage() == config.StageNotificationsThreshold() &&
+			state.getActionsLeftInStage() == config.StageNotificationsThreshold() &&
 			(oldStage == null || oldStage != state.getCurrentStage()))
 		{
 			notifier.notify("About to finish the current stage!");
 			oldStage = state.getCurrentStage();
 		}
 		else if (config.showGiantsFoundryHeatNotifications() &&
-			helper.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
+			state.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
 		{
 			notifier.notify("About to run out of heat!");
 		}
@@ -246,6 +252,48 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	}
 
 	@Subscribe
+	public void onMenuOptionClicked(MenuOptionClicked event)
+	{
+		if (!state.isEnabled()) return;
+
+		if (event.getMenuTarget().contains("Crucible "))
+		{
+			if (event.getMenuOption().equals("Pour"))
+			{
+				// add persistent game message of the alloy value so user can reference later.
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The quality of the alloy poured is " + (int) state.getCrucibleQuality(), null);
+			}
+		}
+
+		// Could not find a varbit to capture, so capture the menu-option directly.
+		// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
+		if (event.getMenuOption().startsWith("Heat-preform"))
+		{
+			state.heatingCoolingState.stop();
+			state.heatingCoolingState.setup(7, 0, "heats");
+		}
+		else if (event.getMenuOption().startsWith("Dunk-preform"))
+		{
+			state.heatingCoolingState.stop();
+			state.heatingCoolingState.setup(27, 2, "dunks");
+		}
+		else if (event.getMenuOption().startsWith("Cool-preform"))
+		{
+			state.heatingCoolingState.stop();
+			state.heatingCoolingState.setup(-7, 0, "cools");
+		}
+		else if (event.getMenuOption().startsWith("Quench-preform"))
+		{
+			state.heatingCoolingState.stop();
+			state.heatingCoolingState.setup(-27, -2, "quenches");
+		}
+		else // canceled heating/cooling, stop the heating state-machine
+		{
+			state.heatingCoolingState.stop();
+		}
+	}
+
+	@Subscribe
 	public void onScriptPostFired(ScriptPostFired event)
 	{
 		if (event.getScriptId() == MouldHelper.DRAW_MOULD_LIST_SCRIPT
@@ -257,12 +305,33 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
+	// previous heat varbit value, used to filter out passive heat decay.
+	private int previousHeat = 0;
+
 	@Subscribe
 	public void onVarbitChanged(VarbitChanged event)
 	{
 		if (event.getVarpId() == REPUTATION_VARBIT)
 		{
 			reputation = client.getVarpValue(REPUTATION_VARBIT);
+		}
+
+		// start the heating state-machine when the varbit updates
+		// if heat varbit updated and the user clicked, start the state-machine
+		if (event.getVarbitId() == VARBIT_HEAT && state.heatingCoolingState.getActionName() != null)
+		{
+			// ignore passive heat decay, one heat per two ticks
+			if (event.getValue() - previousHeat != -1)
+			{
+				// if the state-machine is idle, start it
+				if (state.heatingCoolingState.isIdle())
+				{
+					state.heatingCoolingState.start(state, config, state.getHeatAmount());
+				}
+
+				state.heatingCoolingState.onTick();
+			}
+			previousHeat = event.getValue();
 		}
 	}
 
