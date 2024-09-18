@@ -12,7 +12,6 @@ import net.runelite.client.ui.ColorScheme;
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
 public interface EasyGiantsFoundryConfig extends Config
 {
-
 	String GROUP = "easygiantsfoundry";
 	String SOUND_ID = "soundID";
 	String POINTS_KEY = "easygiantsfoundrypoints";
@@ -316,17 +315,28 @@ public interface EasyGiantsFoundryConfig extends Config
 	}
 
 	@ConfigItem(
+		keyName = "bonusActions",
+		name = "Bonus Actions",
+		description = "Toggle for Bonus actions text",
+		position = 5,
+		section = infoPanelList
+	)
+	default boolean drawBonusActions()
+	{
+		return true;
+	}
+
+	@ConfigItem(
 		keyName = "shopPoints",
 		name = "Reputation",
 		description = "Toggle for reputation text",
-		position = 5,
+		position = 6,
 		section = infoPanelList
 	)
 	default boolean drawShopPoints()
 	{
 		return false;
 	}
-
 
 	@ConfigSection(
 		name = "Info Overlay",

@@ -29,6 +29,9 @@ public class EasyGiantsFoundryState
 	@Getter
 	private boolean enabled;
 
+	@Getter
+	private int bonusActionsReceived = 0;
+
 	@Setter
 	private int smithsOutfitPieces;
 
@@ -39,6 +42,7 @@ public class EasyGiantsFoundryState
 	{
 		stages.clear();
 		heatRangeRatio = 0;
+		bonusActionsReceived = 0;
 	}
 
 	public int getHeatAmount()
@@ -187,6 +191,21 @@ public class EasyGiantsFoundryState
 			return 0;
 	}
 
+	public int getBonusActionsExpected()
+	{
+		if (getStages().size() >= 6)
+		{
+			return 3;
+		}
+
+		return 2;
+	}
+
+	public void addBonusActionReceived()
+	{
+		++bonusActionsReceived;
+	}
+
 	public int getCrucibleCount()
 	{
 		int bronze = client.getVarbitValue(VARBIT_BRONZE_COUNT);
@@ -292,5 +311,4 @@ public class EasyGiantsFoundryState
 	}
 
 	public HeatActionStateMachine heatingCoolingState = new HeatActionStateMachine();
-
 }

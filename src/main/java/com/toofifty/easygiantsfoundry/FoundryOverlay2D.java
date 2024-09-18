@@ -4,12 +4,14 @@ import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColo
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import net.runelite.api.Client;
+import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
@@ -36,6 +38,31 @@ public class FoundryOverlay2D extends OverlayPanel
 		this.state = state;
 		this.config = config;
 		this.setPosition(OverlayPosition.BOTTOM_LEFT);
+	}
+
+	private Color getHeatColor(int actions, int heat)
+	{
+		if (heat >= actions)
+		{
+			return ColorScheme.PROGRESS_COMPLETE_COLOR;
+		}
+
+		if (heat > 0)
+		{
+			return ColorScheme.PROGRESS_INPROGRESS_COLOR;
+		}
+
+		return ColorScheme.PROGRESS_ERROR_COLOR;
+	}
+
+	private Color getBonusActionsColor(int received, int expected)
+	{
+		if (received >= expected)
+		{
+			return ColorScheme.PROGRESS_COMPLETE_COLOR;
+		}
+
+		return ColorScheme.PROGRESS_INPROGRESS_COLOR;
 	}
 
 	@Override
@@ -83,6 +110,12 @@ public class FoundryOverlay2D extends OverlayPanel
 			{
 				panelComponent.getChildren().add(
 					LineComponent.builder().left("Heat left").right(heatLeft + "").rightColor(getHeatColor(actionsLeft, heatLeft)).build()
+				);
+			}
+			if (config.drawBonusActions())
+			{
+				panelComponent.getChildren().add(
+					LineComponent.builder().left("Bonus actions").right(state.getBonusActionsReceived() + "/" + state.getBonusActionsExpected()).rightColor(getBonusActionsColor(state.getBonusActionsReceived(), state.getBonusActionsExpected())).build()
 				);
 			}
 		}
