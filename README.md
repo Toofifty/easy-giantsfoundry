@@ -26,6 +26,7 @@ The "Easy Giants' Foundry" plugin is designed to optimize your performance in th
   - Shows the **number of actions required** to complete the next stage.
   - Indicates the **number of actions** before gaining or losing too much heat.
   - Tracks **heat and progress** as percentages.
+  - Tracks **Bonus Actions**: 6+ section swords get 3 bonuses, others get 2.
 
 # Pictures
 Best Mould             |  Crucible Alloy Quality
@@ -60,5 +61,8 @@ Bonus Click Notification |  Information Panel
   * Added tools action/heat status overlay
   * Added lava/waterfall action prediction and overlay
   * Added border highlighting
-
+- [geeckon](https://github.com/geeckon "geeckon's github")
+    * Added bonus action tracking
+- [TalSk](https://github.com/TalSk "TalSk's github")
+    * Integrated Smith's outfit effect
 
