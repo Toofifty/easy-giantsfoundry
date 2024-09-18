@@ -4,12 +4,14 @@ import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColo
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
 import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import net.runelite.api.Client;
+import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
