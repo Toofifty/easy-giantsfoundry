@@ -15,4 +15,14 @@ public enum Stage
 	private final Heat heat;
 	private final int progressPerAction;
 	private final int heatChange;
+
+	public boolean isHeating()
+	{
+		return heatChange > 0;
+	}
+
+	public boolean isCooling()
+	{
+		return heatChange < 0;
+	}
 }

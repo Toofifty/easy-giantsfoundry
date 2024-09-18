@@ -1,256 +1,414 @@
 package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
+
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
+import net.runelite.client.config.Range;
 import net.runelite.client.ui.ColorScheme;
 
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
-public interface EasyGiantsFoundryConfig extends Config {
-    String GROUP = "easygiantsfoundry";
-    String SOUND_ID = "soundID";
-    String POINTS_KEY = "easygiantsfoundrypoints";
+public interface EasyGiantsFoundryConfig extends Config
+{
+	String GROUP = "easygiantsfoundry";
+	String SOUND_ID = "soundID";
+	String POINTS_KEY = "easygiantsfoundrypoints";
 
-    @ConfigSection(
-            name = "Notifications",
-            description = "Notifications",
-            position = 0
-    )
-    String notificationList = "notificationList";
+	@ConfigSection(
+		name = "Notifications",
+		description = "Notifications",
+		position = 0
+	)
+	String notificationList = "notificationList";
 
-    @ConfigItem(
-            keyName = "giantsFoundryStageNotification",
-            name = "Notify stage changes",
-            description = "Notifies just before completing a stage",
-            position = 0,
-            section = notificationList
-    )
-    default boolean showGiantsFoundryStageNotifications() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = "giantsFoundryStageNotification",
+		name = "Notify stage changes",
+		description = "Notifies just before completing a stage",
+		position = 0,
+		section = notificationList
+	)
+	default boolean showGiantsFoundryStageNotifications()
+	{
+		return true;
+	}
 
-    @ConfigItem(
-            keyName = "giantsFoundryHeatNotification",
-            name = "Notify heat changes",
-            description = "Notifies just before overheating/cooling when using tools",
-            position = 1,
-            section = notificationList
-    )
-    default boolean showGiantsFoundryHeatNotifications() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = "giantsFoundryHeatNotification",
+		name = "Notify heat changes",
+		description = "Notifies just before overheating/cooling when using tools",
+		position = 1,
+		section = notificationList
+	)
+	default boolean showGiantsFoundryHeatNotifications()
+	{
+		return true;
+	}
 
-    @ConfigItem(
-            keyName = "giantsFoundryStageThreshold",
-            name = "Stage threshold notification",
-            description = "The number of actions left required for the notification.",
-            position = 2,
-            section = notificationList
-    )
-    default int StageNotificationsThreshold() {
-        return 1;
-    }
+	@ConfigItem(
+		keyName = "giantsFoundryStageThreshold",
+		name = "Stage threshold notification",
+		description = "The number of actions left required for the notification.",
+		position = 2,
+		section = notificationList
+	)
+	default int StageNotificationsThreshold()
+	{
+		return 1;
+	}
 
-    @ConfigItem(
-            keyName = "giantsFoundryHeatThreshold",
-            name = "Heat threshold notification",
-            description = "The heat level left required for the notification.",
-            position = 3,
-            section = notificationList
-    )
-    default int HeatNotificationsThreshold() {
-        return 1;
-    }
+	@ConfigItem(
+		keyName = "giantsFoundryHeatThreshold",
+		name = "Heat threshold notification",
+		description = "The heat level left required for the notification.",
+		position = 3,
+		section = notificationList
+	)
+	default int HeatNotificationsThreshold()
+	{
+		return 1;
+	}
 
-    @ConfigItem(
-            keyName = "bonusNotification",
-            name = "Notify bonus",
-            description = "Notifies when bonus appears",
-            position = 4,
-            section = notificationList
-    )
-    default boolean bonusNotification() {
-        return false;
-    }
+	@ConfigItem(
+		keyName = "bonusNotification",
+		name = "Notify bonus",
+		description = "Notifies when bonus appears",
+		position = 4,
+		section = notificationList
+	)
+	default boolean bonusNotification()
+	{
+		return false;
+	}
 
-    @ConfigItem(
-            keyName = "bonusSound",
-            name = "Bonus sound",
-            description = "Plays a sound when bonus appears",
-            position = 5,
-            section = notificationList
-    )
-    default boolean bonusSoundNotify() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = "bonusSound",
+		name = "Bonus sound",
+		description = "Plays a sound when bonus appears",
+		position = 5,
+		section = notificationList
+	)
+	default boolean bonusSoundNotify()
+	{
+		return true;
+	}
 
-    @ConfigItem(
-            keyName = SOUND_ID,
-            name = "Bonus sound ID",
-            description = "Sound Effect ID to play when bonus appears",
-            position = 6,
-            section = notificationList
-    )
-    default int soundId() {
-        return 4212;
-    }
-
-
-    @ConfigSection(
-            name = "Highlights",
-            description = "3D npc/object highlights",
-            position = 1
-    )
-    String highlightList = "highlightList";
-
-    @ConfigItem(
-            keyName = "toolsHighlight",
-            name = "Highlight Tools",
-            description = "Highlights current tool with symbolic colors",
-            position = 0,
-            section = highlightList
-    )
-    default boolean highlightTools() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "waterLavaHighlight",
-            name = "Highlight Waterfall/Lava Pool",
-            description = "Highlight Lava Pool / Waterfall when heat change required",
-            position = 1,
-            section = highlightList
-    )
-    default boolean highlightWaterAndLava() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "mouldHighlight",
-            name = "Highlight Mould",
-            description = "Highlight Mould when it should be clicked",
-            position = 2,
-            section = highlightList
-    )
-    default boolean highlightMould() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "crucibleHighlight",
-            name = "Highlight Crucible",
-            description = "Highlight Crucible when it should be filled/poured",
-            position = 3,
-            section = highlightList
-    )
-    default boolean highlightCrucible() {
-        return true;
-    }
-
-    @ConfigItem(
-            keyName = "kovacHighlight",
-            name = "Highlight Kovac for hand in",
-            description = "Highlight Kovac when sword can be handed in",
-            position = 4,
-            section = highlightList
-    )
-    default boolean highlightKovac() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = SOUND_ID,
+		name = "Bonus sound ID",
+		description = "Sound Effect ID to play when bonus appears",
+		position = 6,
+		section = notificationList
+	)
+	default int soundId()
+	{
+		return 4212;
+	}
 
 
-    @ConfigSection(
-            name = "Info Panel",
-            description = "Settings for the Info Panel overlay",
-            position = 2
-    )
-    String infoPanelList = "infoPanelList";
+	@ConfigSection(
+		name = "Highlights",
+		description = "3D npc/object highlights",
+		position = 1
+	)
+	String highlightList = "highlightList";
 
-    @ConfigItem(
-            keyName = "infoTitle",
-            name = "Title",
-            description = "Toggle for \"Easy Giant's Foundry\" text",
-            position = 0,
-            section = infoPanelList
-    )
-    default boolean drawTitle() {
-        return true;
-    }
+	@ConfigItem(
+		name = "Highlight Style",
+		description = "The style of the highlight",
+		position = 0,
+		section = highlightList,
+		keyName = "overlayOption")
+	default HighlightStyle highlightStyle()
+	{
+		return HighlightStyle.HIGHLIGHT_CLICKBOX;
+	}
 
-    @ConfigItem(
-            keyName = "heatInfo",
-            name = "Heat",
-            description = "Toggle for Heat text",
-            position = 1,
-            section = infoPanelList
-    )
-    default boolean drawHeatInfo() {
-        return true;
-    }
+	@Range(
+		min = 1,
+		max = 4
+	)
+	@ConfigItem(
+		keyName = "borderThickness",
+		name = "Border Thickness",
+		description = "The thickness of the border",
+		position = 1,
+		section = highlightList
+	)
+	default int borderThickness()
+	{
+		return 1;
+	}
 
-    @ConfigItem(
-            keyName = "stageInfo",
-            name = "Stage",
-            description = "Toggle for Stage text",
-            position = 2,
-            section = infoPanelList
-    )
-    default boolean drawStageInfo() {
-        return true;
-    }
+	@Range(
+		min = 0,
+		max = 4
+	)
+	@ConfigItem(
+		keyName = "borderFeather",
+		name = "Border Feather",
+		description = "The feather of the border",
+		position = 2,
+		section = highlightList
+	)
+	default int borderFeather()
+	{
+		return 0;
+	}
 
-    @ConfigItem(
-            keyName = "actionsLeft",
-            name = "Actions Left",
-            description = "Toggle for Actions left text",
-            position = 3,
-            section = infoPanelList
-    )
-    default boolean drawActionsLeft() {
-        return true;
-    }
+	// alpha
+	@Range(
+		min = 0,
+		max = 255
+	)
+	@ConfigItem(
+		keyName = "borderAlpha",
+		name = "Border Alpha",
+		description = "The alpha of the border highlight",
+		position = 3,
+		section = highlightList
+	)
+	default int borderAlpha()
+	{
+		return 255;
+	}
 
-    @ConfigItem(
-            keyName = "heatLeft",
-            name = "Heat Left",
-            description = "Toggle for Heat left text",
-            position = 4,
-            section = infoPanelList
-    )
-    default boolean drawHeatLeft() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = "toolsHighlight",
+		name = "Highlight Tools",
+		description = "Highlights current tool with symbolic colors",
+		position = 4,
+		section = highlightList
+	)
+	default boolean highlightTools()
+	{
+		return true;
+	}
 
-    @ConfigItem(
-            keyName = "bonusActions",
-            name = "Bonus Actions",
-            description = "Toggle for Bonus actions text",
-            position = 5,
-            section = infoPanelList
-    )
-    default boolean drawBonusActions() {
-        return true;
-    }
+	@ConfigItem(
+		keyName = "waterLavaHighlight",
+		name = "Highlight Waterfall/Lava Pool",
+		description = "Highlight Lava Pool / Waterfall when heat change required",
+		position = 5,
+		section = highlightList
+	)
+	default boolean highlightWaterAndLava()
+	{
+		return true;
+	}
 
-    @ConfigItem(
-            keyName = "shopPoints",
-            name = "Reputation",
-            description = "Toggle for reputation text",
-            position = 6,
-            section = infoPanelList
-    )
-    default boolean drawShopPoints()
-    {
-        return false;
-    }
+	@ConfigItem(
+		keyName = "mouldHighlight",
+		name = "Highlight Mould",
+		description = "Highlight Mould when it should be clicked",
+		position = 6,
+		section = highlightList
+	)
+	default boolean highlightMould()
+	{
+		return true;
+	}
 
+	@ConfigItem(
+		keyName = "crucibleHighlight",
+		name = "Highlight Crucible",
+		description = "Highlight Crucible when it should be filled/poured",
+		position = 7,
+		section = highlightList
+	)
+	default boolean highlightCrucible()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "kovacHighlight",
+		name = "Highlight Kovac for hand in",
+		description = "Highlight Kovac when sword can be handed in",
+		position = 8,
+		section = highlightList
+	)
+	default boolean highlightKovac()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "crucibleContent",
+		name = "Show Crucible content and quality",
+		description = "Show the content and quality of the crucible",
+		position = 9,
+		section = highlightList
+	)
+	default boolean showCrucibleContent()
+	{
+		return true;
+	}
+
+	@ConfigSection(
+		name = "Info Panel",
+		description = "Settings for the Info Panel overlay",
+		position = 2
+	)
+	String infoPanelList = "infoPanelList";
+
+	@ConfigItem(
+		keyName = "infoTitle",
+		name = "Title",
+		description = "Toggle for \"Easy Giant's Foundry\" text",
+		position = 0,
+		section = infoPanelList
+	)
+	default boolean drawTitle()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "heatInfo",
+		name = "Heat",
+		description = "Toggle for Heat text",
+		position = 1,
+		section = infoPanelList
+	)
+	default boolean drawHeatInfo()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "stageInfo",
+		name = "Stage",
+		description = "Toggle for Stage text",
+		position = 2,
+		section = infoPanelList
+	)
+	default boolean drawStageInfo()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "actionLeft",
+		name = "Actions Left",
+		description = "Toggle for actions left text",
+		position = 3,
+		section = infoPanelList
+	)
+	default boolean drawActionsLeft()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "heatLeft",
+		name = "Heat Left",
+		description = "Toggle for heat left text",
+		position = 4,
+		section = infoPanelList
+	)
+	default boolean drawHeatLeft()
+	{
+		return true;
+	}
+  
+  @ConfigItem(
+		keyName = "bonusActions",
+    name = "Bonus Actions",
+    description = "Toggle for Bonus actions text",
+    position = 5,
+    section = infoPanelList
+	)
+	default boolean drawBonusActions()	
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "shopPoints",
+		name = "Reputation",
+		description = "Toggle for reputation text",
+		position = 6,
+		section = infoPanelList
+	)
+	default boolean drawShopPoints()
+	{
+		return false;
+	}
+
+	@ConfigSection(
+		name = "Info Overlay",
+		description = "Overlay Text Info On Objects",
+		position = 3
+	)
+	String infoOverlay = "infoOverlay";
+
+	@ConfigItem(
+		keyName = "actionLeftOverlay",
+		name = "Actions Left Overlay",
+		description = "Toggle for actions left overlay",
+		position = 0,
+		section = infoOverlay
+	)
+	default boolean drawActionLeftOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "heatLeftOverlay",
+		name = "Heat Left Overlay",
+		description = "Toggle for heat left overlay",
+		position = 1,
+		section = infoOverlay
+	)
+	default boolean drawHeatLeftOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "crucibleInfoOverlay",
+		name = "Crucible Info Overlay",
+		description = "Toggle for crucible info overlay",
+		position = 2,
+		section = infoOverlay
+	)
+	default boolean drawCrucibleInfoOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "mouldInfoOverlay",
+		name = "Mould Info Overlay",
+		description = "Toggle for mould info overlay",
+		position = 3,
+		section = infoOverlay
+	)
+	default boolean drawMouldInfoOverlay()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "LavaWaterInfoOverlay",
+		name = "Lava/Waterfall Info Overlay",
+		description = "Toggle for lava/waterfall info overlay",
+		position = 4,
+		section = infoOverlay
+	)
+	default boolean drawLavaWaterInfoOverlay()
+	{
+		return true;
+	}
 
 	@ConfigSection(
 		name = "Colour",
 		description = "Colours",
-		position = 3
+		position = 4
 	)
 	String colourList = "colourList";
 
@@ -337,5 +495,24 @@ public interface EasyGiantsFoundryConfig extends Config {
 	default Color toolBonus()
 	{
 		return Color.CYAN;
+	}
+
+	@ConfigSection(
+		name = "Advanced",
+		description = "Advanced Settings",
+		position = 5
+	)
+	String generalSettings = "generalSettings";
+
+	@ConfigItem(
+		keyName = "heatingCoolingMarginOfError",
+		name = "Heating/Cooling Margin of Error",
+		description = "The margin of error for lava/waterfall calculations to compensate for decay and overshooting.",
+		position = 0,
+		section = generalSettings
+	)
+	default int heatingCoolingBuffer()
+	{
+		return 20;
 	}
 }
