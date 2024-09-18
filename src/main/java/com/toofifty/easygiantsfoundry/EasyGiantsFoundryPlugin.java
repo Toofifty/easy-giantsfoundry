@@ -13,6 +13,8 @@ import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
+import net.runelite.api.Item;
+import net.runelite.api.ItemContainer;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
@@ -33,6 +35,8 @@ import net.runelite.client.events.ConfigChanged;
 import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
+
+import java.util.Set;
 
 @Slf4j
 @PluginDescriptor(
@@ -56,6 +60,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private static final int PREFORM = 27010;
 
 	private static final int REPUTATION_VARBIT = 3436;
+
+	// 5 total items, includes Smiths gloves (i);
+	private static final Set<Integer> SMITHS_OUTFIT_IDS = Set.of(27023, 27025, 27027, 27029, 27031);
 
 	private Stage oldStage;
 
@@ -243,11 +250,17 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (event.getContainerId() == InventoryID.EQUIPMENT.getId()
-			&& event.getItemContainer().count(PREFORM) == 0)
+		if (event.getContainerId() == InventoryID.EQUIPMENT.getId())
 		{
-			state.reset();
-			oldStage = null;
+			if (event.getItemContainer().count(PREFORM) == 0)
+			{
+				state.reset();
+				oldStage = null;
+			}
+			else
+			{
+				updateSmithsOutfitPieces();
+			}
 		}
 	}
 
@@ -380,6 +393,29 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 
 		bonusNotified = true;
+	}
+
+	private void updateSmithsOutfitPieces()
+	{
+		int pieces = 0;
+
+		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+		if (equipment != null)
+		{
+			for (Item item : equipment.getItems())
+			{
+				if (item != null && isSmithsOutfitPiece(item.getId()))
+				{
+					pieces++;
+				}
+			}
+		}
+		state.setSmithsOutfitPieces(pieces);
+	}
+
+	private boolean isSmithsOutfitPiece(int itemId)
+	{
+		return SMITHS_OUTFIT_IDS.contains(itemId);
 	}
 
 	@Provides

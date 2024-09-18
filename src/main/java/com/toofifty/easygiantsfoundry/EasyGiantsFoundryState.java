@@ -29,6 +29,9 @@ public class EasyGiantsFoundryState
 	@Getter
 	private boolean enabled;
 
+	@Setter
+	private int smithsOutfitPieces;
+
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
 
@@ -241,7 +244,9 @@ public class EasyGiantsFoundryState
 		double progressTillNext = progressPerStage - progress % progressPerStage;
 
 		Stage current = getCurrentStage();
-		return (int) Math.ceil(progressTillNext / current.getProgressPerAction());
+		// Each Smith's Outfit piece adds 20% chance to increase action progress by 1, or 100% for all 4 pieces.
+		double smithsOutfitBonus = smithsOutfitPieces == 4 ? 1 : 0.2 * smithsOutfitPieces;
+		return (int) Math.ceil(progressTillNext / (current.getProgressPerAction() + smithsOutfitBonus));
 	}
 
 	public int[] getCurrentHeatRange()
