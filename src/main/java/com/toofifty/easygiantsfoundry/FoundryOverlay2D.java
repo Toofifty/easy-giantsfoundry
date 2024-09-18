@@ -40,7 +40,7 @@ public class FoundryOverlay2D extends OverlayPanel
 		this.setPosition(OverlayPosition.BOTTOM_LEFT);
 	}
 
-  private Color getHeatColor(int actions, int heat)
+	private Color getHeatColor(int actions, int heat)
 	{
 		if (heat >= actions)
 		{

@@ -31,7 +31,7 @@ public class EasyGiantsFoundryState
 
 	@Getter
 	private int bonusActionsReceived = 0;
-  
+
 	@Setter
 	private int smithsOutfitPieces;
 
@@ -194,7 +194,7 @@ public class EasyGiantsFoundryState
 	public int getBonusActionsExpected()
 	{
 		if (getStages().size() >= 6)
-    {
+		{
 			return 3;
 		}
 
@@ -205,7 +205,7 @@ public class EasyGiantsFoundryState
 	{
 		++bonusActionsReceived;
 	}
-  
+
 	public int getCrucibleCount()
 	{
 		int bronze = client.getVarbitValue(VARBIT_BRONZE_COUNT);

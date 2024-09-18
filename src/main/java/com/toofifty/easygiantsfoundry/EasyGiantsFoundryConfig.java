@@ -313,15 +313,15 @@ public interface EasyGiantsFoundryConfig extends Config
 	{
 		return true;
 	}
-  
-  @ConfigItem(
+
+	@ConfigItem(
 		keyName = "bonusActions",
-    name = "Bonus Actions",
-    description = "Toggle for Bonus actions text",
-    position = 5,
-    section = infoPanelList
+		name = "Bonus Actions",
+		description = "Toggle for Bonus actions text",
+		position = 5,
+		section = infoPanelList
 	)
-	default boolean drawBonusActions()	
+	default boolean drawBonusActions()
 	{
 		return true;
 	}
