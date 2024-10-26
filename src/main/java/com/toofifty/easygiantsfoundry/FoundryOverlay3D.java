@@ -269,7 +269,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			return;
 		}
-		String text = String.format("%d/%d quality: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleQuality());
+		String text = String.format("%d/%d metal score: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleQuality());
 
 		LocalPoint crucibleLoc = crucible.getLocalLocation();
 		crucibleLoc = new LocalPoint(crucibleLoc.getX() - 100, crucibleLoc.getY());

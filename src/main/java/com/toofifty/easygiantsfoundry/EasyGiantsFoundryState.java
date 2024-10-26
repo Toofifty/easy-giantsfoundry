@@ -8,14 +8,19 @@ import com.toofifty.easygiantsfoundry.enums.Stage;
 import static com.toofifty.easygiantsfoundry.enums.Stage.GRINDSTONE;
 import static com.toofifty.easygiantsfoundry.enums.Stage.POLISHING_WHEEL;
 import static com.toofifty.easygiantsfoundry.enums.Stage.TRIP_HAMMER;
+
+import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 
 import javax.inject.Inject;
 import javax.inject.Singleton;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 @Singleton
@@ -220,14 +225,9 @@ public class EasyGiantsFoundryState
 
 	public double getCrucibleQuality()
 	{
-		if (getCrucibleCount() == 0) return 0;
+		// https://oldschool.runescape.wiki/w/Giants%27_Foundry#Metal_score
 
-		int bronze = client.getVarbitValue(VARBIT_BRONZE_COUNT);
-		int iron = client.getVarbitValue(VARBIT_IRON_COUNT);
-		int steel = client.getVarbitValue(VARBIT_STEEL_COUNT);
-		int mithril = client.getVarbitValue(VARBIT_MITHRIL_COUNT);
-		int adamant = client.getVarbitValue(VARBIT_ADAMANT_COUNT);
-		int rune = client.getVarbitValue(VARBIT_RUNE_COUNT);
+		if (getCrucibleCount() == 0) return 0;
 
 		final int BRONZE_VALUE = 1;
 		final int IRON_VALUE = 2;
@@ -236,16 +236,35 @@ public class EasyGiantsFoundryState
 		final int ADAMANT_VALUE = 5;
 		final int RUNE_VALUE = 6;
 
-		final double vB = (10 * BRONZE_VALUE * bronze) / 28.0;
-		final double vI = (10 * IRON_VALUE * iron) / 28.0;
-		final double vS = (10 * STEEL_VALUE * steel) / 28.0;
-		final double vM = (10 * MITHRIL_VALUE * mithril) / 28.0;
-		final double vA = (10 * ADAMANT_VALUE * adamant) / 28.0;
-		final double vR = (10 * RUNE_VALUE * rune) / 28.0;
+
+		final int bronzeNum = client.getVarbitValue(VARBIT_BRONZE_COUNT);
+		final int ironNum = client.getVarbitValue(VARBIT_IRON_COUNT);
+		final int steelNum = client.getVarbitValue(VARBIT_STEEL_COUNT);
+		final int mithrilNum = client.getVarbitValue(VARBIT_MITHRIL_COUNT);
+		final int adamantNum = client.getVarbitValue(VARBIT_ADAMANT_COUNT);
+		final int runeNum = client.getVarbitValue(VARBIT_RUNE_COUNT);
+
+		final double bronzeVal = (10 * BRONZE_VALUE * bronzeNum) / 28.0;
+		final double ironVal = (10 * IRON_VALUE * ironNum) / 28.0;
+		final double steelVal = (10 * STEEL_VALUE * steelNum) / 28.0;
+		final double mithrilVal = (10 * MITHRIL_VALUE * mithrilNum) / 28.0;
+		final double adamantVal = (10 * ADAMANT_VALUE * adamantNum) / 28.0;
+		final double runeVal = (10 * RUNE_VALUE * runeNum) / 28.0;
+
+		Double[] metals = new Double[] {
+			bronzeVal,
+			ironVal,
+			steelVal,
+			mithrilVal,
+			adamantVal,
+			runeVal
+		};
+
+		// Descending order
+		Arrays.sort(metals, Collections.reverseOrder());
 
 		return
-			(10 * (vB + vI + vS + vM + vA + vR)
-				+ (max1(vB) * max1(vI) * max1(vS) * max1(vM) * max1(vA) * max1(vR))) / 10.0;
+			((10 * metals[0] + 10 * metals[1]) + max1(metals[0]) * max1(metals[1])) / 10.0;
 	}
 
 	/**
