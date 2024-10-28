@@ -119,7 +119,11 @@ public class FoundryOverlay3D extends Overlay
 			if (config.highlightCrucible())
 			{
 				drawCrucibleIfMouldSet(graphics);
+				drawMouldScoreIfMouldSet(graphics);
 			}
+
+			drawPreformScoreIfPoured(graphics);
+
 			return null;
 		}
 
@@ -269,7 +273,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			return;
 		}
-		String text = String.format("%d/%d metal score: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleQuality());
+		String text = String.format("%d/%d score: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleScore());
 
 		LocalPoint crucibleLoc = crucible.getLocalLocation();
 		crucibleLoc = new LocalPoint(crucibleLoc.getX() - 100, crucibleLoc.getY());
@@ -287,6 +291,48 @@ public class FoundryOverlay3D extends Overlay
 		OverlayUtil.renderTextLocation(graphics, pos, text, color);
 	}
 
+	private void drawMouldScoreIfMouldSet(Graphics2D graphics) {
+		if (client.getVarbitValue(SWORD_TYPE_1_VARBIT) == 0)
+		{
+			return;
+		}
+		if (client.getVarbitValue(VARBIT_GAME_STAGE) != 1)
+		{
+			return;
+		}
+
+		if (state.getMouldScore() == null)
+		{
+			return;
+		}
+
+		String text = String.format("score: %d", state.getMouldScore());
+		LocalPoint mouldLoc = mouldJig.getLocalLocation();
+		Point pos = Perspective.getCanvasTextLocation(client, graphics, mouldLoc, text, 115);
+		Color color = config.generalHighlight();
+
+		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+	}
+	private void drawPreformScoreIfPoured(Graphics2D graphics) {
+		if (client.getVarbitValue(VARBIT_GAME_STAGE) != 2)
+		{
+			return;
+		}
+
+		if (state.getMouldScore() == null || state.getLastKnownCrucibleScore() == null)
+		{
+			return;
+		}
+
+		int preformScore = state.getLastKnownCrucibleScore() + state.getMouldScore();
+		String text = String.format("score: %d", preformScore);
+		LocalPoint mouldLoc = mouldJig.getLocalLocation();
+		Point pos = Perspective.getCanvasTextLocation(client, graphics, mouldLoc, text, 115);
+
+		Color color = config.generalHighlight();
+
+		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+	}
 
 	private void drawCrucibleIfMouldSet(Graphics2D graphics)
 	{

@@ -9,10 +9,8 @@ import static com.toofifty.easygiantsfoundry.enums.Stage.GRINDSTONE;
 import static com.toofifty.easygiantsfoundry.enums.Stage.POLISHING_WHEEL;
 import static com.toofifty.easygiantsfoundry.enums.Stage.TRIP_HAMMER;
 
-import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.Setter;
-import lombok.Value;
 import net.runelite.api.Client;
 import net.runelite.api.widgets.Widget;
 
@@ -39,6 +37,14 @@ public class EasyGiantsFoundryState
 
 	@Setter
 	private int smithsOutfitPieces;
+
+	@Setter
+	@Getter
+	private Integer mouldScore;
+
+	@Setter
+	@Getter
+	private Integer lastKnownCrucibleScore;
 
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
@@ -223,7 +229,7 @@ public class EasyGiantsFoundryState
 		return bronze + iron + steel + mithril + adamant + rune;
 	}
 
-	public double getCrucibleQuality()
+	public double getCrucibleScore()
 	{
 		// https://oldschool.runescape.wiki/w/Giants%27_Foundry#Metal_score
 

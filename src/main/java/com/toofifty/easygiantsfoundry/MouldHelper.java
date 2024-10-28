@@ -23,6 +23,9 @@ public class MouldHelper
 	static final int SWORD_TYPE_2_VARBIT = 13908; // 3=Flat
 	private static final int DISABLED_TEXT_COLOR = 0x9f9f9f;
 
+	private static final int SCORE_TYPE1_SCORE_WIDGET = 47054876;
+	private static final int SCORE_TYPE2_SCORE_WIDGET = 47054878;
+
 	@Inject
 	private Client client;
 
@@ -32,6 +35,47 @@ public class MouldHelper
 	@Inject
 	private EasyGiantsFoundryConfig config;
 
+	public Integer getTotalScore()
+	{
+		Widget type1Widget = client.getWidget(SCORE_TYPE1_SCORE_WIDGET);
+		Widget type2Widget = client.getWidget(SCORE_TYPE2_SCORE_WIDGET);
+		if (type1Widget == null || type2Widget == null)
+		{
+			return null;
+		}
+
+		String type1Str = type1Widget.getText();
+		String type2Str = type2Widget.getText();
+
+		// (+6) 6
+		//     ^ space seperated
+		// or
+		// 6
+		if (type1Str.contains(" "))
+		{
+			type1Str = type1Str.substring(type1Str.lastIndexOf(' ') + 1);
+		}
+
+		if (type2Str.contains(" "))
+		{
+			type2Str = type2Str.substring(type2Str.lastIndexOf(' ') + 1);
+		}
+
+
+		int type1Score;
+		int type2Score;
+
+		try
+		{
+			type1Score = Integer.parseInt(type1Str);
+			type2Score = Integer.parseInt(type2Str);
+		} catch (NumberFormatException e)
+		{
+			return null;
+		}
+
+		return type1Score + type2Score;
+	}
 	public void selectBest(int scriptId)
 	{
 		Widget parent = client.getWidget(MOULD_LIST_PARENT);
