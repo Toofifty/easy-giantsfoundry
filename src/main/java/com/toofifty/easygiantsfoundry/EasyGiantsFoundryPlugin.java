@@ -354,6 +354,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			reputation = client.getVarpValue(REPUTATION_VARBIT);
 		}
 
+		// STAGE becomes 0 again after player picks up the preform
+		if (event.getVarbitId() == VARBIT_GAME_STAGE && event.getValue() == 0)
+		{
+			// clear out the current and soon to be previous scores.
+			state.setLastKnownCrucibleScore(-1);
+			state.setMouldScore(-1);
+		}
+
 		// start the heating state-machine when the varbit updates
 		// if heat varbit updated and the user clicked, start the state-machine
 		if (event.getVarbitId() == VARBIT_HEAT && state.heatingCoolingState.getActionName() != null)
