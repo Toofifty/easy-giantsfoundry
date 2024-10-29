@@ -338,7 +338,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		{
 			Widget title = Objects.requireNonNull(mouldParent.getChild(1));
 
-			// not sure why, the ":" character turns into ":      ," when rendered; obmitting it.
+			// not sure why, the ":" character turns into ":      ," when rendered; omitting it.
 			title.setText("Giants' Foundry Mould Setup <col=FFFFFF>(Score " + mouldScore + ")");
 		}
 	}
@@ -369,8 +369,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 				state.heatingCoolingState.onTick();
 			}
-			previousHeat = event.getValue();
 		}
+		previousHeat = event.getValue();
 	}
 
 	@Subscribe

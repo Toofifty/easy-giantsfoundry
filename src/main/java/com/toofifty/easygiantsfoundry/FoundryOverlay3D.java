@@ -134,7 +134,7 @@ public class FoundryOverlay3D extends Overlay
 			return null;
 		}
 
-		drawHeatingActionOverlay(graphics, stageObject);
+		drawActionOverlay(graphics, stageObject);
 
 		Heat heat = state.getCurrentHeat();
 		Color color = getObjectColor(stage, heat);
@@ -155,11 +155,11 @@ public class FoundryOverlay3D extends Overlay
 
 		if (state.heatingCoolingState.isCooling())
 		{
-			drawHeatingActionOverlay(graphics, waterfall, false);
+			drawHeatingCoolingOverlay(graphics, waterfall);
 		}
 		if (state.heatingCoolingState.isHeating())
 		{
-			drawHeatingActionOverlay(graphics, lavaPool, true);
+			drawHeatingCoolingOverlay(graphics, lavaPool);
 		}
 
 
@@ -192,10 +192,10 @@ public class FoundryOverlay3D extends Overlay
 		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
 	}
 
-	private void drawHeatingActionOverlay(
+	private void drawHeatingCoolingOverlay(
 		Graphics2D graphics,
-		GameObject stageObject,
-		boolean isLava /* and not cooling */)
+		GameObject stageObject
+	)
 	{
 		if (!config.drawLavaWaterInfoOverlay())
 		{
@@ -208,22 +208,10 @@ public class FoundryOverlay3D extends Overlay
 		}
 
 		String text;
-		if (isLava)
-		{
-			// %d heats or %d dunks
-			text = String.format("%d %s",
-				state.heatingCoolingState.getRemainingDuration(),
-				state.heatingCoolingState.getActionName()
-			);
-		}
-		else
-		{
-			// %d cools
-			text = String.format("%d %s",
-				state.heatingCoolingState.getRemainingDuration(),
-				state.heatingCoolingState.getActionName()
-			);
-		}
+		text = String.format("%d %s",
+			state.heatingCoolingState.getRemainingDuration(),
+			state.heatingCoolingState.getActionName()
+		);
 
 		LocalPoint stageLoc = stageObject.getLocalLocation();
 		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
@@ -437,7 +425,7 @@ public class FoundryOverlay3D extends Overlay
 		}
 	}
 
-	private void drawHeatingActionOverlay(Graphics2D graphics, GameObject gameObject)
+	private void drawActionOverlay(Graphics2D graphics, GameObject gameObject)
 	{
 		int actionsLeft = state.getActionsLeftInStage();
 		int heatLeft = state.getActionsForHeatLevel();

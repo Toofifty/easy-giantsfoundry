@@ -504,15 +504,4 @@ public interface EasyGiantsFoundryConfig extends Config
 	)
 	String generalSettings = "generalSettings";
 
-	@ConfigItem(
-		keyName = "heatingCoolingMarginOfError",
-		name = "Heating/Cooling Margin of Error",
-		description = "The margin of error for lava/waterfall calculations to compensate for decay and overshooting.",
-		position = 0,
-		section = generalSettings
-	)
-	default int heatingCoolingBuffer()
-	{
-		return 20;
-	}
 }
