@@ -40,11 +40,11 @@ public class EasyGiantsFoundryState
 
 	@Setter
 	@Getter
-	private Integer mouldScore;
+	private int mouldScore = -1; // starts -1 because mould score is unknown
 
 	@Setter
 	@Getter
-	private Integer lastKnownCrucibleScore;
+	private int lastKnownCrucibleScore = -1; // will be set when "Pour"ed
 
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;

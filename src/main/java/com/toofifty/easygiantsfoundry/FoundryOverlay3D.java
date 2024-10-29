@@ -292,7 +292,7 @@ public class FoundryOverlay3D extends Overlay
 			return;
 		}
 
-		if (state.getMouldScore() == null)
+		if (state.getMouldScore() < 0)
 		{
 			return;
 		}
@@ -310,7 +310,7 @@ public class FoundryOverlay3D extends Overlay
 			return;
 		}
 
-		if (state.getMouldScore() == null || state.getLastKnownCrucibleScore() == null)
+		if (state.getMouldScore() < 0 || state.getLastKnownCrucibleScore() < 0)
 		{
 			return;
 		}
