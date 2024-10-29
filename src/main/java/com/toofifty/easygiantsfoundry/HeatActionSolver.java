@@ -78,6 +78,13 @@ public class HeatActionSolver
 {
 
 	/**
+	 * <b>Warning:</b> this method prefers overshooting goal. For example, if goal is 957,
+	 * it will return index that reaches >957.<br>
+	 * This may be desirable if we're aiming to heat over range minimum,
+	 * but undesirable when cooling below range maximum; make sure to -1 the index if so.
+	 *
+	 *
+	 *
 	 * @param goal       the desired heat destination
 	 * @param init_dx1   initial speed of heating/cooling. currently 7 for heat/cool, 27 for dunk/quench.
 	 * @param dx2_offset bonus acceleration. currently, 0 for heat/cool, 2 for dunk/quench.

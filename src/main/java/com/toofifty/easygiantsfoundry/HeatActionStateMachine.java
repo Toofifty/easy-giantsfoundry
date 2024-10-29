@@ -113,26 +113,32 @@ public class HeatActionStateMachine
 	 */
 	public void calculateEstimates()
 	{
+		// 0: left/min 1: right/max
 		int[] range = State.getCurrentHeatRange();
+		int stageMin = range[0];
+		int stageMax = range[1];
+
 		Stage stage = State.getCurrentStage();
 		int actionsLeft = State.getActionsLeftInStage();
-		int actionsLeft_DeltaHeat = actionsLeft * stage.getHeatChange();
+		int actionsLeft_DeltaHeat = (actionsLeft+1) * stage.getHeatChange();
 		if (isHeating())
 		{
 			if (stage.isHeating())
 			{
-				GoalHeat = Math.max(range[0] + Config.heatingCoolingBuffer(), range[1] - actionsLeft_DeltaHeat);
+				GoalHeat = Math.max(stageMin, stageMax - actionsLeft_DeltaHeat);
 				if (StartingHeat < GoalHeat)
 				{
+					int duration = HeatActionSolver.findDx0Index(
+						GoalHeat - StartingHeat,
+						Velocity, AccelerationBonus
+					);
+
+					GoalHeat += duration / 2;
+
 					EstimatedDuration = HeatActionSolver.findDx0Index(
 						GoalHeat - StartingHeat,
-						Velocity, AccelerationBonus);
-
-					GoalHeat += EstimatedDuration / 2; // compensate for decay during heating
-
-					EstimatedDuration = HeatActionSolver.findDx0Index(
-						GoalHeat - StartingHeat,
-						Velocity, AccelerationBonus);
+						Velocity, AccelerationBonus
+					);
 				}
 				else // overheating
 				{
@@ -141,13 +147,21 @@ public class HeatActionStateMachine
 			}
 			else // is cooling
 			{
-				GoalHeat = Math.min(range[1] - Config.heatingCoolingBuffer(), range[0] - actionsLeft_DeltaHeat);
+				// actionsLeft_DeltaHeat is negative here
+				GoalHeat = Math.min(stageMax, stageMin - actionsLeft_DeltaHeat);
 				if (StartingHeat < GoalHeat)
 				{
+					int duration = HeatActionSolver.findDx0Index(
+						GoalHeat - StartingHeat,
+						Velocity, AccelerationBonus
+					) - 1;
+
+					GoalHeat -= duration / 2;
+
 					EstimatedDuration = HeatActionSolver.findDx0Index(
 						GoalHeat - StartingHeat,
 						Velocity, AccelerationBonus
-					);
+					) - 1;
 				}
 				else // cold enough
 				{
@@ -157,11 +171,39 @@ public class HeatActionStateMachine
 		}
 		else if (isCooling())
 		{
-			if (stage.isCooling())
-			{
-				GoalHeat = Math.max(range[1] - Config.heatingCoolingBuffer(), range[0] + actionsLeft_DeltaHeat);
+			if (stage.isHeating()) {
+				GoalHeat = Math.max(stageMin, stageMax - actionsLeft_DeltaHeat);
+				if (StartingHeat > GoalHeat)
+				{
+					int duration = HeatActionSolver.findDx0Index(
+						StartingHeat - GoalHeat,
+						Math.abs(Velocity), Math.abs(AccelerationBonus)
+					) - 1;
+
+					GoalHeat += duration / 2;
+
+					EstimatedDuration = HeatActionSolver.findDx0Index(
+						(StartingHeat - GoalHeat),
+						Math.abs(Velocity), Math.abs(AccelerationBonus)
+					) - 1;
+				}
+				else
+				{
+					EstimatedDuration = 0;
+				}
+			}
+			// Heating Stage
+			else {
+				GoalHeat = Math.max(stageMax, stageMin + actionsLeft_DeltaHeat);
 				if (StartingHeat > GoalHeat) // too hot
 				{
+					int duration = HeatActionSolver.findDx0Index(
+						StartingHeat - GoalHeat,
+						Math.abs(Velocity), Math.abs(AccelerationBonus)
+					);
+
+					GoalHeat -= duration / 2;
+
 					EstimatedDuration = HeatActionSolver.findDx0Index(
 						StartingHeat - GoalHeat,
 						Math.abs(Velocity), Math.abs(AccelerationBonus)
@@ -172,21 +214,7 @@ public class HeatActionStateMachine
 					EstimatedDuration = 0;
 				}
 			}
-			else // Heating Stage
-			{
-				GoalHeat = Math.max(range[0] + Config.heatingCoolingBuffer(), range[1] - actionsLeft_DeltaHeat);
-				if (StartingHeat > GoalHeat)
-				{
-					EstimatedDuration = HeatActionSolver.findDx0Index(
-						(StartingHeat - GoalHeat),
-						Math.abs(Velocity), Math.abs(AccelerationBonus)
-					);
-				}
-				else
-				{
-					EstimatedDuration = 0;
-				}
-			}
+
 		}
 	}
 

@@ -1,6 +1,8 @@
 package com.toofifty.easygiantsfoundry;
 
 import com.google.inject.Provides;
+
+import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.VARBIT_GAME_STAGE;
 import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.VARBIT_HEAT;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
@@ -27,6 +29,7 @@ import net.runelite.api.events.NpcSpawned;
 import net.runelite.api.events.ScriptPostFired;
 import net.runelite.api.events.StatChanged;
 import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
 import net.runelite.client.config.ConfigManager;
@@ -36,6 +39,7 @@ import net.runelite.client.plugins.Plugin;
 import net.runelite.client.plugins.PluginDescriptor;
 import net.runelite.client.ui.overlay.OverlayManager;
 
+import java.util.Objects;
 import java.util.Set;
 
 @Slf4j
@@ -273,8 +277,12 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		{
 			if (event.getMenuOption().equals("Pour"))
 			{
+				if (client.getVarbitValue(VARBIT_GAME_STAGE) == 1)
+				{
+					state.setLastKnownCrucibleScore((int) state.getCrucibleScore());
+				}
 				// add persistent game message of the alloy value so user can reference later.
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The quality of the alloy poured is " + (int) state.getCrucibleQuality(), null);
+				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The score of the preform is <col=00FFFF>" + ((int) state.getCrucibleScore() + state.getMouldScore()), null);
 			}
 		}
 
@@ -315,6 +323,23 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			|| event.getScriptId() == MouldHelper.RESET_MOULD_SCRIPT)
 		{
 			mouldHelper.selectBest(event.getScriptId());
+			updateMouldScore();
+		}
+	}
+
+	private void updateMouldScore() {
+
+		state.setMouldScore(mouldHelper.getTotalScore());
+
+		// show mould score on Mould UI Title
+		Widget mouldParent = client.getWidget(47054850);
+		Integer mouldScore = state.getMouldScore();
+		if (mouldParent != null && mouldScore != null)
+		{
+			Widget title = Objects.requireNonNull(mouldParent.getChild(1));
+
+			// not sure why, the ":" character turns into ":      ," when rendered; omitting it.
+			title.setText("Giants' Foundry Mould Setup <col=FFFFFF>(Score " + mouldScore + ")");
 		}
 	}
 
@@ -327,6 +352,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		if (event.getVarpId() == REPUTATION_VARBIT)
 		{
 			reputation = client.getVarpValue(REPUTATION_VARBIT);
+		}
+
+		// STAGE becomes 0 again after player picks up the preform
+		if (event.getVarbitId() == VARBIT_GAME_STAGE && event.getValue() == 0)
+		{
+			// clear out the current and soon to be previous scores.
+			state.setLastKnownCrucibleScore(-1);
+			state.setMouldScore(-1);
 		}
 
 		// start the heating state-machine when the varbit updates
@@ -344,8 +377,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 				state.heatingCoolingState.onTick();
 			}
-			previousHeat = event.getValue();
 		}
+		previousHeat = event.getValue();
 	}
 
 	@Subscribe

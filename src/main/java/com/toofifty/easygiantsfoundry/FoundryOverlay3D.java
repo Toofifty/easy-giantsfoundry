@@ -120,6 +120,13 @@ public class FoundryOverlay3D extends Overlay
 			{
 				drawCrucibleIfMouldSet(graphics);
 			}
+			if (config.drawMouldInfoOverlay())
+			{
+				drawMouldScoreIfMouldSet(graphics);
+				drawPreformScoreIfPoured(graphics);
+			}
+
+
 			return null;
 		}
 
@@ -130,7 +137,7 @@ public class FoundryOverlay3D extends Overlay
 			return null;
 		}
 
-		drawHeatingActionOverlay(graphics, stageObject);
+		drawActionOverlay(graphics, stageObject);
 
 		Heat heat = state.getCurrentHeat();
 		Color color = getObjectColor(stage, heat);
@@ -151,11 +158,11 @@ public class FoundryOverlay3D extends Overlay
 
 		if (state.heatingCoolingState.isCooling())
 		{
-			drawHeatingActionOverlay(graphics, waterfall, false);
+			drawHeatingCoolingOverlay(graphics, waterfall);
 		}
 		if (state.heatingCoolingState.isHeating())
 		{
-			drawHeatingActionOverlay(graphics, lavaPool, true);
+			drawHeatingCoolingOverlay(graphics, lavaPool);
 		}
 
 
@@ -188,10 +195,10 @@ public class FoundryOverlay3D extends Overlay
 		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
 	}
 
-	private void drawHeatingActionOverlay(
+	private void drawHeatingCoolingOverlay(
 		Graphics2D graphics,
-		GameObject stageObject,
-		boolean isLava /* and not cooling */)
+		GameObject stageObject
+	)
 	{
 		if (!config.drawLavaWaterInfoOverlay())
 		{
@@ -204,22 +211,10 @@ public class FoundryOverlay3D extends Overlay
 		}
 
 		String text;
-		if (isLava)
-		{
-			// %d heats or %d dunks
-			text = String.format("%d %s",
-				state.heatingCoolingState.getRemainingDuration(),
-				state.heatingCoolingState.getActionName()
-			);
-		}
-		else
-		{
-			// %d cools
-			text = String.format("%d %s",
-				state.heatingCoolingState.getRemainingDuration(),
-				state.heatingCoolingState.getActionName()
-			);
-		}
+		text = String.format("%d %s",
+			state.heatingCoolingState.getRemainingDuration(),
+			state.heatingCoolingState.getActionName()
+		);
 
 		LocalPoint stageLoc = stageObject.getLocalLocation();
 		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
@@ -269,7 +264,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			return;
 		}
-		String text = String.format("%d/%d quality: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleQuality());
+		String text = String.format("%d/%d score: %d", state.getCrucibleCount(), CRUCIBLE_CAPACITY, (int)state.getCrucibleScore());
 
 		LocalPoint crucibleLoc = crucible.getLocalLocation();
 		crucibleLoc = new LocalPoint(crucibleLoc.getX() - 100, crucibleLoc.getY());
@@ -287,6 +282,48 @@ public class FoundryOverlay3D extends Overlay
 		OverlayUtil.renderTextLocation(graphics, pos, text, color);
 	}
 
+	private void drawMouldScoreIfMouldSet(Graphics2D graphics) {
+		if (client.getVarbitValue(SWORD_TYPE_1_VARBIT) == 0)
+		{
+			return;
+		}
+		if (client.getVarbitValue(VARBIT_GAME_STAGE) != 1)
+		{
+			return;
+		}
+
+		if (state.getMouldScore() < 0)
+		{
+			return;
+		}
+
+		String text = String.format("score: %d", state.getMouldScore());
+		LocalPoint mouldLoc = mouldJig.getLocalLocation();
+		Point pos = Perspective.getCanvasTextLocation(client, graphics, mouldLoc, text, 115);
+		Color color = config.generalHighlight();
+
+		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+	}
+	private void drawPreformScoreIfPoured(Graphics2D graphics) {
+		if (client.getVarbitValue(VARBIT_GAME_STAGE) != 2)
+		{
+			return;
+		}
+
+		if (state.getMouldScore() < 0 || state.getLastKnownCrucibleScore() < 0)
+		{
+			return;
+		}
+
+		int preformScore = state.getLastKnownCrucibleScore() + state.getMouldScore();
+		String text = String.format("score: %d", preformScore);
+		LocalPoint mouldLoc = mouldJig.getLocalLocation();
+		Point pos = Perspective.getCanvasTextLocation(client, graphics, mouldLoc, text, 115);
+
+		Color color = config.generalHighlight();
+
+		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+	}
 
 	private void drawCrucibleIfMouldSet(Graphics2D graphics)
 	{
@@ -391,7 +428,7 @@ public class FoundryOverlay3D extends Overlay
 		}
 	}
 
-	private void drawHeatingActionOverlay(Graphics2D graphics, GameObject gameObject)
+	private void drawActionOverlay(Graphics2D graphics, GameObject gameObject)
 	{
 		int actionsLeft = state.getActionsLeftInStage();
 		int heatLeft = state.getActionsForHeatLevel();
