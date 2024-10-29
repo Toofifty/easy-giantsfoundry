@@ -119,10 +119,13 @@ public class FoundryOverlay3D extends Overlay
 			if (config.highlightCrucible())
 			{
 				drawCrucibleIfMouldSet(graphics);
+			}
+			if (config.drawMouldInfoOverlay())
+			{
 				drawMouldScoreIfMouldSet(graphics);
+				drawPreformScoreIfPoured(graphics);
 			}
 
-			drawPreformScoreIfPoured(graphics);
 
 			return null;
 		}
