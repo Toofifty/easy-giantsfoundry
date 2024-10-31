@@ -44,7 +44,7 @@ public class EasyGiantsFoundryState
 
 	@Setter
 	@Getter
-	private int lastKnownCrucibleScore = -1; // will be set when "Pour"ed
+	private int lastKnownCrucibleScore = -1; // will be set when "Pour"ed (because the crucible will be empty then)
 
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;

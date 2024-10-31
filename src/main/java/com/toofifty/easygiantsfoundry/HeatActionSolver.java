@@ -78,22 +78,30 @@ public class HeatActionSolver
 {
 
 	/**
-	 * <b>Warning:</b> this method prefers overshooting goal. For example, if goal is 957,
-	 * it will return index that reaches >957.<br>
-	 * This may be desirable if we're aiming to heat over range minimum,
-	 * but undesirable when cooling below range maximum; make sure to -1 the index if so.
+	 * <p><b>Warning:</b> this method prefers overshooting goal. For example, if goal is 957,
+	 * it will return index that reaches >957.</p>
+	 *
+	 * <p>This may be desirable if we're aiming to heat just over range minimum;
+	 * for example if the stage is heating (grind stone),</p>
+	 *
+	 * <p>but undesirable when heating to just below range maximum;
+	 * for example if the stage is cooling (hammer.)</p>
+	 *
+	 * <p>
+	 * Make sure to subtract 1 tick from duration, if so.
+	 * </p>
 	 *
 	 *
 	 *
 	 * @param goal       the desired heat destination
-	 * @param init_dx1   initial speed of heating/cooling. currently 7 for heat/cool, 27 for dunk/quench.
+	 * @param dx1_init   initial speed of heating/cooling. currently 7 for heat/cool, 27 for dunk/quench.
 	 * @param dx2_offset bonus acceleration. currently, 0 for heat/cool, 2 for dunk/quench.
 	 * @return Index here refers to tick. So an index of 10 means the goal can be reached in 10 ticks.
 	 */
-	public static int findDx0Index(int goal, int init_dx1, int dx2_offset)
+	public static int findDuration(int goal, int dx1_init, int dx2_offset)
 	{
 		int dx0 = 0;
-		int dx1 = init_dx1;
+		int dx1 = dx1_init;
 		int count_index = 0;
 		for (int dx2 = 1; dx0 <= goal; dx2++)
 		{  // Start from 1 up to the count inclusive

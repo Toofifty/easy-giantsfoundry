@@ -99,7 +99,7 @@ public class HeatSolverTest
 	{
 		for (int i = 0; i < 50; i++)
 		{
-			System.err.println("[" + (350 + i) + "]" + HeatActionSolver.findDx0Index(350 + i, 7, 0));
+			System.err.println("[" + (350 + i) + "]" + HeatActionSolver.findDuration(350 + i, 7, 0));
 		}
 	}
 
@@ -131,18 +131,18 @@ public class HeatSolverTest
 //		System.err.println(
 //			HeatSolver.findDx0IndexContinue(1000, 7, 0));
 		System.err.println(
-			HeatActionSolver.findDx0Index(957, 27, 2));
+			HeatActionSolver.findDuration(957, 27, 2));
 //		System.err.println(
-//			HeatActionSolver.findDx0Index(1000, 7, 1));
+//			HeatActionSolver.findDuration(1000, 7, 1));
 	}
 
 	public void TestHeatSolver_Dx0_Helper(int dx0, int constant, int answer_index)
 	{
-		System.err.print(dx0 + "->" + HeatActionSolver.findDx0Index(dx0, constant, 0) + ",");
+		System.err.print(dx0 + "->" + HeatActionSolver.findDuration(dx0, constant, 0) + ",");
 
 		// test calcDx0Index
 		assertEquals("Asserting dx0 for index " + answer_index,
-			answer_index, HeatActionSolver.findDx0Index(dx0, constant, 0));
+			answer_index, HeatActionSolver.findDuration(dx0, constant, 0));
 	}
 
 	@Test

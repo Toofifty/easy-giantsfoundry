@@ -158,11 +158,11 @@ public class FoundryOverlay3D extends Overlay
 
 		if (state.heatingCoolingState.isCooling())
 		{
-			drawHeatingCoolingOverlay(graphics, waterfall);
+			drawHeatChangerOverlay(graphics, waterfall);
 		}
 		if (state.heatingCoolingState.isHeating())
 		{
-			drawHeatingCoolingOverlay(graphics, lavaPool);
+			drawHeatChangerOverlay(graphics, lavaPool);
 		}
 
 
@@ -195,7 +195,7 @@ public class FoundryOverlay3D extends Overlay
 		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
 	}
 
-	private void drawHeatingCoolingOverlay(
+	private void drawHeatChangerOverlay(
 		Graphics2D graphics,
 		GameObject stageObject
 	)

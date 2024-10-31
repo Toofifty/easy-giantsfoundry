@@ -121,6 +121,7 @@ public class HeatActionStateMachine
 		Stage stage = State.getCurrentStage();
 		int actionsLeft = State.getActionsLeftInStage();
 		int actionsLeft_DeltaHeat = (actionsLeft+1) * stage.getHeatChange();
+
 		if (isHeating())
 		{
 			if (stage.isHeating())
@@ -128,14 +129,15 @@ public class HeatActionStateMachine
 				GoalHeat = Math.max(stageMin, stageMax - actionsLeft_DeltaHeat);
 				if (StartingHeat < GoalHeat)
 				{
-					int duration = HeatActionSolver.findDx0Index(
+					int duration = HeatActionSolver.findDuration(
 						GoalHeat - StartingHeat,
 						Velocity, AccelerationBonus
 					);
 
+					// compensate for heat decay during (1 heat every 2 ticks)
 					GoalHeat += duration / 2;
 
-					EstimatedDuration = HeatActionSolver.findDx0Index(
+					EstimatedDuration = HeatActionSolver.findDuration(
 						GoalHeat - StartingHeat,
 						Velocity, AccelerationBonus
 					);
@@ -151,14 +153,14 @@ public class HeatActionStateMachine
 				GoalHeat = Math.min(stageMax, stageMin - actionsLeft_DeltaHeat);
 				if (StartingHeat < GoalHeat)
 				{
-					int duration = HeatActionSolver.findDx0Index(
+					int duration = HeatActionSolver.findDuration(
 						GoalHeat - StartingHeat,
 						Velocity, AccelerationBonus
 					) - 1;
 
 					GoalHeat -= duration / 2;
 
-					EstimatedDuration = HeatActionSolver.findDx0Index(
+					EstimatedDuration = HeatActionSolver.findDuration(
 						GoalHeat - StartingHeat,
 						Velocity, AccelerationBonus
 					) - 1;
@@ -175,14 +177,14 @@ public class HeatActionStateMachine
 				GoalHeat = Math.max(stageMin, stageMax - actionsLeft_DeltaHeat);
 				if (StartingHeat > GoalHeat)
 				{
-					int duration = HeatActionSolver.findDx0Index(
+					int duration = HeatActionSolver.findDuration(
 						StartingHeat - GoalHeat,
 						Math.abs(Velocity), Math.abs(AccelerationBonus)
 					) - 1;
 
 					GoalHeat += duration / 2;
 
-					EstimatedDuration = HeatActionSolver.findDx0Index(
+					EstimatedDuration = HeatActionSolver.findDuration(
 						(StartingHeat - GoalHeat),
 						Math.abs(Velocity), Math.abs(AccelerationBonus)
 					) - 1;
@@ -197,14 +199,14 @@ public class HeatActionStateMachine
 				GoalHeat = Math.max(stageMax, stageMin + actionsLeft_DeltaHeat);
 				if (StartingHeat > GoalHeat) // too hot
 				{
-					int duration = HeatActionSolver.findDx0Index(
+					int duration = HeatActionSolver.findDuration(
 						StartingHeat - GoalHeat,
 						Math.abs(Velocity), Math.abs(AccelerationBonus)
 					);
 
 					GoalHeat -= duration / 2;
 
-					EstimatedDuration = HeatActionSolver.findDx0Index(
+					EstimatedDuration = HeatActionSolver.findDuration(
 						StartingHeat - GoalHeat,
 						Math.abs(Velocity), Math.abs(AccelerationBonus)
 					);
