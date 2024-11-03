@@ -3,13 +3,16 @@ package com.toofifty.easygiantsfoundry;
 //import java.util.ArrayList;
 //import java.util.List;
 
+import com.toofifty.easygiantsfoundry.enums.Stage;
+import lombok.Value;
+
 /**
  * Solves the heating/cooling action and predicts tick duration (index)
  * the naming convention is focused on the algorithm rather than in-game terminology for the context.
  * <p>
  * the dx_n refers to successive derivatives of an ordinary-differential-equations
  * https://en.wikipedia.org/wiki/Ordinary_differential_equation
- * also known as distance (dx0), speed (dx1), and acceleration (dx2).
+ * also known as position (dx0), speed (dx1), and acceleration (dx2).
  * <p>
  * dx0 - players current heat at tick
  * dx1 - dx0_current - dx0_last_tick, aka the first derivative
@@ -18,7 +21,17 @@ package com.toofifty.easygiantsfoundry;
  * for context, here's what dx1 extracted directly from in-game dunking looks like.
  * the purpose of the HeatActionSolver.java is to accurately model this data.
  * int[] dx1 = {
- * 27,
+ * 7,
+ * 8,
+ * 9,
+ * 11,
+ * 13,
+ * 15,
+ * 17,
+ * 19,
+ * 21,
+ * 24,
+ * 27, -- dunk/quench starts here
  * 30,
  * 33,
  * 37,
@@ -77,156 +90,254 @@ subscribe(VarbitChanged.class, ev ->
 public class HeatActionSolver
 {
 
-	/**
-	 * <p><b>Warning:</b> this method prefers overshooting goal. For example, if goal is 957,
-	 * it will return index that reaches >957.</p>
-	 *
-	 * <p>This may be desirable if we're aiming to heat just over range minimum;
-	 * for example if the stage is heating (grind stone),</p>
-	 *
-	 * <p>but undesirable when heating to just below range maximum;
-	 * for example if the stage is cooling (hammer.)</p>
-	 *
-	 * <p>
-	 * Make sure to subtract 1 tick from duration, if so.
-	 * </p>
-	 *
-	 *
-	 *
-	 * @param goal       the desired heat destination
-	 * @param dx1_init   initial speed of heating/cooling. currently 7 for heat/cool, 27 for dunk/quench.
-	 * @param dx2_offset bonus acceleration. currently, 0 for heat/cool, 2 for dunk/quench.
-	 * @return Index here refers to tick. So an index of 10 means the goal can be reached in 10 ticks.
-	 */
-	public static int findDuration(int goal, int dx1_init, int dx2_offset)
+	public static final int[] DX_1 = new int[]{
+		7,
+		8,
+		9,
+		11,
+		13,
+		15,
+		17,
+		19,
+		21,
+		24,
+		27, // -- dunk/quench starts here
+		30,
+		33,
+		37,
+		41,
+		45,
+		49,
+		53,
+		57,
+		62,
+		67,
+		72,
+		77,
+		83,
+		89,
+		95,
+		91, // last one will always overshoot 1000
+	};
+	public static final int MAX_INDEX = DX_1.length;
+	public static final int FAST_INDEX = 10;
+
+	@Value(staticConstructor = "of")
+	public static class SolveResult
 	{
+		int index;
+		int dx0;
+		int dx1;
+		int dx2;
+	}
+
+	private static SolveResult heatingSolve(int start, int goal, boolean overshoot, int max, boolean isFast)
+	{
+		return relativeSolve(goal - start, overshoot, max - start, isFast, -1);
+	}
+
+	private static SolveResult coolingSolve(int start, int goal, boolean overshoot, int min, boolean isFast)
+	{
+		return relativeSolve(start - goal, overshoot, start - min, isFast, 1);
+	}
+
+	private static SolveResult relativeSolve(int goal, boolean overshoot, int max, boolean isFast, int decayValue)
+	{
+
+		int index = isFast ? FAST_INDEX : 0;
 		int dx0 = 0;
-		int dx1 = dx1_init;
-		int count_index = 0;
-		for (int dx2 = 1; dx0 <= goal; dx2++)
-		{  // Start from 1 up to the count inclusive
-			int repetitions;
-			if (dx2 == 1)
+
+		boolean decay = false;
+
+		while (true) {
+
+			if (index >= MAX_INDEX)
 			{
-				repetitions = 2;  // The first number appears twice
+				break;
 			}
-			else if (dx2 % 2 == 0)
+
+			if (!overshoot && dx0 + DX_1[index] > goal)
 			{
-				repetitions = 6;  // Even numbers appear six times
+				break;
 			}
-			else
+			else if (overshoot && dx0 >= goal)
 			{
-				repetitions = 4;  // Odd numbers (after 1) appear four times
+				break;
 			}
-			for (int j = 0; j < repetitions && dx0 <= goal; j++)
+
+			if (dx0 + DX_1[index] >= max)
 			{
-				dx0 += dx1;
-				dx1 += dx2 + dx2_offset;  // Sum the current number 'repetitions' times
-				count_index += 1;
+				break;
 			}
+
+			if (decay)
+			{
+				dx0 -= decayValue;
+			}
+
+			dx0 += DX_1[index];
+			++index;
+			decay = !decay;
 		}
-		return count_index;
+
+		if (isFast)
+		{
+			index -= FAST_INDEX;
+		}
+
+		return SolveResult.of(index, dx0, DX_1[index], -1);
 	}
 
 
-	/**
-	 * We can use the pattern to get the dx2 at a specific index numerically
-	 *
-	 * @param index the index/tick we want to calculate dx2 at
-	 * @return the acceleration of heating/cooling at index/tick
-	 */
-	public static int getDx2AtIndex(int index)
+	@Value(staticConstructor = "of")
+	public static class DurationResult
 	{
-		if (index <= 1) return 1;
-
-		index -= 2;
-		// 0 1 2 3 4 5 6 7 8 9
-		// e,e,e,e,e,e,o,o,o,o
-
-		int block = index / 10;
-		int block_idx = index % 10;
-		int number = block * 2;
-		if (block_idx <= 5)
-		{
-			return number + 2;
-		}
-		else
-		{
-			return number + 3;
-		}
+		int duration;
+		boolean goalInRange;
+		boolean overshooting;
+		int predictedHeat;
 	}
 
-
-	/**
-	 * We can use the pattern to get the dx1 at a specific index numerically
-	 *
-	 * @param index    the index/tick we want to calculate the speed of heating/cooling
-	 * @param constant the initial speed of heating/cooling.
-	 * @return the speed of heating at index/tick
-	 */
-	public static int getDx1AtIndex(int index, int constant)
+	public static DurationResult solve(
+		Stage stage,
+		int[] range,
+		int actionLeftInStage,
+		int start,
+		boolean isFast,
+		boolean isActionHeating,
+		int padding)
 	{
-		int _dx1 = constant;
-		for (int i = 0; i < index; ++i)
+
+		final boolean isStageHeating = stage.isHeating();
+
+		// adding 1.8s/6ticks worth of padding so preform doesn't decay out of range
+		// average distance from lava+waterfall around 6 ticks
+		// preform decays 1 heat every 2 ticks
+		final int min = range[0] + padding;
+		final int max = range[1] + padding;
+
+		final int actionsLeft_DeltaHeat = actionLeftInStage * stage.getHeatChange();
+
+		int estimatedDuration = 0;
+
+		final boolean goalInRange;
+		boolean overshoot = false;
+
+		SolveResult result = null;
+
+		// case actions are all cooling, heating is mirrored version
+
+		// goal: in-range // stage: heating
+		// overshoot goal
+		//  <----------|stop|<---------------- heat
+		// ------|min|----------goal-------|max|
+		//                      stage ---------------->
+
+		// goal: out-range // stage: heating
+		// undershoot min
+		// ...----------|stop|<--------------------- heat
+		// -goal---|min|---------------------|max|
+		//                      stage ----------------->
+
+		// goal: in-range // stage: cooling
+		// undershoot goal
+		//   <-------------------------|stop|<--------------- heat
+		// ------|min|----------goal-------|max|
+		//    <---------------- stage
+
+		// goal: out-range // stage: cooling
+		// overshoot max
+		//    <--------------------|stop|<--------------- heat
+		// --------|min|---------------------|max|----goal
+		//    <---------------- stage
+
+		if (isActionHeating)
 		{
-			_dx1 += getDx2AtIndex(i);
+			int goal = min - actionsLeft_DeltaHeat;
+			goalInRange = goal >= min && goal <= max;
+
+			if (isStageHeating)
+			{
+
+				if (start <= max)
+				{
+					overshoot = !goalInRange;
+
+					if (!goalInRange)
+					{
+						goal = min;
+					}
+
+					result = heatingSolve(start, goal, overshoot, max, isFast);
+
+					estimatedDuration = result.index;
+				}
+			}
+			else // cooling stage
+			{
+				// actionsLeft_DeltaHeat is negative here
+				if (start <= max)
+				{
+					overshoot = goalInRange;
+
+					if (!goalInRange)
+					{
+						goal = max;
+					}
+
+					result = heatingSolve(start, goal, overshoot, max, isFast);
+
+					estimatedDuration = result.index;
+				}
+			}
+		}
+		else // cooling action
+		{
+			int goal = max - actionsLeft_DeltaHeat;
+			goalInRange = goal >= min && goal <= max;
+
+			if (isStageHeating)
+			{
+				if (start >= min)
+				{
+					overshoot = goalInRange;
+
+					if (!goalInRange)
+					{
+						goal = min;
+					}
+
+					result = coolingSolve(start, goal, overshoot, min, isFast);
+
+					estimatedDuration = result.index;
+				}
+			}
+			else // cooling stage cooling action
+			{
+				if (start >= min)
+				{
+					overshoot = !goalInRange;
+					if (!goalInRange)
+					{
+						goal = max;
+					}
+
+					result = coolingSolve(start, goal, overshoot, min, isFast);
+
+					estimatedDuration = result.index;
+				}
+			}
 		}
 
-		return _dx1;
+		int dx0 = result == null ? 0 : result.dx0;
+		if (!isActionHeating)
+		{
+			dx0 *= -1;
+		}
+
+
+		return DurationResult.of(estimatedDuration, goalInRange, overshoot, start + dx0);
 	}
 
-// Methods below are functional, but only used to for debugging & development
-
-//	public static int getDx0AtIndex(int index, int constant)
-//	{
-//		int dx0 = 0;
-//		int dx1 = getDx1AtIndex(0, constant);
-//		for (int i = 0; i < index; i++)
-//		{  // Start from 1 up to the count inclusive
-//			int dx2 = getDx2AtIndex(i);
-//			dx1 += dx2;  // Sum the current number 'repetitions' times
-//			dx0 += dx1;
-//		}
-//		return dx0;
-//	}
-
-	// We iteratively generate dx2 into a list
-//	public static List<Integer> generateDx2List(int count)
-//	{
-//		List<Integer> pattern = new ArrayList<>();  // This will hold our pattern
-//		for (int n = 1, i = 0; i < count; n++)
-//		{  // Start from 1 up to the count inclusive
-//			int repetitions;
-//			if (n == 1)
-//			{
-//				repetitions = 2;  // The first number appears twice
-//			} else if (n % 2 == 0)
-//			{
-//				repetitions = 6;  // Even numbers appear six times
-//			} else
-//			{
-//				repetitions = 4;  // Odd numbers (after 1) appear four times
-//			}
-//			for (int j = 0; j < repetitions && i < count; j++, i++)
-//			{
-//				pattern.add(n);  // Append the current number 'repetitions' times
-//			}
-//		}
-//		return pattern;
-//	}
-
-//	public static int findDx0IndexContinue(int goal, int constant, int init_index)
-//	{
-//		int dx0 = getDx0AtIndex(init_index, constant);
-//		int dx1 = getDx1AtIndex(init_index, constant);
-//		int count_index = init_index;
-//		for (; dx0 <= goal; count_index++)
-//		{  // Start from 1 up to the count inclusive
-//			int dx2 = getDx2AtIndex(count_index);
-//			dx1 += dx2;  // Sum the current number 'repetitions' times
-//			dx0 += dx1;
-//		}
-//		return count_index - init_index;
-//	}
 }
 

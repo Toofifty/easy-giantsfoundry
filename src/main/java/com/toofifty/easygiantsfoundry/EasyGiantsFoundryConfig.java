@@ -502,6 +502,31 @@ public interface EasyGiantsFoundryConfig extends Config
 		description = "Advanced Settings",
 		position = 5
 	)
-	String generalSettings = "generalSettings";
+	String advancedSettings = "generalSettings";
 
+
+	@ConfigItem(
+		keyName = "heatActionBuffer", // renamed to reset player's settings for previous bugged implementation
+		name = "Lava/Waterfall Padding Ticks",
+		description = "Units in ticks; buffers more than optimal heat when in lava/waterfall calculations to compensate for heat decay when the player is afk or running/walking slower than optimal.",
+		position = 0,
+		section = advancedSettings
+	)
+	default int heatActionPadTicks()
+	{
+		return 3;
+	}
+
+	@ConfigItem(
+		keyName = "debugging",
+		name = "Show Debugging",
+		description = "Shows debugging visuals used for development",
+		position = 0,
+		section = advancedSettings,
+		warning = "Only used for development."
+	)
+	default boolean debugging()
+	{
+		return false;
+	}
 }

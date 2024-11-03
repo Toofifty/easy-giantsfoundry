@@ -290,27 +290,27 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
 		if (event.getMenuOption().startsWith("Heat-preform"))
 		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(7, 0, "heats");
+			state.heatActionStateMachine.stop();
+			state.heatActionStateMachine.setup(false, true, "heats");
 		}
 		else if (event.getMenuOption().startsWith("Dunk-preform"))
 		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(27, 2, "dunks");
+			state.heatActionStateMachine.stop();
+			state.heatActionStateMachine.setup(true, true, "dunks");
 		}
 		else if (event.getMenuOption().startsWith("Cool-preform"))
 		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(-7, 0, "cools");
+			state.heatActionStateMachine.stop();
+			state.heatActionStateMachine.setup(false, false, "cools");
 		}
 		else if (event.getMenuOption().startsWith("Quench-preform"))
 		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(-27, -2, "quenches");
+			state.heatActionStateMachine.stop();
+			state.heatActionStateMachine.setup(true, false, "quenches");
 		}
-		else // canceled heating/cooling, stop the heating state-machine
+		else if (!state.heatActionStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
 		{
-			state.heatingCoolingState.stop();
+			state.heatActionStateMachine.stop();
 		}
 	}
 
@@ -333,8 +333,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		// show mould score on Mould UI Title
 		Widget mouldParent = client.getWidget(47054850);
-		Integer mouldScore = state.getMouldScore();
-		if (mouldParent != null && mouldScore != null)
+		int mouldScore = state.getMouldScore();
+		if (mouldParent != null && mouldScore >= 0)
 		{
 			Widget title = Objects.requireNonNull(mouldParent.getChild(1));
 
@@ -362,23 +362,40 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			state.setMouldScore(-1);
 		}
 
+
 		// start the heating state-machine when the varbit updates
 		// if heat varbit updated and the user clicked, start the state-machine
-		if (event.getVarbitId() == VARBIT_HEAT && state.heatingCoolingState.getActionName() != null)
+		if (event.getVarbitId() == VARBIT_HEAT)
 		{
 			// ignore passive heat decay, one heat per two ticks
-			if (event.getValue() - previousHeat != -1)
+			int delta = event.getValue() - previousHeat;
+			// sign check: num * num > 0 == same sign
+			if (delta != -1)
 			{
-				// if the state-machine is idle, start it
-				if (state.heatingCoolingState.isIdle())
+				if (state.heatActionStateMachine.getActionname() != null)
 				{
-					state.heatingCoolingState.start(state, config, state.getHeatAmount());
+					// if the state-machine is idle, start it
+					if (state.heatActionStateMachine.isIdle())
+					{
+						state.heatActionStateMachine.start(state, config, previousHeat);
+					}
+					state.heatActionStateMachine.onTick();
 				}
 
-				state.heatingCoolingState.onTick();
+				if (config.debugging())
+				{
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "",
+						"Heat: <col=FF0000>" + event.getValue() + "</col>" +
+							"Delta: <col=00FFFF>" + delta + "</col> " +
+							"Heating Ticks: <col=00FFFF>" + state.heatActionStateMachine.heatingTicks + "</col>" +
+							" Cooling Ticks: <col=00FFFF>" + state.heatActionStateMachine.coolingTicks + "</col>" +
+							" Remaining Ticks: <col=00FFFF>" + state.heatActionStateMachine.getRemainingDuration(), "");
+				}
 			}
+
+//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Delta: <col=00FFFF>" + delta + "</col> ", "");
+			previousHeat = event.getValue();
 		}
-		previousHeat = event.getValue();
 	}
 
 	@Subscribe

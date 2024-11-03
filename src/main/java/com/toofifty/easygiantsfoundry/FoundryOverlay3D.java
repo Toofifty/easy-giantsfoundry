@@ -32,6 +32,7 @@ public class FoundryOverlay3D extends Overlay
 {
 
 	private static final int HAND_IN_WIDGET = 49414221;
+	private static final int CRUCIBLE_CAPACITY = 28;
 	private final ModelOutlineRenderer modelOutlineRenderer;
 
 	GameObject tripHammer;
@@ -132,7 +133,7 @@ public class FoundryOverlay3D extends Overlay
 
 		Stage stage = state.getCurrentStage();
 		GameObject stageObject = getStageObject(stage);
-		if (stageObject == null)
+		if (stageObject == null || graphics == null)
 		{
 			return null;
 		}
@@ -151,20 +152,12 @@ public class FoundryOverlay3D extends Overlay
 			drawObjectOutline(graphics, stageObject, color);
 		}
 
-		if ((stage.getHeat() != heat || !state.heatingCoolingState.isIdle()) && config.highlightWaterAndLava())
+		// !state.heatingCoolingState.isIdle()
+		// if the stage heat is already in range, but player still wants to do heat changes
+		if ((stage.getHeat() != heat || !state.heatActionStateMachine.isIdle()) && config.highlightWaterAndLava())
 		{
 			drawHeatChangers(graphics);
 		}
-
-		if (state.heatingCoolingState.isCooling())
-		{
-			drawHeatChangerOverlay(graphics, waterfall);
-		}
-		if (state.heatingCoolingState.isHeating())
-		{
-			drawHeatChangerOverlay(graphics, lavaPool);
-		}
-
 
 		return null;
 	}
@@ -195,26 +188,87 @@ public class FoundryOverlay3D extends Overlay
 		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
 	}
 
-	private void drawHeatChangerOverlay(
+	private void drawHeatChangerPreviewOverlay(
 		Graphics2D graphics,
-		GameObject stageObject
+		GameObject stageObject,
+		boolean isLava
 	)
 	{
-		if (!config.drawLavaWaterInfoOverlay())
-		{
-			return;
-		}
 
-		if (state.heatingCoolingState.isIdle())
-		{
-			return;
-		}
+		int sign = isLava ? 1 : -1;
+		int fastVelocity = 27 * sign;
+		int slowVelocity = 7 * sign;
+		int fastAccelBonus = 2 * sign;
+		int slowAccelBonus = 0;
+
+		HeatActionSolver.DurationResult fastResult =
+			HeatActionSolver.solve(
+				state.getCurrentStage(),
+				state.getCurrentHeatRange(),
+				state.getActionsLeftInStage(),
+				state.getHeatAmount(),
+				true,
+				isLava,
+				config.heatActionPadTicks() * 2
+			);
+
+		final int fastDuration = fastResult.getDuration();
+		HeatActionSolver.DurationResult slowResult =
+			HeatActionSolver.solve(
+				state.getCurrentStage(),
+				state.getCurrentHeatRange(),
+				state.getActionsLeftInStage(),
+				state.getHeatAmount(),
+				false,
+				isLava,
+				config.heatActionPadTicks() * 2
+			);
+		final int slowDuration = slowResult.getDuration();
+
+		final String fastName = isLava ? "dunks" : "quenches";
+		final String slowName = isLava ? "heats" : "cools";
 
 		String text;
-		text = String.format("%d %s",
-			state.heatingCoolingState.getRemainingDuration(),
-			state.heatingCoolingState.getActionName()
-		);
+		if (config.debugging())
+		{
+			text = String.format("%d %s (predicted: %d) or %d %s (predicted: %d) (overshoot: %s goal-in-range: %s)",
+				fastDuration, fastName, fastResult.getPredictedHeat(), slowDuration, slowName, slowResult.getPredictedHeat(), slowResult.isOvershooting(), fastResult.isGoalInRange());
+		}
+		else
+		{
+			text = String.format("%d %s or %d %s ",
+				fastDuration, fastName, slowDuration, slowName);
+		}
+
+		LocalPoint stageLoc = stageObject.getLocalLocation();
+		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
+
+		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
+		Color color = config.lavaWaterfallColour();
+
+		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+	}
+
+	private void drawHeatChangerOverlay(Graphics2D graphics, GameObject stageObject)
+	{
+
+		String text;
+		if (config.debugging())
+		{
+			text = String.format("%d %s (overshoot: %s) [goal-in-range: %s]",
+				state.heatActionStateMachine.getRemainingDuration(),
+				state.heatActionStateMachine.getActionname(),
+				state.heatActionStateMachine.isOverShooting(),
+				state.heatActionStateMachine.isGoalInRange()
+			);
+		}
+		else
+		{
+			text = String.format("%d %s",
+				state.heatActionStateMachine.getRemainingDuration(),
+				state.heatActionStateMachine.getActionname()
+			);
+		}
 
 		LocalPoint stageLoc = stageObject.getLocalLocation();
 		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
@@ -230,11 +284,13 @@ public class FoundryOverlay3D extends Overlay
 		int change = state.getHeatChangeNeeded();
 		Shape shape = null;
 
-		if (change < 0 || state.heatingCoolingState.isCooling())
+		boolean isLava = change > 0;
+		boolean isWaterfall = change < 0;
+		if (isWaterfall || state.heatActionStateMachine.isCooling())
 		{
 			shape = waterfall.getClickbox();
 		}
-		else if (change > 0 || state.heatingCoolingState.isHeating())
+		else if (isLava || state.heatActionStateMachine.isHeating())
 		{
 			shape = lavaPool.getClickbox();
 		}
@@ -254,9 +310,28 @@ public class FoundryOverlay3D extends Overlay
 			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
 			graphics.fill(shape);
 		}
+
+		if (config.drawLavaWaterInfoOverlay())
+		{
+			if (state.heatActionStateMachine.isCooling())
+			{
+				drawHeatChangerOverlay(graphics, waterfall);
+			}
+			else if (isWaterfall)
+			{
+				drawHeatChangerPreviewOverlay(graphics, waterfall, false);
+			}
+			if (state.heatActionStateMachine.isHeating())
+			{
+				drawHeatChangerOverlay(graphics, lavaPool);
+			}
+			else if (isLava)
+			{
+				drawHeatChangerPreviewOverlay(graphics, lavaPool, true);
+			}
+		}
 	}
 
-	static final int CRUCIBLE_CAPACITY = 28;
 
 	private void drawCrucibleContent(Graphics2D graphics)
 	{
@@ -430,6 +505,8 @@ public class FoundryOverlay3D extends Overlay
 
 	private void drawActionOverlay(Graphics2D graphics, GameObject gameObject)
 	{
+
+
 		int actionsLeft = state.getActionsLeftInStage();
 		int heatLeft = state.getActionsForHeatLevel();
 
@@ -440,6 +517,10 @@ public class FoundryOverlay3D extends Overlay
 			LocalPoint textLocation = gameObject.getLocalLocation();
 			textLocation = new LocalPoint(textLocation.getX(), textLocation.getY());
 			Point canvasLocation = Perspective.getCanvasTextLocation(client, graphics, textLocation, text, 250);
+			if (canvasLocation == null)
+			{
+				return;
+			}
 			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft));
 		}
 		if (config.drawActionLeftOverlay())
@@ -449,6 +530,10 @@ public class FoundryOverlay3D extends Overlay
 			LocalPoint textLocation = gameObject.getLocalLocation();
 			textLocation = new LocalPoint(textLocation.getX(), textLocation.getY());
 			Point canvasLocation = Perspective.getCanvasTextLocation(client, graphics, textLocation, text, 250);
+			if (canvasLocation == null)
+			{
+				return;
+			}
 			canvasLocation = new Point(canvasLocation.getX(), canvasLocation.getY() + 10);
 			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft));
 		}

@@ -335,5 +335,5 @@ public class EasyGiantsFoundryState
 		return actions;
 	}
 
-	public HeatActionStateMachine heatingCoolingState = new HeatActionStateMachine();
+	public HeatActionStateMachine heatActionStateMachine = new HeatActionStateMachine();
 }
