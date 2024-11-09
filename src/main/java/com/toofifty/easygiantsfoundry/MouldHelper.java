@@ -114,7 +114,7 @@ public class MouldHelper
 				int height = scrollList.getHeight();
 				int scrollMax = scrollList.getScrollHeight();
 				Widget finalBestWidget = bestWidget;
-				clientThread.invokeLater(() ->
+				clientThread.invokeAtTickEnd(() ->
 				{
 					if (finalBestWidget != null)
 					{
