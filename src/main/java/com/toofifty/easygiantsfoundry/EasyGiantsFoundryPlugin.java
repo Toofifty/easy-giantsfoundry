@@ -279,59 +279,62 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-
-		if (!(event.getMenuAction() == MenuAction.GAME_OBJECT_FIRST_OPTION
-			|| event.getMenuAction() == MenuAction.GAME_OBJECT_SECOND_OPTION
-			|| event.getMenuAction() == MenuAction.GAME_OBJECT_THIRD_OPTION
-			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FOURTH_OPTION
-			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION
-			|| event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT
-			|| event.getMenuAction() == MenuAction.WALK))
+		clientThread.invokeAtTickEnd(() ->
 		{
-			return;
-		}
-
-		if (!state.isEnabled()) return;
-
-		if (event.getMenuTarget().contains("Crucible "))
-		{
-			if (event.getMenuOption().equals("Pour"))
+			if (!(event.getMenuAction() == MenuAction.GAME_OBJECT_FIRST_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_SECOND_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_THIRD_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_FOURTH_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION
+				|| event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT
+				|| event.getMenuAction() == MenuAction.WALK))
 			{
-				if (client.getVarbitValue(VARBIT_GAME_STAGE) == 1)
-				{
-					state.setLastKnownCrucibleScore((int) state.getCrucibleScore());
-				}
-				// add persistent game message of the alloy value so user can reference later.
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The score of the preform is <col=00FFFF>" + ((int) state.getCrucibleScore() + state.getMouldScore()), null);
+				return;
 			}
-		}
 
-		// Could not find a varbit to capture, so capture the menu-option directly.
-		// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
-		if (event.getMenuOption().startsWith("Heat-preform"))
-		{
-			state.heatActionStateMachine.stop();
-			state.heatActionStateMachine.setup(false, true, "heats");
-		}
-		else if (event.getMenuOption().startsWith("Dunk-preform"))
-		{
-			state.heatActionStateMachine.stop();
-			state.heatActionStateMachine.setup(true, true, "dunks");
-		}
-		else if (event.getMenuOption().startsWith("Cool-preform"))
-		{
-			state.heatActionStateMachine.stop();
-			state.heatActionStateMachine.setup(false, false, "cools");
-		}
-		else if (event.getMenuOption().startsWith("Quench-preform"))
-		{
-			state.heatActionStateMachine.stop();
-			state.heatActionStateMachine.setup(true, false, "quenches");
-		}
-		else if (!state.heatActionStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
-		{
-			state.heatActionStateMachine.stop();
-		}
+			if (!state.isEnabled()) return;
+
+			if (event.getMenuTarget().contains("Crucible "))
+			{
+				if (event.getMenuOption().equals("Pour"))
+				{
+					if (client.getVarbitValue(VARBIT_GAME_STAGE) == 1)
+					{
+						state.setLastKnownCrucibleScore((int) state.getCrucibleScore());
+					}
+					// add persistent game message of the alloy value so user can reference later.
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The score of the preform is <col=00FFFF>" + ((int) state.getCrucibleScore() + state.getMouldScore()), null);
+				}
+			}
+
+			// Could not find a varbit to capture, so capture the menu-option directly.
+			// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
+			if (event.getMenuOption().startsWith("Heat-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(false, true, "heats");
+			}
+			else if (event.getMenuOption().startsWith("Dunk-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(true, true, "dunks");
+			}
+			else if (event.getMenuOption().startsWith("Cool-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(false, false, "cools");
+			}
+			else if (event.getMenuOption().startsWith("Quench-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(true, false, "quenches");
+			}
+			else if (!state.heatActionStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
+			{
+				state.heatActionStateMachine.stop();
+			}
+
+		});
 	}
 
 	@Subscribe
