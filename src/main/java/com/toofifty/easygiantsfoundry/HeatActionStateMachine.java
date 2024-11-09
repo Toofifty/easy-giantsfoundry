@@ -62,7 +62,7 @@ public class HeatActionStateMachine
 	 * @param state        the current state of the foundry
 	 * @param config       the current configuration of the plugin
 	 * @param startingHeat the starting heat amount
-	 * @see HeatActionStateMachine#setup(int, int, String)
+	 * @see HeatActionStateMachine#setup(boolean, boolean, String)
 	 */
 	public void start(EasyGiantsFoundryState state, EasyGiantsFoundryConfig config, int startingHeat)
 	{
