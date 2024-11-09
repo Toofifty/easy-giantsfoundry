@@ -153,19 +153,19 @@ public class EasyGiantsFoundryState
 		int heat = getHeatAmount();
 
 		int[] low = getLowHeatRange();
-		if (heat > low[0] && heat < low[1])
+		if (heat >= low[0] && heat <= low[1])
 		{
 			return Heat.LOW;
 		}
 
 		int[] med = getMedHeatRange();
-		if (heat > med[0] && heat < med[1])
+		if (heat >= med[0] && heat <= med[1])
 		{
 			return Heat.MED;
 		}
 
 		int[] high = getHighHeatRange();
-		if (heat > high[0] && heat < high[1])
+		if (heat >= high[0] && heat <= high[1])
 		{
 			return Heat.HIGH;
 		}
@@ -326,7 +326,7 @@ public class EasyGiantsFoundryState
 		int[] range = getCurrentHeatRange();
 		int actions = 0;
 		int heat = getHeatAmount();
-		while (heat > range[0] && heat < range[1])
+		while (heat >= range[0] && heat <= range[1])
 		{
 			actions++;
 			heat += stage.getHeatChange();
