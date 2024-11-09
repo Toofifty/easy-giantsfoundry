@@ -16,6 +16,7 @@ import javax.inject.Inject;
 
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
+import net.runelite.api.MenuEntry;
 import net.runelite.api.NPC;
 import net.runelite.api.Perspective;
 import net.runelite.api.Point;
@@ -165,6 +166,23 @@ public class FoundryOverlay3D extends Overlay
 		if ((stage.getHeat() != heat || !state.heatActionStateMachine.isIdle()) && config.highlightWaterAndLava())
 		{
 			drawHeatChangers(graphics);
+		}
+		else
+		{
+			MenuEntry[] menuEntries = client.getMenuEntries();
+			if (menuEntries.length != 0)
+			{
+				MenuEntry hoveredMenu = menuEntries[menuEntries.length - 1];
+
+				if (hoveredMenu.getIdentifier() == lavaPool.getId())
+				{
+					drawHeatChangerPreviewOverlay(graphics, lavaPool, true);
+				}
+				else if (hoveredMenu.getIdentifier() == waterfall.getId())
+				{
+					drawHeatChangerPreviewOverlay(graphics, waterfall, false);
+				}
+			}
 		}
 
 		return null;

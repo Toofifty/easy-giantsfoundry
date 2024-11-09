@@ -19,17 +19,7 @@ import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
 import net.runelite.api.Skill;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
@@ -277,6 +267,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (event.getOption().startsWith("Heat-preform") || event.getOption().startsWith("Dunk-preform"))
+		{
+		}
+		else if (event.getOption().startsWith("Cool-preform") || event.getOption().startsWith("Quench-preform")) {
+		}
+	}
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
@@ -285,7 +284,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			|| event.getMenuAction() == MenuAction.GAME_OBJECT_SECOND_OPTION
 			|| event.getMenuAction() == MenuAction.GAME_OBJECT_THIRD_OPTION
 			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FOURTH_OPTION
-			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION))
+			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION
+			|| event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT
+			|| event.getMenuAction() == MenuAction.WALK))
 		{
 			return;
 		}
