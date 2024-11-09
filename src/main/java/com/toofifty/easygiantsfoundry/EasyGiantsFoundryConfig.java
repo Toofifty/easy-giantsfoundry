@@ -247,6 +247,18 @@ public interface EasyGiantsFoundryConfig extends Config
 		return true;
 	}
 
+	@ConfigItem(
+		keyName = "storageHighlight",
+		name = "Highlight Preform Storage",
+		description = "Highlight Storage when it contains a preform.",
+		position = 10,
+		section = highlightList
+	)
+	default boolean highlightStorage()
+	{
+		return true;
+	}
+
 	@ConfigSection(
 		name = "Info Panel",
 		description = "Settings for the Info Panel overlay",

@@ -17,6 +17,7 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Skill;
 import net.runelite.api.events.GameObjectDespawned;
 import net.runelite.api.events.GameObjectSpawned;
@@ -58,6 +59,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private static final int CRUCIBLE = 44776;
 	private static final int MOULD_JIG = 44777;
+	private static final int STORAGE = 44778;
 
 	private static final int KOVAC_NPC = 11472;
 
@@ -156,9 +158,46 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			case CRUCIBLE:
 				overlay3d.crucible = gameObject;
 				break;
+			case STORAGE:
+				overlay3d.storage = gameObject;
+				break;
 		}
 	}
 
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		GameObject gameObject = event.getGameObject();
+		switch (gameObject.getId())
+		{
+			case POLISHING_WHEEL:
+				state.setEnabled(false);
+				overlay3d.polishingWheel = null;
+				break;
+			case GRINDSTONE:
+				overlay3d.grindstone = null;
+				break;
+			case LAVA_POOL:
+				overlay3d.lavaPool = null;
+				break;
+			case WATERFALL:
+				overlay3d.waterfall = null;
+				break;
+			case TRIP_HAMMER:
+				overlay3d.tripHammer = null;
+				break;
+			case MOULD_JIG:
+				overlay3d.mouldJig = null;
+				break;
+			case CRUCIBLE:
+				overlay3d.crucible = null;
+				break;
+			case STORAGE:
+				overlay3d.storage = null;
+				break;
+		}
+	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
@@ -202,36 +241,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		GameObject gameObject = event.getGameObject();
-		switch (gameObject.getId())
-		{
-			case POLISHING_WHEEL:
-				state.setEnabled(false);
-				overlay3d.polishingWheel = null;
-				break;
-			case GRINDSTONE:
-				overlay3d.grindstone = null;
-				break;
-			case LAVA_POOL:
-				overlay3d.lavaPool = null;
-				break;
-			case WATERFALL:
-				overlay3d.waterfall = null;
-				break;
-			case TRIP_HAMMER:
-				overlay3d.tripHammer = null;
-				break;
-			case MOULD_JIG:
-				overlay3d.mouldJig = null;
-				break;
-			case CRUCIBLE:
-				overlay3d.crucible = null;
-				break;
-		}
-	}
 
 	@Subscribe
 	public void onNpcSpawned(NpcSpawned event)
@@ -271,6 +280,16 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
+
+		if (!(event.getMenuAction() == MenuAction.GAME_OBJECT_FIRST_OPTION
+			|| event.getMenuAction() == MenuAction.GAME_OBJECT_SECOND_OPTION
+			|| event.getMenuAction() == MenuAction.GAME_OBJECT_THIRD_OPTION
+			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FOURTH_OPTION
+			|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION))
+		{
+			return;
+		}
+
 		if (!state.isEnabled()) return;
 
 		if (event.getMenuTarget().contains("Crucible "))

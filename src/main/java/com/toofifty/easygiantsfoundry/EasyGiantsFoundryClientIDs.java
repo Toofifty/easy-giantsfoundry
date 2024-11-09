@@ -23,6 +23,8 @@ public class EasyGiantsFoundryClientIDs
 	// 3 -
 	protected static final int VARBIT_GAME_STAGE = 13914;
 
+	protected static final int VARBIT_PREFORM_STORED = 13947;
+
 	protected static final int WIDGET_HEAT_PARENT = 49414153;
 	protected static final int WIDGET_LOW_HEAT_PARENT = 49414163;
 	protected static final int WIDGET_MED_HEAT_PARENT = 49414164;

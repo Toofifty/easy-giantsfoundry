@@ -1,7 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
-import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.VARBIT_GAME_STAGE;
-import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.WIDGET_PROGRESS_PARENT;
+import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.*;
 import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColor;
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_1_VARBIT;
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_2_VARBIT;
@@ -42,6 +41,7 @@ public class FoundryOverlay3D extends Overlay
 	GameObject waterfall;
 	GameObject mouldJig;
 	GameObject crucible;
+	GameObject storage;
 	NPC kovac;
 
 	private final Client client;
@@ -111,6 +111,15 @@ public class FoundryOverlay3D extends Overlay
 			drawKovacIfHandIn(graphics);
 		}
 
+		if (client.getVarbitValue(VARBIT_PREFORM_STORED) == 1)
+		{
+			if (config.highlightStorage())
+			{
+				drawStorage(graphics);
+			}
+			return null;
+		}
+
 		if (state.getCurrentStage() == null)
 		{
 			if (config.highlightMould())
@@ -126,7 +135,6 @@ public class FoundryOverlay3D extends Overlay
 				drawMouldScoreIfMouldSet(graphics);
 				drawPreformScoreIfPoured(graphics);
 			}
-
 
 			return null;
 		}
@@ -483,6 +491,19 @@ public class FoundryOverlay3D extends Overlay
 			Point canvasLocation = Perspective.getCanvasTextLocation(client, graphics, textLocation, text, 100);
 			canvasLocation = new Point(canvasLocation.getX(), canvasLocation.getY() + 10);
 			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, config.generalHighlight());
+		}
+	}
+
+	private void drawStorage(Graphics2D graphics)
+	{
+		Shape shape = storage.getConvexHull();
+		if (shape != null)
+		{
+			Color color = config.generalHighlight();
+			graphics.setColor(color);
+			graphics.draw(shape);
+			graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+			graphics.fill(shape);
 		}
 	}
 
