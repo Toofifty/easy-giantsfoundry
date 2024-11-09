@@ -526,7 +526,7 @@ public interface EasyGiantsFoundryConfig extends Config
 	)
 	default int heatActionPadTicks()
 	{
-		return 3;
+		return 4;
 	}
 
 	@ConfigItem(
