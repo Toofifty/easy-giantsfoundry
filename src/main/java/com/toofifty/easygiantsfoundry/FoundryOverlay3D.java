@@ -167,7 +167,8 @@ public class FoundryOverlay3D extends Overlay
 		{
 			drawHeatChangers(graphics);
 		}
-		else
+		// mouse hover over preview
+		else if (config.drawLavaWaterInfoOverlay())
 		{
 			MenuEntry[] menuEntries = client.getMenuEntries();
 			if (menuEntries.length != 0)
