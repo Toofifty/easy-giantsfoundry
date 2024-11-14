@@ -214,8 +214,8 @@ public class HeatActionSolver
 		// adding 2.4s/8ticks worth of padding so preform doesn't decay out of range
 		// average distance from lava+waterfall around 8 ticks
 		// preform decays 1 heat every 2 ticks
-		final int min = Math.min(1000, range[0] + padding);
-		final int max = Math.min(1000, range[1] + padding);
+		final int min = Math.max(0, Math.min(1000, range[0] + padding));
+		final int max = Math.max(0, Math.min(1000, range[1] + padding));
 
 		final int actionsLeft_DeltaHeat = actionLeftInStage * stage.getHeatChange();
 
