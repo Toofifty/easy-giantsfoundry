@@ -135,8 +135,6 @@ public class HeatActionStateMachine
 	/**
 	 * Helper to remind the neccessary parameters to start the state-machine.
 	 *
-	 * @param velocity          the velocity of the heating/cooling action, 7 for slow, 27 for fast.
-	 * @param accelerationBonus the acceleration bonus of the heating/cooling action. Usually 0 for slow, 2 for fast.
 	 * @param actionName        the name of the action to display in the ui overlay
 	 */
 	public void setup(boolean isFast, boolean isHeating, String actionName)

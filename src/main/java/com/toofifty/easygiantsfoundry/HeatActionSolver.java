@@ -151,7 +151,7 @@ public class HeatActionSolver
 
 		while (true) {
 
-			if (index >= MAX_INDEX)
+			if (index > MAX_INDEX)
 			{
 				break;
 			}
@@ -174,6 +174,7 @@ public class HeatActionSolver
 			{
 				dx0 -= decayValue;
 			}
+
 
 			dx0 += DX_1[index];
 			++index;
@@ -210,11 +211,11 @@ public class HeatActionSolver
 
 		final boolean isStageHeating = stage.isHeating();
 
-		// adding 1.8s/6ticks worth of padding so preform doesn't decay out of range
-		// average distance from lava+waterfall around 6 ticks
+		// adding 2.4s/8ticks worth of padding so preform doesn't decay out of range
+		// average distance from lava+waterfall around 8 ticks
 		// preform decays 1 heat every 2 ticks
-		final int min = range[0] + padding;
-		final int max = range[1] + padding;
+		final int min = Math.min(1000, range[0] + padding);
+		final int max = Math.min(1000, range[1] + padding);
 
 		final int actionsLeft_DeltaHeat = actionLeftInStage * stage.getHeatChange();
 
