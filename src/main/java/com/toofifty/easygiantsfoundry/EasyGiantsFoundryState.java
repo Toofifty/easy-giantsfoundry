@@ -44,7 +44,7 @@ public class EasyGiantsFoundryState
 
 	@Setter
 	@Getter
-	private int lastKnownCrucibleScore = -1; // will be set when "Pour"ed
+	private int lastKnownCrucibleScore = -1; // will be set when "Pour"ed (because the crucible will be empty then)
 
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
@@ -153,19 +153,19 @@ public class EasyGiantsFoundryState
 		int heat = getHeatAmount();
 
 		int[] low = getLowHeatRange();
-		if (heat > low[0] && heat < low[1])
+		if (heat >= low[0] && heat <= low[1])
 		{
 			return Heat.LOW;
 		}
 
 		int[] med = getMedHeatRange();
-		if (heat > med[0] && heat < med[1])
+		if (heat >= med[0] && heat <= med[1])
 		{
 			return Heat.MED;
 		}
 
 		int[] high = getHighHeatRange();
-		if (heat > high[0] && heat < high[1])
+		if (heat >= high[0] && heat <= high[1])
 		{
 			return Heat.HIGH;
 		}
@@ -326,7 +326,7 @@ public class EasyGiantsFoundryState
 		int[] range = getCurrentHeatRange();
 		int actions = 0;
 		int heat = getHeatAmount();
-		while (heat > range[0] && heat < range[1])
+		while (heat >= range[0] && heat <= range[1])
 		{
 			actions++;
 			heat += stage.getHeatChange();
@@ -335,5 +335,5 @@ public class EasyGiantsFoundryState
 		return actions;
 	}
 
-	public HeatActionStateMachine heatingCoolingState = new HeatActionStateMachine();
+	public HeatActionStateMachine heatActionStateMachine = new HeatActionStateMachine();
 }

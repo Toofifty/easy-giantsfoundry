@@ -1,7 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
-
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -243,6 +242,18 @@ public interface EasyGiantsFoundryConfig extends Config
 		section = highlightList
 	)
 	default boolean showCrucibleContent()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+		keyName = "storageHighlight",
+		name = "Highlight Preform Storage",
+		description = "Highlight Storage when it contains a preform.",
+		position = 10,
+		section = highlightList
+	)
+	default boolean highlightStorage()
 	{
 		return true;
 	}
@@ -502,6 +513,34 @@ public interface EasyGiantsFoundryConfig extends Config
 		description = "Advanced Settings",
 		position = 5
 	)
-	String generalSettings = "generalSettings";
+	String advancedSettings = "generalSettings";
 
+
+	@Range(
+		max = 50
+	)
+	@ConfigItem(
+		keyName = "heatActionBuffer", // renamed to reset player's settings for previous bugged implementation
+		name = "Lava/Waterfall Padding Ticks",
+		description = "Units in ticks; buffers more than optimal heat when in lava/waterfall calculations to compensate for heat decay when the player is afk or running/walking slower than optimal.",
+		position = 0,
+		section = advancedSettings
+	)
+	default int heatActionPadTicks()
+	{
+		return 4;
+	}
+
+	@ConfigItem(
+		keyName = "debugging",
+		name = "Show Debugging",
+		description = "Shows debugging visuals used for development",
+		position = 0,
+		section = advancedSettings,
+		warning = "Only used for development."
+	)
+	default boolean debugging()
+	{
+		return false;
+	}
 }

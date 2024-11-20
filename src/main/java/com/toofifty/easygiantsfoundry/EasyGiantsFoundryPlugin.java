@@ -17,18 +17,9 @@ import net.runelite.api.GameState;
 import net.runelite.api.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
+import net.runelite.api.MenuAction;
 import net.runelite.api.Skill;
-import net.runelite.api.events.GameObjectDespawned;
-import net.runelite.api.events.GameObjectSpawned;
-import net.runelite.api.events.GameStateChanged;
-import net.runelite.api.events.GameTick;
-import net.runelite.api.events.ItemContainerChanged;
-import net.runelite.api.events.MenuOptionClicked;
-import net.runelite.api.events.NpcDespawned;
-import net.runelite.api.events.NpcSpawned;
-import net.runelite.api.events.ScriptPostFired;
-import net.runelite.api.events.StatChanged;
-import net.runelite.api.events.VarbitChanged;
+import net.runelite.api.events.*;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.Notifier;
 import net.runelite.client.callback.ClientThread;
@@ -58,6 +49,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	private static final int CRUCIBLE = 44776;
 	private static final int MOULD_JIG = 44777;
+	private static final int STORAGE = 44778;
 
 	private static final int KOVAC_NPC = 11472;
 
@@ -156,9 +148,46 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			case CRUCIBLE:
 				overlay3d.crucible = gameObject;
 				break;
+			case STORAGE:
+				overlay3d.storage = gameObject;
+				break;
 		}
 	}
 
+
+	@Subscribe
+	public void onGameObjectDespawned(GameObjectDespawned event)
+	{
+		GameObject gameObject = event.getGameObject();
+		switch (gameObject.getId())
+		{
+			case POLISHING_WHEEL:
+				state.setEnabled(false);
+				overlay3d.polishingWheel = null;
+				break;
+			case GRINDSTONE:
+				overlay3d.grindstone = null;
+				break;
+			case LAVA_POOL:
+				overlay3d.lavaPool = null;
+				break;
+			case WATERFALL:
+				overlay3d.waterfall = null;
+				break;
+			case TRIP_HAMMER:
+				overlay3d.tripHammer = null;
+				break;
+			case MOULD_JIG:
+				overlay3d.mouldJig = null;
+				break;
+			case CRUCIBLE:
+				overlay3d.crucible = null;
+				break;
+			case STORAGE:
+				overlay3d.storage = null;
+				break;
+		}
+	}
 
 	@Subscribe
 	public void onGameStateChanged(GameStateChanged event)
@@ -202,36 +231,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
-	@Subscribe
-	public void onGameObjectDespawned(GameObjectDespawned event)
-	{
-		GameObject gameObject = event.getGameObject();
-		switch (gameObject.getId())
-		{
-			case POLISHING_WHEEL:
-				state.setEnabled(false);
-				overlay3d.polishingWheel = null;
-				break;
-			case GRINDSTONE:
-				overlay3d.grindstone = null;
-				break;
-			case LAVA_POOL:
-				overlay3d.lavaPool = null;
-				break;
-			case WATERFALL:
-				overlay3d.waterfall = null;
-				break;
-			case TRIP_HAMMER:
-				overlay3d.tripHammer = null;
-				break;
-			case MOULD_JIG:
-				overlay3d.mouldJig = null;
-				break;
-			case CRUCIBLE:
-				overlay3d.crucible = null;
-				break;
-		}
-	}
 
 	@Subscribe
 	public void onNpcSpawned(NpcSpawned event)
@@ -268,50 +267,74 @@ public class EasyGiantsFoundryPlugin extends Plugin
 		}
 	}
 
+	public void onMenuEntryAdded(MenuEntryAdded event)
+	{
+		if (event.getOption().startsWith("Heat-preform") || event.getOption().startsWith("Dunk-preform"))
+		{
+		}
+		else if (event.getOption().startsWith("Cool-preform") || event.getOption().startsWith("Quench-preform")) {
+		}
+	}
+
 	@Subscribe
 	public void onMenuOptionClicked(MenuOptionClicked event)
 	{
-		if (!state.isEnabled()) return;
-
-		if (event.getMenuTarget().contains("Crucible "))
+		clientThread.invokeAtTickEnd(() ->
 		{
-			if (event.getMenuOption().equals("Pour"))
+			if (!(event.getMenuAction() == MenuAction.GAME_OBJECT_FIRST_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_SECOND_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_THIRD_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_FOURTH_OPTION
+				|| event.getMenuAction() == MenuAction.GAME_OBJECT_FIFTH_OPTION
+				|| event.getMenuAction() == MenuAction.WIDGET_TARGET_ON_GAME_OBJECT
+				|| event.getMenuAction() == MenuAction.WALK))
 			{
-				if (client.getVarbitValue(VARBIT_GAME_STAGE) == 1)
-				{
-					state.setLastKnownCrucibleScore((int) state.getCrucibleScore());
-				}
-				// add persistent game message of the alloy value so user can reference later.
-				client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The score of the preform is <col=00FFFF>" + ((int) state.getCrucibleScore() + state.getMouldScore()), null);
+				return;
 			}
-		}
 
-		// Could not find a varbit to capture, so capture the menu-option directly.
-		// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
-		if (event.getMenuOption().startsWith("Heat-preform"))
-		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(7, 0, "heats");
-		}
-		else if (event.getMenuOption().startsWith("Dunk-preform"))
-		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(27, 2, "dunks");
-		}
-		else if (event.getMenuOption().startsWith("Cool-preform"))
-		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(-7, 0, "cools");
-		}
-		else if (event.getMenuOption().startsWith("Quench-preform"))
-		{
-			state.heatingCoolingState.stop();
-			state.heatingCoolingState.setup(-27, -2, "quenches");
-		}
-		else // canceled heating/cooling, stop the heating state-machine
-		{
-			state.heatingCoolingState.stop();
-		}
+			if (!state.isEnabled()) return;
+
+			if (event.getMenuTarget().contains("Crucible "))
+			{
+				if (event.getMenuOption().equals("Pour"))
+				{
+					if (client.getVarbitValue(VARBIT_GAME_STAGE) == 1)
+					{
+						state.setLastKnownCrucibleScore((int) state.getCrucibleScore());
+					}
+					// add persistent game message of the alloy value so user can reference later.
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "The score of the preform is <col=00FFFF>" + ((int) state.getCrucibleScore() + state.getMouldScore()), null);
+				}
+			}
+
+			// Could not find a varbit to capture, so capture the menu-option directly.
+			// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
+			if (event.getMenuOption().startsWith("Heat-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(false, true, "heats");
+			}
+			else if (event.getMenuOption().startsWith("Dunk-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(true, true, "dunks");
+			}
+			else if (event.getMenuOption().startsWith("Cool-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(false, false, "cools");
+			}
+			else if (event.getMenuOption().startsWith("Quench-preform"))
+			{
+				state.heatActionStateMachine.stop();
+				state.heatActionStateMachine.setup(true, false, "quenches");
+			}
+			else if (!state.heatActionStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
+			{
+				state.heatActionStateMachine.stop();
+			}
+
+		});
 	}
 
 	@Subscribe
@@ -333,8 +356,8 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		// show mould score on Mould UI Title
 		Widget mouldParent = client.getWidget(47054850);
-		Integer mouldScore = state.getMouldScore();
-		if (mouldParent != null && mouldScore != null)
+		int mouldScore = state.getMouldScore();
+		if (mouldParent != null && mouldScore >= 0)
 		{
 			Widget title = Objects.requireNonNull(mouldParent.getChild(1));
 
@@ -362,23 +385,40 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			state.setMouldScore(-1);
 		}
 
+
 		// start the heating state-machine when the varbit updates
 		// if heat varbit updated and the user clicked, start the state-machine
-		if (event.getVarbitId() == VARBIT_HEAT && state.heatingCoolingState.getActionName() != null)
+		if (event.getVarbitId() == VARBIT_HEAT)
 		{
 			// ignore passive heat decay, one heat per two ticks
-			if (event.getValue() - previousHeat != -1)
+			int delta = event.getValue() - previousHeat;
+			// sign check: num * num > 0 == same sign
+			if (delta != -1)
 			{
-				// if the state-machine is idle, start it
-				if (state.heatingCoolingState.isIdle())
+				if (state.heatActionStateMachine.getActionname() != null)
 				{
-					state.heatingCoolingState.start(state, config, state.getHeatAmount());
+					// if the state-machine is idle, start it
+					if (state.heatActionStateMachine.isIdle())
+					{
+						state.heatActionStateMachine.start(state, config, previousHeat);
+					}
+					state.heatActionStateMachine.onTick();
 				}
 
-				state.heatingCoolingState.onTick();
+				if (config.debugging())
+				{
+					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "",
+						"Heat: <col=FF0000>" + event.getValue() + "</col>" +
+							"Delta: <col=00FFFF>" + delta + "</col> " +
+							"Heating Ticks: <col=00FFFF>" + state.heatActionStateMachine.heatingTicks + "</col>" +
+							" Cooling Ticks: <col=00FFFF>" + state.heatActionStateMachine.coolingTicks + "</col>" +
+							" Remaining Ticks: <col=00FFFF>" + state.heatActionStateMachine.getRemainingDuration(), "");
+				}
 			}
+
+//			client.addChatMessage(ChatMessageType.GAMEMESSAGE, "", "Delta: <col=00FFFF>" + delta + "</col> ", "");
+			previousHeat = event.getValue();
 		}
-		previousHeat = event.getValue();
 	}
 
 	@Subscribe
