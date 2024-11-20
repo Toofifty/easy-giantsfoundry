@@ -1,7 +1,6 @@
 package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
-
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -517,6 +516,9 @@ public interface EasyGiantsFoundryConfig extends Config
 	String advancedSettings = "generalSettings";
 
 
+	@Range(
+		max = 50
+	)
 	@ConfigItem(
 		keyName = "heatActionBuffer", // renamed to reset player's settings for previous bugged implementation
 		name = "Lava/Waterfall Padding Ticks",
