@@ -222,12 +222,6 @@ public class FoundryOverlay3D extends Overlay
 	)
 	{
 
-		int sign = isLava ? 1 : -1;
-		int fastVelocity = 27 * sign;
-		int slowVelocity = 7 * sign;
-		int fastAccelBonus = 2 * sign;
-		int slowAccelBonus = 0;
-
 		HeatActionSolver.DurationResult fastResult =
 			HeatActionSolver.solve(
 				state.getCurrentStage(),
