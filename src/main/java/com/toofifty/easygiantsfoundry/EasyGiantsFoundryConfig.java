@@ -520,7 +520,7 @@ public interface EasyGiantsFoundryConfig extends Config
 		max = 50
 	)
 	@ConfigItem(
-		keyName = "paddingTicks", // renamed to reset player's settings for previous bugged implementation
+		keyName = "heatActionBuffer", // renamed to reset player's settings for previous bugged implementation
 		name = "Padding Ticks",
 		description = "Number of inefficient idle ticks between actions; calculations will pad more than optimal heat compensate for heat decay during idle/afk.",
 		position = 0,
