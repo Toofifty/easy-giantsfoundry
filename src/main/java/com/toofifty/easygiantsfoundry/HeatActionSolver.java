@@ -121,15 +121,6 @@ public class HeatActionSolver
 	};
 
 
-	// index 1 is stage, ordinal order
-	// index 2 [0] = lava [1] = waterfall
-	// in units of tiles
-	public static final int[][] DISTANCE_TO_STAGE = new int[][] {
-		new int[] {4, 14},
-		new int[] {7, 9},
-		new int[] {12, 10}
-	};
-
 	// index is stage, ordinal order
 	public static final int[] TOOL_TICK_CYCLE = new int[] {
 		5,
@@ -368,9 +359,15 @@ public class HeatActionSolver
 
 	private static int solveTravelTicks(boolean isRunning, Stage stage, boolean isLava)
 	{
-		final int index1 = stage.ordinal();
-		final int index2 = isLava ? 0 : 1;
-		final int distance = DISTANCE_TO_STAGE[index1][index2];
+		final int distance;
+		if (isLava)
+		{
+			distance = stage.getDistanceToLava();
+		}
+		else
+		{
+			distance = stage.getDistanceToWaterfall();
+		}
 
 		if (isRunning)
 		{
