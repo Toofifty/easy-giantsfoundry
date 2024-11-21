@@ -121,7 +121,8 @@ public class HeatActionStateMachine
 				getStartingHeat(),
 				actionFast,
 				isHeating(),
-				config.heatActionPadTicks() * 2
+				config.heatActionPadTicks(),
+				state.isPlayerRunning()
 			);
 
 		goalInRange = result.isGoalInRange();

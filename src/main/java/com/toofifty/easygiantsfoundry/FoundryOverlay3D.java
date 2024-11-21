@@ -230,7 +230,8 @@ public class FoundryOverlay3D extends Overlay
 				state.getHeatAmount(),
 				true,
 				isLava,
-				config.heatActionPadTicks() * 2
+				config.heatActionPadTicks(),
+				state.isPlayerRunning()
 			);
 
 		final int fastDuration = fastResult.getDuration();
@@ -242,7 +243,8 @@ public class FoundryOverlay3D extends Overlay
 				state.getHeatAmount(),
 				false,
 				isLava,
-				config.heatActionPadTicks() * 2
+				config.heatActionPadTicks(),
+				state.isPlayerRunning()
 			);
 		final int slowDuration = slowResult.getDuration();
 
