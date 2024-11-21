@@ -271,6 +271,11 @@ public class FoundryOverlay3D extends Overlay
 		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
 
 		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
+		if (pos == null)
+		{
+			return;
+		}
+
 		Color color = config.lavaWaterfallColour();
 
 		OverlayUtil.renderTextLocation(graphics, pos, text, color);
