@@ -206,12 +206,15 @@ public class HeatActionSolver
 		int start,
 		boolean isFast,
 		boolean isActionHeating,
-		int padding)
+		int paddingTicks)
 	{
+
+		// units of heat
+		final int padding = paddingTicks / 2;
 
 		final boolean isStageHeating = stage.isHeating();
 
-		// adding 2.4s/8ticks worth of padding so preform doesn't decay out of range
+		// adding heat padding so preform doesn't decay out of range during action
 		// average distance from lava+waterfall around 8 ticks
 		// preform decays 1 heat every 2 ticks
 		final int min = Math.max(0, Math.min(1000, range[0] + padding));

@@ -522,13 +522,13 @@ public interface EasyGiantsFoundryConfig extends Config
 	@ConfigItem(
 		keyName = "heatActionBuffer", // renamed to reset player's settings for previous bugged implementation
 		name = "Lava/Waterfall Padding Ticks",
-		description = "Units in ticks; buffers more than optimal heat when in lava/waterfall calculations to compensate for heat decay when the player is afk or running/walking slower than optimal.",
+		description = "Units in ticks, heat decays by 1 every 2 ticks; buffers more than optimal heat when in lava/waterfall calculations to compensate for heat decay when the player is afk or running/walking slower than optimal.",
 		position = 0,
 		section = advancedSettings
 	)
 	default int heatActionPadTicks()
 	{
-		return 4;
+		return 16;
 	}
 
 	@ConfigItem(
