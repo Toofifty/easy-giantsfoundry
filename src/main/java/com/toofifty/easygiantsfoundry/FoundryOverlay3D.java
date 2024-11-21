@@ -222,12 +222,6 @@ public class FoundryOverlay3D extends Overlay
 	)
 	{
 
-		int sign = isLava ? 1 : -1;
-		int fastVelocity = 27 * sign;
-		int slowVelocity = 7 * sign;
-		int fastAccelBonus = 2 * sign;
-		int slowAccelBonus = 0;
-
 		HeatActionSolver.DurationResult fastResult =
 			HeatActionSolver.solve(
 				state.getCurrentStage(),
@@ -236,7 +230,8 @@ public class FoundryOverlay3D extends Overlay
 				state.getHeatAmount(),
 				true,
 				isLava,
-				config.heatActionPadTicks() * 2
+				config.heatActionPadTicks(),
+				state.isPlayerRunning()
 			);
 
 		final int fastDuration = fastResult.getDuration();
@@ -248,7 +243,8 @@ public class FoundryOverlay3D extends Overlay
 				state.getHeatAmount(),
 				false,
 				isLava,
-				config.heatActionPadTicks() * 2
+				config.heatActionPadTicks(),
+				state.isPlayerRunning()
 			);
 		final int slowDuration = slowResult.getDuration();
 
@@ -271,6 +267,11 @@ public class FoundryOverlay3D extends Overlay
 		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
 
 		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
+		if (pos == null)
+		{
+			return;
+		}
+
 		Color color = config.lavaWaterfallColour();
 
 		OverlayUtil.renderTextLocation(graphics, pos, text, color);

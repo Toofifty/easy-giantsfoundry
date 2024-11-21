@@ -49,6 +49,8 @@ public class EasyGiantsFoundryState
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
 
+	public final HeatActionStateMachine heatActionStateMachine = new HeatActionStateMachine();
+
 	public void reset()
 	{
 		stages.clear();
@@ -335,5 +337,9 @@ public class EasyGiantsFoundryState
 		return actions;
 	}
 
-	public HeatActionStateMachine heatActionStateMachine = new HeatActionStateMachine();
+
+	public boolean isPlayerRunning()
+	{
+		return client.getVarpValue(173) == 1;
+	}
 }

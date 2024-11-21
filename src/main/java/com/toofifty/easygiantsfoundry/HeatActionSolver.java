@@ -119,6 +119,15 @@ public class HeatActionSolver
 		95,
 		91, // last one will always overshoot 1000
 	};
+
+
+	// index is stage, ordinal order
+	public static final int[] TOOL_TICK_CYCLE = new int[] {
+		5,
+		2,
+		2
+	};
+
 	public static final int MAX_INDEX = DX_1.length;
 	public static final int FAST_INDEX = 10;
 
@@ -206,16 +215,24 @@ public class HeatActionSolver
 		int start,
 		boolean isFast,
 		boolean isActionHeating,
-		int padding)
+		int paddingTicks,
+		boolean isRunning)
 	{
 
 		final boolean isStageHeating = stage.isHeating();
+		// adding tool cycle ticks because the first cycle at a tool is almost always nulled
+		// (unless manually reaching the tile, then clicking the tool)
+		final int toolDelay = TOOL_TICK_CYCLE[stage.ordinal()];
+		final int travelTicks = solveTravelTicks(isRunning, stage, isActionHeating) + toolDelay;
+		final int travelDecay = (int) Math.ceil((double) travelTicks / 2);
+
+		final int paddingDecay = (int) Math.ceil((double) paddingTicks / 2);
 
 		// adding 2.4s/8ticks worth of padding so preform doesn't decay out of range
 		// average distance from lava+waterfall around 8 ticks
 		// preform decays 1 heat every 2 ticks
-		final int min = Math.max(0, Math.min(1000, range[0] + padding));
-		final int max = Math.max(0, Math.min(1000, range[1] + padding));
+		final int min = Math.max(0, Math.min(1000, range[0] + paddingDecay + travelDecay));
+		final int max = Math.max(0, Math.min(1000, range[1] + paddingDecay + travelDecay));
 
 		final int actionsLeft_DeltaHeat = actionLeftInStage * stage.getHeatChange();
 
@@ -340,5 +357,29 @@ public class HeatActionSolver
 		return DurationResult.of(estimatedDuration, goalInRange, overshoot, start + dx0);
 	}
 
+	private static int solveTravelTicks(boolean isRunning, Stage stage, boolean isLava)
+	{
+		final int distance;
+		if (isLava)
+		{
+			distance = stage.getDistanceToLava();
+		}
+		else
+		{
+			distance = stage.getDistanceToWaterfall();
+		}
+
+		if (isRunning)
+		{
+			// for odd distances, like 7
+			// 7 / 2 = 3.5
+			// rounded to 4
+			return (int) Math.ceil((double) distance / 2);
+		}
+		else
+		{
+			return distance;
+		}
+	}
 }
 
