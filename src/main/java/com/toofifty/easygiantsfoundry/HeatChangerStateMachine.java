@@ -176,9 +176,14 @@ public class HeatChangerStateMachine
 	}
 
 	/**
-	 * Check if the heating/cooling state is currently idle. Neither heating nor cooling.
-	 *
-	 * @return
+	 * @return Check if the state-machine is currently set-up and waiting to start.
+	 */
+	public boolean isPending() {
+		return actionName != null && heatingTicks < 0 && coolingTicks < 0;
+	}
+
+	/**
+	 * @return Check if the heating/cooling state is currently idle. Neither heating nor cooling.
 	 */
 	public boolean isIdle()
 	{
