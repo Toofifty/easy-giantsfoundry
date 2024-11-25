@@ -48,7 +48,7 @@ public class HeatChangerStateMachine
 	 * The last action the player clicked on. Used for ui overlay to display.
 	 * When null, the state-machine will stop() and reset.
 	 */
-	String actionname = null;
+	String actionName = null;
 
 	private EasyGiantsFoundryState state;
 	private EasyGiantsFoundryConfig config;
@@ -140,9 +140,9 @@ public class HeatChangerStateMachine
 	 */
 	public void setup(boolean isFast, boolean isHeating, String actionName)
 	{
-		actionFast = isFast;
-		actionHeating = isHeating;
-		actionname = actionName;
+		this.actionFast = isFast;
+		this.actionHeating = isHeating;
+		this.actionName = actionName;
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class HeatChangerStateMachine
 	{
 		heatingTicks = -1;
 		coolingTicks = -1;
-		actionname = null;
+		actionName = null;
 	}
 
 	/**

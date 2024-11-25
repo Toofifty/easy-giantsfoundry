@@ -333,7 +333,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			text = String.format("%d %s (overshoot: %s) [goal-in-range: %s]",
 				state.heatChangerStateMachine.getRemainingDuration(),
-				state.heatChangerStateMachine.getActionname(),
+				state.heatChangerStateMachine.getActionName(),
 				state.heatChangerStateMachine.isOverShooting(),
 				state.heatChangerStateMachine.isGoalInRange()
 			);
@@ -342,7 +342,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			text = String.format("%d %s",
 				state.heatChangerStateMachine.getRemainingDuration(),
-				state.heatChangerStateMachine.getActionname()
+				state.heatChangerStateMachine.getActionName()
 			);
 		}
 

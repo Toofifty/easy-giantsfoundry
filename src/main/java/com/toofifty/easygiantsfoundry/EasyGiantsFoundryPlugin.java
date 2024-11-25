@@ -395,7 +395,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			// sign check: num * num > 0 == same sign
 			if (delta != -1)
 			{
-				if (state.heatChangerStateMachine.getActionname() != null)
+				if (state.heatChangerStateMachine.getActionName() != null)
 				{
 					// if the state-machine is idle, start it
 					if (state.heatChangerStateMachine.isIdle())
