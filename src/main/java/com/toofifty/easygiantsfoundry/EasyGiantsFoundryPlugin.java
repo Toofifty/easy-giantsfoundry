@@ -307,29 +307,30 @@ public class EasyGiantsFoundryPlugin extends Plugin
 				}
 			}
 
+
 			// Could not find a varbit to capture, so capture the menu-option directly.
 			// start the HeatChangerStateMachine when varbit begins to update in onVarbitChanged()
 			if (event.getMenuOption().startsWith("Heat-preform"))
 			{
 				state.heatChangerStateMachine.stop();
-				state.heatChangerStateMachine.setup(false, true, "heats");
+				state.heatChangerStateMachine.setup(false, true, "Heats");
 			}
 			else if (event.getMenuOption().startsWith("Dunk-preform"))
 			{
 				state.heatChangerStateMachine.stop();
-				state.heatChangerStateMachine.setup(true, true, "dunks");
+				state.heatChangerStateMachine.setup(true, true, "Dunks");
 			}
 			else if (event.getMenuOption().startsWith("Cool-preform"))
 			{
 				state.heatChangerStateMachine.stop();
-				state.heatChangerStateMachine.setup(false, false, "cools");
+				state.heatChangerStateMachine.setup(false, false, "Cools");
 			}
 			else if (event.getMenuOption().startsWith("Quench-preform"))
 			{
 				state.heatChangerStateMachine.stop();
-				state.heatChangerStateMachine.setup(true, false, "quenches");
+				state.heatChangerStateMachine.setup(true, false, "Quenches");
 			}
-			else if (!state.heatChangerStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
+			else // canceled heating/cooling, stop the heating state-machine
 			{
 				state.heatChangerStateMachine.stop();
 			}
