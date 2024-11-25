@@ -5,7 +5,6 @@ import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColo
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_1_VARBIT;
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_2_VARBIT;
 import com.toofifty.easygiantsfoundry.enums.CommissionType;
-import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
 import java.awt.Color;
@@ -155,15 +154,8 @@ public class FoundryOverlay3D extends Overlay
 			drawToolHighlight(graphics);
 		}
 
-		if (config.highlightWaterAndLava())
-		{
-			drawHeatChangersClickbox(graphics);
-		}
+		drawHeatChangersIfEnabled(graphics);
 
-		if (config.drawLavaWaterInfoOverlay())
-		{
-			drawHeatChangerInfo(graphics);
-		}
 
 		return null;
 	}
@@ -182,35 +174,40 @@ public class FoundryOverlay3D extends Overlay
 		}
 	}
 
-	private void drawHeatChangerInfo(Graphics2D graphics)
+	private void drawHeatChangersIfEnabled(Graphics2D graphics)
 	{
-
 
 		if (state.heatChangerStateMachine.isCooling())
 		{
-			drawHeatChangerStateMachineInfo(graphics, waterfall);
+			_drawHeatChangerStateMachineIfEnabled(graphics, waterfall);
 			return;
 		}
 
 		if (state.heatChangerStateMachine.isHeating())
 		{
-			drawHeatChangerStateMachineInfo(graphics, lavaPool);
+			_drawHeatChangerStateMachineIfEnabled(graphics, lavaPool);
 			return;
 		}
 
-		final boolean isLava = state.getHeatChangeNeeded() > 0;
-		final boolean isWaterfall = state.getHeatChangeNeeded() < 0;
-
-		if (isWaterfall)
+		if (state.heatChangerStateMachine.isPending())
 		{
-			drawHeatChangerPreviewOverlay(graphics, waterfall, false);
+			final boolean isLava = state.heatChangerStateMachine.actionHeating;
+			final GameObject gameObject = isLava ? lavaPool : waterfall;
+			_drawHeatChangerPreviewIfEnabled(graphics, isLava);
 			return;
 		}
 
+		final boolean needLava = state.getHeatChangeNeeded() > 0;
+		final boolean needWaterfall = state.getHeatChangeNeeded() < 0;
 
-		if (isLava)
+		if (needWaterfall)
 		{
-			drawHeatChangerPreviewOverlay(graphics, lavaPool, true);
+			_drawHeatChangerPreviewIfEnabled(graphics, false);
+			return;
+		}
+		else if (needLava)
+		{
+			_drawHeatChangerPreviewIfEnabled(graphics, true);
 			return;
 		}
 
@@ -221,54 +218,34 @@ public class FoundryOverlay3D extends Overlay
 
 			if (hoveredMenu.getIdentifier() == lavaPool.getId())
 			{
-				drawHeatChangerPreviewOverlay(graphics, lavaPool, true);
+				_drawHeatChangerPreviewIfEnabled(graphics, true);
 				return;
 			}
 
 			if (hoveredMenu.getIdentifier() == waterfall.getId())
 			{
-				drawHeatChangerPreviewOverlay(graphics, waterfall, false);
+				_drawHeatChangerPreviewIfEnabled(graphics, false);
 				return;
 			}
 		}
 
 	}
 
-	private void drawObjectClickbox(Graphics2D graphics, GameObject stageObject, Color color)
+	/**
+	 * Private helper for drawHeatChangersIfEnabled
+	 * An live updating solve for preview before the statemachine has started. Shows both fast and slow.
+	 * Draws both clickbox & info, depending on plugin config.
+	 */
+	private void _drawHeatChangerPreviewIfEnabled(Graphics2D graphics, boolean isLava)
 	{
-		if (stageObject == null)
+
+		// early exit if we're not rendering anything
+		if (!config.highlightWaterAndLava() && !config.drawLavaWaterInfoOverlay())
 		{
 			return;
 		}
 
-		Shape objectClickbox = stageObject.getClickbox();
-		if (objectClickbox == null)
-		{
-			return;
-		}
-
-		Point mousePosition = client.getMouseCanvasPosition();
-		if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
-		{
-			graphics.setColor(color.darker());
-		}
-		else
-		{
-			graphics.setColor(color);
-		}
-		graphics.draw(objectClickbox);
-		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
-		graphics.fill(objectClickbox);
-	}
-
-	private void drawObjectOutline(GameObject stageObject, Color color)
-	{
-		Color _color = new Color(color.getRed(), color.getGreen(), color.getBlue(), config.borderAlpha());
-		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
-	}
-
-	private void drawHeatChangerPreviewOverlay(Graphics2D graphics, GameObject stageObject, boolean isLava)
-	{
+		GameObject gameObject = isLava ? lavaPool : waterfall;
 
 		HeatActionSolver.DurationResult fastResult =
 			HeatActionSolver.solve(
@@ -296,94 +273,89 @@ public class FoundryOverlay3D extends Overlay
 			);
 		final int slowDuration = slowResult.getDuration();
 
-		final String fastName = isLava ? "dunks" : "quenches";
-		final String slowName = isLava ? "heats" : "cools";
-
-		String text;
-		if (config.debugging())
-		{
-			text = String.format("%d %s (predicted: %d) or %d %s (predicted: %d) (overshoot: %s goal-in-range: %s)",
-				fastDuration, fastName, fastResult.getPredictedHeat(), slowDuration, slowName, slowResult.getPredictedHeat(), slowResult.isOvershooting(), fastResult.isGoalInRange());
-		}
-		else
-		{
-			text = String.format("%d %s or %d %s ",
-				fastDuration, fastName, slowDuration, slowName);
-		}
-
-		LocalPoint stageLoc = stageObject.getLocalLocation();
-		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
-
-		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
-		if (pos == null)
+		if (fastDuration == 0 && slowDuration == 0)
 		{
 			return;
 		}
 
-		Color color = config.lavaWaterfallColour();
+		if (config.highlightWaterAndLava())
+		{
+			drawObjectClickbox(graphics, gameObject, config.lavaWaterfallColour());
+		}
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		if (config.drawLavaWaterInfoOverlay())
+		{
+			final String fastName = isLava ? "Dunks" : "Quenches";
+			final String slowName = isLava ? "Heats" : "Cools";
+
+			String text;
+			if (config.debugging())
+			{
+				text = String.format("%d %s (predicted: %d) or %d %s (predicted: %d) (overshoot: %s goal-in-range: %s)",
+					fastDuration, fastName, fastResult.getPredictedHeat(), slowDuration, slowName, slowResult.getPredictedHeat(), slowResult.isOvershooting(), fastResult.isGoalInRange());
+			}
+			else
+			{
+				text = String.format("%d %s or %d %s ",
+					fastDuration, fastName, slowDuration, slowName);
+			}
+
+			LocalPoint stageLoc = gameObject.getLocalLocation();
+			stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
+
+			Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
+			if (pos == null)
+			{
+				return;
+			}
+
+			OverlayUtil.renderTextLocation(graphics, pos, text, config.lavaWaterfallColour());
+		}
+
 	}
 
-	private void drawHeatChangerStateMachineInfo(Graphics2D graphics, GameObject stageObject)
+	/**
+	 * Private helper for drawHeatChangersIfEnabled.
+	 * State Machine solves once and tracks the progress over time. Only draws the ongoing action for clarity.
+	 * Draws both clickbox & info, depending on plugin config.
+	 * @param gameObject Lava/Waterfall gameObject
+	 */
+	private void _drawHeatChangerStateMachineIfEnabled(Graphics2D graphics, GameObject gameObject)
 	{
-
-		String text;
-		if (config.debugging())
+		if (config.highlightWaterAndLava())
 		{
-			text = String.format("%d %s (overshoot: %s) [goal-in-range: %s]",
-				state.heatChangerStateMachine.getRemainingDuration(),
-				state.heatChangerStateMachine.getActionName(),
-				state.heatChangerStateMachine.isOverShooting(),
-				state.heatChangerStateMachine.isGoalInRange()
-			);
-		}
-		else
-		{
-			text = String.format("%d %s",
-				state.heatChangerStateMachine.getRemainingDuration(),
-				state.heatChangerStateMachine.getActionName()
-			);
+			drawObjectClickbox(graphics, gameObject, config.lavaWaterfallColour());
 		}
 
-		LocalPoint stageLoc = stageObject.getLocalLocation();
-		stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
+		if (config.drawLavaWaterInfoOverlay())
+		{
+			String text;
+			if (config.debugging())
+			{
+				text = String.format("%d %s (overshoot: %s) [goal-in-range: %s]",
+					state.heatChangerStateMachine.getRemainingDuration(),
+					state.heatChangerStateMachine.getActionName(),
+					state.heatChangerStateMachine.isOverShooting(),
+					state.heatChangerStateMachine.isGoalInRange()
+				);
+			}
+			else
+			{
+				text = String.format("%d %s",
+					state.heatChangerStateMachine.getRemainingDuration(),
+					state.heatChangerStateMachine.getActionName()
+				);
+			}
 
-		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
-		Color color = config.lavaWaterfallColour();
+			LocalPoint stageLoc = gameObject.getLocalLocation();
+			stageLoc = new LocalPoint(stageLoc.getX(), stageLoc.getY());
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+			Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
+
+			OverlayUtil.renderTextLocation(graphics, pos, text, config.lavaWaterfallColour());
+		}
 	}
 
-	private void drawHeatChangersClickbox(Graphics2D graphics)
-	{
-		final Heat heat = state.getCurrentHeat();
-		final Stage stage = state.getCurrentStage();
-		final int change = state.getHeatChangeNeeded();
-		final boolean isLava = change > 0;
-		final boolean isWaterfall = change < 0;
-
-		if (stage.getHeat() == heat && state.heatChangerStateMachine.isIdle())
-		{
-			return;
-		}
-
-		GameObject shape = null;
-		if (isWaterfall || state.heatChangerStateMachine.isCooling())
-		{
-			shape = waterfall;
-		}
-		else if (isLava || state.heatChangerStateMachine.isHeating())
-		{
-			shape = lavaPool;
-		}
-
-		if (shape != null)
-		{
-			drawObjectClickbox(graphics, shape, config.lavaWaterfallColour());
-		}
-
-	}
 
 
 	private void drawCrucibleContent(Graphics2D graphics)
@@ -605,4 +577,38 @@ public class FoundryOverlay3D extends Overlay
 		}
 		OverlayUtil.renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft));
 	}
+
+	private void drawObjectClickbox(Graphics2D graphics, GameObject stageObject, Color color)
+	{
+		if (stageObject == null)
+		{
+			return;
+		}
+
+		Shape objectClickbox = stageObject.getClickbox();
+		if (objectClickbox == null)
+		{
+			return;
+		}
+
+		Point mousePosition = client.getMouseCanvasPosition();
+		if (objectClickbox.contains(mousePosition.getX(), mousePosition.getY()))
+		{
+			graphics.setColor(color.darker());
+		}
+		else
+		{
+			graphics.setColor(color);
+		}
+		graphics.draw(objectClickbox);
+		graphics.setColor(new Color(color.getRed(), color.getGreen(), color.getBlue(), 20));
+		graphics.fill(objectClickbox);
+	}
+
+	private void drawObjectOutline(GameObject stageObject, Color color)
+	{
+		Color _color = new Color(color.getRed(), color.getGreen(), color.getBlue(), config.borderAlpha());
+		modelOutlineRenderer.drawOutline(stageObject, config.borderThickness(), _color, config.borderFeather());
+	}
+
 }
