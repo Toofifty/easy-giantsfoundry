@@ -49,7 +49,7 @@ public class EasyGiantsFoundryState
 	private final List<Stage> stages = new ArrayList<>();
 	private double heatRangeRatio = 0;
 
-	public final HeatActionStateMachine heatActionStateMachine = new HeatActionStateMachine();
+	public final HeatChangerStateMachine heatChangerStateMachine = new HeatChangerStateMachine();
 
 	public void reset()
 	{
