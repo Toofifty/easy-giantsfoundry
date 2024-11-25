@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
-public class HeatActionStateMachine
+public class HeatChangerStateMachine
 {
 	/**
 	 * Tick counter for heating, -1 means not currently heating.
@@ -62,7 +62,7 @@ public class HeatActionStateMachine
 	 * @param state        the current state of the foundry
 	 * @param config       the current configuration of the plugin
 	 * @param startingHeat the starting heat amount
-	 * @see HeatActionStateMachine#setup(boolean, boolean, String)
+	 * @see HeatChangerStateMachine#setup(boolean, boolean, String)
 	 */
 	public void start(EasyGiantsFoundryState state, EasyGiantsFoundryConfig config, int startingHeat)
 	{
@@ -107,7 +107,7 @@ public class HeatActionStateMachine
 	}
 
 	/**
-	 * Core logic. Runs once on {@link HeatActionStateMachine#start} and assumes synchronization with the game.
+	 * Core logic. Runs once on {@link HeatChangerStateMachine#start} and assumes synchronization with the game.
 	 * Calculate the estimated duration and goal heat amount of the heating/cooling action.
 	 */
 	public void updateEstimates()

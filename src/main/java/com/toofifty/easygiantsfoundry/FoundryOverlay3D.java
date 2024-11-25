@@ -186,13 +186,13 @@ public class FoundryOverlay3D extends Overlay
 	{
 
 
-		if (state.heatActionStateMachine.isCooling())
+		if (state.heatChangerStateMachine.isCooling())
 		{
 			drawHeatChangerStateMachineInfo(graphics, waterfall);
 			return;
 		}
 
-		if (state.heatActionStateMachine.isHeating())
+		if (state.heatChangerStateMachine.isHeating())
 		{
 			drawHeatChangerStateMachineInfo(graphics, lavaPool);
 			return;
@@ -332,17 +332,17 @@ public class FoundryOverlay3D extends Overlay
 		if (config.debugging())
 		{
 			text = String.format("%d %s (overshoot: %s) [goal-in-range: %s]",
-				state.heatActionStateMachine.getRemainingDuration(),
-				state.heatActionStateMachine.getActionname(),
-				state.heatActionStateMachine.isOverShooting(),
-				state.heatActionStateMachine.isGoalInRange()
+				state.heatChangerStateMachine.getRemainingDuration(),
+				state.heatChangerStateMachine.getActionname(),
+				state.heatChangerStateMachine.isOverShooting(),
+				state.heatChangerStateMachine.isGoalInRange()
 			);
 		}
 		else
 		{
 			text = String.format("%d %s",
-				state.heatActionStateMachine.getRemainingDuration(),
-				state.heatActionStateMachine.getActionname()
+				state.heatChangerStateMachine.getRemainingDuration(),
+				state.heatChangerStateMachine.getActionname()
 			);
 		}
 
@@ -363,17 +363,17 @@ public class FoundryOverlay3D extends Overlay
 		final boolean isLava = change > 0;
 		final boolean isWaterfall = change < 0;
 
-		if (stage.getHeat() == heat && state.heatActionStateMachine.isIdle())
+		if (stage.getHeat() == heat && state.heatChangerStateMachine.isIdle())
 		{
 			return;
 		}
 
 		GameObject shape = null;
-		if (isWaterfall || state.heatActionStateMachine.isCooling())
+		if (isWaterfall || state.heatChangerStateMachine.isCooling())
 		{
 			shape = waterfall;
 		}
-		else if (isLava || state.heatActionStateMachine.isHeating())
+		else if (isLava || state.heatChangerStateMachine.isHeating())
 		{
 			shape = lavaPool;
 		}

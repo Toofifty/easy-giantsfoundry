@@ -308,30 +308,30 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			}
 
 			// Could not find a varbit to capture, so capture the menu-option directly.
-			// start the HeatActionStateMachine when varbit begins to update in onVarbitChanged()
+			// start the HeatChangerStateMachine when varbit begins to update in onVarbitChanged()
 			if (event.getMenuOption().startsWith("Heat-preform"))
 			{
-				state.heatActionStateMachine.stop();
-				state.heatActionStateMachine.setup(false, true, "heats");
+				state.heatChangerStateMachine.stop();
+				state.heatChangerStateMachine.setup(false, true, "heats");
 			}
 			else if (event.getMenuOption().startsWith("Dunk-preform"))
 			{
-				state.heatActionStateMachine.stop();
-				state.heatActionStateMachine.setup(true, true, "dunks");
+				state.heatChangerStateMachine.stop();
+				state.heatChangerStateMachine.setup(true, true, "dunks");
 			}
 			else if (event.getMenuOption().startsWith("Cool-preform"))
 			{
-				state.heatActionStateMachine.stop();
-				state.heatActionStateMachine.setup(false, false, "cools");
+				state.heatChangerStateMachine.stop();
+				state.heatChangerStateMachine.setup(false, false, "cools");
 			}
 			else if (event.getMenuOption().startsWith("Quench-preform"))
 			{
-				state.heatActionStateMachine.stop();
-				state.heatActionStateMachine.setup(true, false, "quenches");
+				state.heatChangerStateMachine.stop();
+				state.heatChangerStateMachine.setup(true, false, "quenches");
 			}
-			else if (!state.heatActionStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
+			else if (!state.heatChangerStateMachine.isIdle()) // canceled heating/cooling, stop the heating state-machine
 			{
-				state.heatActionStateMachine.stop();
+				state.heatChangerStateMachine.stop();
 			}
 
 		});
@@ -395,14 +395,14 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			// sign check: num * num > 0 == same sign
 			if (delta != -1)
 			{
-				if (state.heatActionStateMachine.getActionname() != null)
+				if (state.heatChangerStateMachine.getActionname() != null)
 				{
 					// if the state-machine is idle, start it
-					if (state.heatActionStateMachine.isIdle())
+					if (state.heatChangerStateMachine.isIdle())
 					{
-						state.heatActionStateMachine.start(state, config, previousHeat);
+						state.heatChangerStateMachine.start(state, config, previousHeat);
 					}
-					state.heatActionStateMachine.onTick();
+					state.heatChangerStateMachine.onTick();
 				}
 
 				if (config.debugging())
@@ -410,9 +410,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 					client.addChatMessage(ChatMessageType.GAMEMESSAGE, "",
 						"Heat: <col=FF0000>" + event.getValue() + "</col>" +
 							"Delta: <col=00FFFF>" + delta + "</col> " +
-							"Heating Ticks: <col=00FFFF>" + state.heatActionStateMachine.heatingTicks + "</col>" +
-							" Cooling Ticks: <col=00FFFF>" + state.heatActionStateMachine.coolingTicks + "</col>" +
-							" Remaining Ticks: <col=00FFFF>" + state.heatActionStateMachine.getRemainingDuration(), "");
+							"Heating Ticks: <col=00FFFF>" + state.heatChangerStateMachine.heatingTicks + "</col>" +
+							" Cooling Ticks: <col=00FFFF>" + state.heatChangerStateMachine.coolingTicks + "</col>" +
+							" Remaining Ticks: <col=00FFFF>" + state.heatChangerStateMachine.getRemainingDuration(), "");
 				}
 			}
 
