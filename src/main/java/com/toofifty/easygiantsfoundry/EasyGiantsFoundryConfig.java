@@ -268,7 +268,7 @@ public interface EasyGiantsFoundryConfig extends Config
 	@ConfigItem(
 		keyName = "infoTitle",
 		name = "Title",
-		description = "Toggle for \"Easy Giant's Foundry\" text",
+		description = "Toggle for \"Easy Giants' Foundry\" text",
 		position = 0,
 		section = infoPanelList
 	)
