@@ -6,6 +6,7 @@ import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
 import net.runelite.client.config.ConfigSection;
 import net.runelite.client.config.Range;
+import net.runelite.client.config.Notification;
 import net.runelite.client.ui.ColorScheme;
 
 @ConfigGroup(EasyGiantsFoundryConfig.GROUP)
@@ -29,9 +30,9 @@ public interface EasyGiantsFoundryConfig extends Config
 		position = 0,
 		section = notificationList
 	)
-	default boolean showGiantsFoundryStageNotifications()
+	default Notification stageNotification()
 	{
-		return true;
+		return Notification.ON;
 	}
 
 	@ConfigItem(
@@ -41,9 +42,9 @@ public interface EasyGiantsFoundryConfig extends Config
 		position = 1,
 		section = notificationList
 	)
-	default boolean showGiantsFoundryHeatNotifications()
+	default Notification heatNotification()
 	{
-		return true;
+		return Notification.ON;
 	}
 
 	@ConfigItem(
@@ -77,9 +78,9 @@ public interface EasyGiantsFoundryConfig extends Config
 		position = 4,
 		section = notificationList
 	)
-	default boolean bonusNotification()
+	default Notification bonusNotification()
 	{
-		return false;
+		return Notification.OFF;
 	}
 
 	@ConfigItem(
