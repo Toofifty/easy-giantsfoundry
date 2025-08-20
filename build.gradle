@@ -27,7 +27,7 @@ dependencies {
 }
 
 group = 'com.toofifty'
-version = '1.0.8'
+version = '1.0.9'
 
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
