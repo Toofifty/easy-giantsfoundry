@@ -1,6 +1,8 @@
 package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
+
+import com.toofifty.easygiantsfoundry.enums.Location;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -510,9 +512,60 @@ public interface EasyGiantsFoundryConfig extends Config
 	}
 
 	@ConfigSection(
+			name = "Total Metals Info",
+			description = "Shows an info box with total number of metals usable for the foundry",
+			position = 5
+	)
+	String totalMetalsInfo = "metalInfoSettings";
+	@ConfigItem(
+			position = 1,
+			keyName = "location",
+			name = "Where To Show:",
+			description = "Where to show the info box",
+			section = totalMetalsInfo
+	)
+	default Location location() { return Location.GIANTS_FOUNDRY; }
+
+	@ConfigItem(
+			position = 2,
+			keyName = "includeEquipment",
+			name = "Include Equipment",
+			description = "Include equipment that are meltable in the foundry in the count",
+			section = totalMetalsInfo
+	)
+	default boolean includeEquipment() { return true; }
+
+	@ConfigItem(
+			position = 3,
+			keyName = "includeMetalBars",
+			name = "Include Metal Bars",
+			description = "Include actual metal bars in the count",
+			section = totalMetalsInfo
+	)
+	default boolean includeMetalBars() { return true; }
+
+	@ConfigItem(
+			position = 4,
+			keyName = "includeOre",
+			name = "Include Ore",
+			description = "Include unmelted ores in the count (iron ore is added to both iron and steel)",
+			section =  totalMetalsInfo
+	)
+	default boolean includeOre() { return false; }
+
+	@ConfigItem(
+			position = 4,
+			keyName = "showZeroValues",
+			name = "Show All Metals",
+			description = "Show rows for metals even if you don't have any of that type",
+			section = totalMetalsInfo
+	)
+	default boolean showZeroValues() { return false; }
+
+	@ConfigSection(
 		name = "Advanced",
 		description = "Advanced Settings",
-		position = 5
+		position = 6
 	)
 	String advancedSettings = "generalSettings";
 

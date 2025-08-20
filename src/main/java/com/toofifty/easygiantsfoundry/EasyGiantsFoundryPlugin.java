@@ -85,6 +85,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private FoundryOverlay3D overlay3d;
 
 	@Inject
+	private EasyGiantsFoundryMetalInfo metalInfo;
+
+	@Inject
 	private MouldHelper mouldHelper;
 
 	@Inject
@@ -107,6 +110,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
+		overlayManager.add(metalInfo);
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
 			reputation = client.getVarpValue(REPUTATION_VARBIT);
@@ -118,6 +122,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.remove(overlay2d);
 		overlayManager.remove(overlay3d);
+		overlayManager.remove(metalInfo);
 	}
 
 	@Subscribe
@@ -264,6 +269,12 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			{
 				updateSmithsOutfitPieces();
 			}
+		}
+		else if (event.getContainerId() == InventoryID.BANK.getId()) {
+			metalInfo.bank = event.getItemContainer();
+		}
+		else if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
+			metalInfo.inventory = event.getItemContainer();
 		}
 	}
 
