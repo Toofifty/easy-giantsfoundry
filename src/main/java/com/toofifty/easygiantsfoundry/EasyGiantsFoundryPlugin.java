@@ -217,17 +217,17 @@ public class EasyGiantsFoundryPlugin extends Plugin
 			return;
 		}
 
-		if (config.showGiantsFoundryStageNotifications() &&
+		if (config.stageNotification().isEnabled() &&
 			state.getActionsLeftInStage() == config.StageNotificationsThreshold() &&
 			(oldStage == null || oldStage != state.getCurrentStage()))
 		{
-			notifier.notify("About to finish the current stage!");
+			notifier.notify(config.stageNotification(), "About to finish the current stage!");
 			oldStage = state.getCurrentStage();
 		}
-		else if (config.showGiantsFoundryHeatNotifications() &&
+		else if (config.heatNotification().isEnabled() &&
 			state.getActionsForHeatLevel() == config.HeatNotificationsThreshold())
 		{
-			notifier.notify("About to run out of heat!");
+			notifier.notify(config.heatNotification(), "About to run out of heat!");
 		}
 	}
 
@@ -458,9 +458,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 		state.addBonusActionReceived();
 
-		if (config.bonusNotification())
+		if (config.bonusNotification().isEnabled())
 		{
-			notifier.notify("Bonus - Click tool");
+			notifier.notify(config.bonusNotification(), "Bonus - Click tool");
 		}
 		if (config.bonusSoundNotify())
 		{
