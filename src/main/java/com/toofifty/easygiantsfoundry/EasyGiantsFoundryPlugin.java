@@ -35,8 +35,8 @@ import java.util.Set;
 
 @Slf4j
 @PluginDescriptor(
-	name = "Easy Giant's Foundry",
-	description = "Helpful overlays for the Giant's Foundry minigame"
+	name = "Easy Giants' Foundry",
+	description = "Helpful overlays for the Giants' Foundry minigame"
 )
 public class EasyGiantsFoundryPlugin extends Plugin
 {

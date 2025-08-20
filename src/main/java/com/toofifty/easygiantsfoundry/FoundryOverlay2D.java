@@ -76,7 +76,7 @@ public class FoundryOverlay2D extends OverlayPanel
 
 		if (config.drawTitle())
 		{
-			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giant's Foundry").build());
+			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giants' Foundry").build());
 		}
 
 		if (swordPickedUp)
