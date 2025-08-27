@@ -524,7 +524,7 @@ public interface EasyGiantsFoundryConfig extends Config
 			description = "Where to show the info box",
 			section = totalMetalsInfo
 	)
-	default Location location() { return Location.GIANTS_FOUNDRY; }
+	default Location location() { return Location.NOWHERE; }
 
 	@ConfigItem(
 			position = 2,

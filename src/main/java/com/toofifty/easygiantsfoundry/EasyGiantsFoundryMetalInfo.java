@@ -57,7 +57,12 @@ class EasyGiantsFoundryMetalInfo extends OverlayPanel
 				|| config.location() == Location.NOWHERE)
 			return null;
 
-		CountBars();
+        if (bank == null)
+            panelComponent.getChildren().add(LineComponent.builder()
+                    .left("Open bank")
+                    .leftColor(Color.RED)
+                    .build());
+
 		if (bronzeBars > 0 || config.showZeroValues())
             AddMetalBarText("Bronze bars:", bronzeBars);
 		if (ironBars > 0 || config.showZeroValues())

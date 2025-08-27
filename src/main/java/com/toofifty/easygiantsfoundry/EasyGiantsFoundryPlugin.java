@@ -270,12 +270,15 @@ public class EasyGiantsFoundryPlugin extends Plugin
 				updateSmithsOutfitPieces();
 			}
 		}
-		else if (event.getContainerId() == InventoryID.BANK.getId()) {
-			metalInfo.bank = event.getItemContainer();
-		}
-		else if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
-			metalInfo.inventory = event.getItemContainer();
-		}
+        else {
+            if (event.getContainerId() == InventoryID.BANK.getId()) {
+                metalInfo.bank = event.getItemContainer();
+            }
+            else if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
+                metalInfo.inventory = event.getItemContainer();
+            }
+            metalInfo.CountBars();
+        }
 	}
 
 	public void onMenuEntryAdded(MenuEntryAdded event)
