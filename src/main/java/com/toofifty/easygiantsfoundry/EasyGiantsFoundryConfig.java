@@ -2,7 +2,6 @@ package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
 
-import com.toofifty.easygiantsfoundry.enums.Location;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -511,61 +510,82 @@ public interface EasyGiantsFoundryConfig extends Config
 		return Color.CYAN;
 	}
 
-	@ConfigSection(
-			name = "Total Metals Info",
-			description = "Shows an info box with total number of metals usable for the foundry",
-			position = 5
-	)
-	String totalMetalsInfo = "metalInfoSettings";
 	@ConfigItem(
-			position = 1,
-			keyName = "location",
-			name = "Where To Show:",
-			description = "Where to show the info box",
-			section = totalMetalsInfo
+			position = -100,
+			keyName = "alwaysShowInfoPanel",
+			name = "Always show",
+			description = "Always show the info panel, even outside of Giants' Foundry.",
+			section = infoPanelList
 	)
-	default Location location() { return Location.NOWHERE; }
+	default boolean alwaysDrawInfoPanel()
+	{
+		return false;
+	}
 
 	@ConfigItem(
-			position = 2,
-			keyName = "includeEquipment",
-			name = "Include Equipment",
-			description = "Include equipment that are meltable in the foundry in the count",
-			section = totalMetalsInfo
+			position = 100,
+			keyName = "drawMetals",
+			name = "Metals",
+			description = "Show total metals count in the info panel.",
+			section = infoPanelList
 	)
-	default boolean includeEquipment() { return true; }
+	default boolean drawMetals()
+	{
+		return false;
+	}
 
 	@ConfigItem(
-			position = 3,
-			keyName = "includeMetalBars",
-			name = "Include Metal Bars",
-			description = "Include actual metal bars in the count",
-			section = totalMetalsInfo
+			position = 101,
+			keyName = "drawAllMetals",
+			name = "Metals: show all",
+			description = "Show rows for metals even if you don't have any of that type.",
+			section = infoPanelList
 	)
-	default boolean includeMetalBars() { return true; }
+	default boolean drawAllMetals()
+	{
+		return false;
+	}
 
 	@ConfigItem(
-			position = 4,
-			keyName = "includeOre",
-			name = "Include Ore",
-			description = "Include unmelted ores in the count (iron ore is added to both iron and steel)",
-			section =  totalMetalsInfo
+			position = 110,
+			keyName = "countOre",
+			name = "Metals: count ore",
+			description = "Include raw ores in the metals count.",
+			section = infoPanelList
 	)
-	default boolean includeOre() { return false; }
+	default boolean countOre()
+	{
+		return true;
+	}
 
 	@ConfigItem(
-			position = 4,
-			keyName = "showZeroValues",
-			name = "Show All Metals",
-			description = "Show rows for metals even if you don't have any of that type",
-			section = totalMetalsInfo
+			position = 111,
+			keyName = "countBars",
+			name = "Metals: count bars",
+			description = "Include smelted bars in the metals count.",
+			section = infoPanelList
 	)
-	default boolean showZeroValues() { return false; }
+	default boolean countBars()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 112,
+			keyName = "countEquipment",
+			name = "Metals: count equipment",
+			description = "Include equipment in the metals count.",
+			section = infoPanelList
+	)
+	default boolean countEquipment()
+	{
+		return true;
+	}
 
 	@ConfigSection(
 		name = "Advanced",
 		description = "Advanced Settings",
-		position = 6
+		position = 5
 	)
 	String advancedSettings = "generalSettings";
 

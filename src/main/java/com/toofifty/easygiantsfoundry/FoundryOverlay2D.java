@@ -1,7 +1,7 @@
 package com.toofifty.easygiantsfoundry;
 
-import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColor;
 import com.toofifty.easygiantsfoundry.enums.Heat;
+import com.toofifty.easygiantsfoundry.enums.MetalBarType;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
 import java.awt.Color;
@@ -24,6 +24,7 @@ public class FoundryOverlay2D extends OverlayPanel
 	private final Client client;
 	private final EasyGiantsFoundryPlugin plugin;
 	private final EasyGiantsFoundryState state;
+	private final MetalBarCounter metalBarCounter;
 	private final EasyGiantsFoundryConfig config;
 
 	@Inject
@@ -31,11 +32,13 @@ public class FoundryOverlay2D extends OverlayPanel
 		Client client,
 		EasyGiantsFoundryPlugin plugin,
 		EasyGiantsFoundryState state,
+		MetalBarCounter metalBarCounter,
 		EasyGiantsFoundryConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
 		this.state = state;
+		this.metalBarCounter = metalBarCounter;
 		this.config = config;
 		this.setPosition(OverlayPosition.BOTTOM_LEFT);
 	}
@@ -68,7 +71,7 @@ public class FoundryOverlay2D extends OverlayPanel
 	@Override
 	public Dimension render(Graphics2D graphics)
 	{
-		if (client.getLocalPlayer().getWorldLocation().getRegionID() != REGION_ID)
+		if (!config.alwaysDrawInfoPanel() && client.getLocalPlayer().getWorldLocation().getRegionID() != REGION_ID)
 		{
 			return null;
 		}
@@ -77,6 +80,11 @@ public class FoundryOverlay2D extends OverlayPanel
 		if (config.drawTitle())
 		{
 			panelComponent.getChildren().add(TitleComponent.builder().text("Easy Giants' Foundry").build());
+		}
+
+		if (config.drawMetals())
+		{
+			drawMetals(graphics);
 		}
 
 		if (swordPickedUp)
@@ -129,5 +137,38 @@ public class FoundryOverlay2D extends OverlayPanel
 		}
 
 		return super.render(graphics);
+	}
+
+	private void drawMetals(Graphics2D graphics2D)
+	{
+		if (!metalBarCounter.isSeenBank())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder()
+							.left("Metals: open bank")
+							.leftColor(Color.RED)
+							.build()
+			);
+		}
+
+		drawMetalCount(graphics2D, "Bronze bars:", metalBarCounter.get(MetalBarType.BRONZE));
+		drawMetalCount(graphics2D, "Iron bars:", metalBarCounter.get(MetalBarType.IRON));
+		drawMetalCount(graphics2D, "Steel bars:", metalBarCounter.get(MetalBarType.STEEL));
+		drawMetalCount(graphics2D, "Mithril bars:", metalBarCounter.get(MetalBarType.MITHRIL));
+		drawMetalCount(graphics2D, "Adamant bars:", metalBarCounter.get(MetalBarType.ADAMANT));
+		drawMetalCount(graphics2D, "Runite bars:", metalBarCounter.get(MetalBarType.RUNITE));
+	}
+
+	private void drawMetalCount(Graphics2D graphics2D, String displayName, int count)
+	{
+		if (count > 0 || config.drawAllMetals())
+		{
+			panelComponent.getChildren().add(
+					LineComponent.builder()
+							.left(displayName)
+							.right(Integer.toString(count))
+							.build()
+			);
+		}
 	}
 }

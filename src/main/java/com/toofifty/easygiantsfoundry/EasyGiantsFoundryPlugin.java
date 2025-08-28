@@ -14,7 +14,7 @@ import net.runelite.api.ChatMessageType;
 import net.runelite.api.Client;
 import net.runelite.api.GameObject;
 import net.runelite.api.GameState;
-import net.runelite.api.InventoryID;
+import net.runelite.api.gameval.InventoryID;
 import net.runelite.api.Item;
 import net.runelite.api.ItemContainer;
 import net.runelite.api.MenuAction;
@@ -76,6 +76,9 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	private EasyGiantsFoundryHelper helper;
 
 	@Inject
+	private MetalBarCounter metalBarCounter;
+
+	@Inject
 	private OverlayManager overlayManager;
 
 	@Inject
@@ -83,9 +86,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 
 	@Inject
 	private FoundryOverlay3D overlay3d;
-
-	@Inject
-	private EasyGiantsFoundryMetalInfo metalInfo;
 
 	@Inject
 	private MouldHelper mouldHelper;
@@ -110,7 +110,6 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.add(overlay2d);
 		overlayManager.add(overlay3d);
-		overlayManager.add(metalInfo);
 		if (client.getGameState() == GameState.LOGGED_IN)
 		{
 			reputation = client.getVarpValue(REPUTATION_VARBIT);
@@ -122,7 +121,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		overlayManager.remove(overlay2d);
 		overlayManager.remove(overlay3d);
-		overlayManager.remove(metalInfo);
+		metalBarCounter.clear();
 	}
 
 	@Subscribe
@@ -258,7 +257,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	@Subscribe
 	public void onItemContainerChanged(ItemContainerChanged event)
 	{
-		if (event.getContainerId() == InventoryID.EQUIPMENT.getId())
+		if (event.getContainerId() == InventoryID.WORN)
 		{
 			if (event.getItemContainer().count(PREFORM) == 0)
 			{
@@ -270,15 +269,10 @@ public class EasyGiantsFoundryPlugin extends Plugin
 				updateSmithsOutfitPieces();
 			}
 		}
-        else {
-            if (event.getContainerId() == InventoryID.BANK.getId()) {
-                metalInfo.bank = event.getItemContainer();
-            }
-            else if (event.getContainerId() == InventoryID.INVENTORY.getId()) {
-                metalInfo.inventory = event.getItemContainer();
-            }
-            metalInfo.CountBars();
-        }
+		else if (event.getContainerId() == InventoryID.INV || event.getContainerId() == InventoryID.BANK)
+		{
+			metalBarCounter.put(event.getItemContainer());
+		}
 	}
 
 	public void onMenuEntryAdded(MenuEntryAdded event)
@@ -488,7 +482,7 @@ public class EasyGiantsFoundryPlugin extends Plugin
 	{
 		int pieces = 0;
 
-		ItemContainer equipment = client.getItemContainer(InventoryID.EQUIPMENT);
+		ItemContainer equipment = client.getItemContainer(InventoryID.WORN);
 		if (equipment != null)
 		{
 			for (Item item : equipment.getItems())
