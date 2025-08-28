@@ -65,4 +65,6 @@ Bonus Click Notification |  Information Panel
     * Added bonus action tracking
 - [TalSk](https://github.com/TalSk "TalSk's github")
     * Integrated Smith's outfit effect
+- [Aiadan](https://github.com/Aiadan "Aiadan's github")
+  * Added metal counter
 
