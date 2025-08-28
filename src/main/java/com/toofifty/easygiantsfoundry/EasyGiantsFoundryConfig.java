@@ -1,6 +1,7 @@
 package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
+
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -507,6 +508,78 @@ public interface EasyGiantsFoundryConfig extends Config
 	default Color toolBonus()
 	{
 		return Color.CYAN;
+	}
+
+	@ConfigItem(
+			position = -100,
+			keyName = "alwaysShowInfoPanel",
+			name = "Always show",
+			description = "Always show the info panel, even outside of Giants' Foundry.",
+			section = infoPanelList
+	)
+	default boolean alwaysDrawInfoPanel()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 100,
+			keyName = "drawMetals",
+			name = "Metals",
+			description = "Show total metals count in the info panel.",
+			section = infoPanelList
+	)
+	default boolean drawMetals()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 101,
+			keyName = "drawAllMetals",
+			name = "Metals: show all",
+			description = "Show rows for metals even if you don't have any of that type.",
+			section = infoPanelList
+	)
+	default boolean drawAllMetals()
+	{
+		return false;
+	}
+
+	@ConfigItem(
+			position = 110,
+			keyName = "countOre",
+			name = "Metals: count ore",
+			description = "Include raw ores in the metals count.",
+			section = infoPanelList
+	)
+	default boolean countOre()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 111,
+			keyName = "countBars",
+			name = "Metals: count bars",
+			description = "Include smelted bars in the metals count.",
+			section = infoPanelList
+	)
+	default boolean countBars()
+	{
+		return true;
+	}
+
+	@ConfigItem(
+			position = 112,
+			keyName = "countEquipment",
+			name = "Metals: count equipment",
+			description = "Include equipment in the metals count.",
+			section = infoPanelList
+	)
+	default boolean countEquipment()
+	{
+		return true;
 	}
 
 	@ConfigSection(
