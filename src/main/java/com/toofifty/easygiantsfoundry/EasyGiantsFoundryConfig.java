@@ -2,6 +2,8 @@ package com.toofifty.easygiantsfoundry;
 
 import java.awt.Color;
 
+import com.toofifty.easygiantsfoundry.enums.FontType;
+import net.runelite.client.config.Alpha;
 import net.runelite.client.config.Config;
 import net.runelite.client.config.ConfigGroup;
 import net.runelite.client.config.ConfigItem;
@@ -508,6 +510,44 @@ public interface EasyGiantsFoundryConfig extends Config
 	default Color toolBonus()
 	{
 		return Color.CYAN;
+	}
+
+	@ConfigItem(
+		keyName = "textBackground",
+		name = "Text Background",
+		description = "Set a color to draw a box behind text.",
+		position = 7,
+		section = colourList
+	)
+	@Alpha
+	default Color textBackground()
+	{
+		return null;
+	}
+
+	@ConfigItem(
+		keyName = "dynamicOverlayFont",
+		name = "Dynamic Overlay Font",
+		description = "Choose the font type for the info overlay.<br/>" +
+				"Defaults to your setting from RuneLite -> Overlay settings -> Dynamic overlay font.",
+		position = 10,
+		section = colourList
+	)
+	default FontType dynamicOverlayFont()
+	{
+		return FontType.DEFAULT;
+	}
+
+	@ConfigItem(
+		keyName = "textOutline",
+		name = "Text Outline",
+		description = "Use an outline around text instead of a shadow.",
+		position = 11,
+		section = colourList
+	)
+	default boolean textOutline()
+	{
+		return false;
 	}
 
 	@ConfigItem(
