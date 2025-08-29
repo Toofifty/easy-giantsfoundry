@@ -7,9 +7,9 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum Stage
 {
-	TRIP_HAMMER("Hammer", Heat.HIGH, 20, -25, 4, 14),
-	GRINDSTONE("Grind", Heat.MED, 10, 15, 7, 19),
-	POLISHING_WHEEL("Polish", Heat.LOW, 10, -17, 12, 10);
+	TRIP_HAMMER("Hammer", Heat.HIGH, 20, -25, 4, 14, 5),
+	GRINDSTONE("Grind", Heat.MED, 10, 15, 7, 19, 2),
+	POLISHING_WHEEL("Polish", Heat.LOW, 10, -17, 12, 10, 2);
 
 	private final String name;
 	private final Heat heat;
@@ -18,6 +18,9 @@ public enum Stage
 
 	private final int distanceToLava;
 	private final int distanceToWaterfall;
+
+	// Ticks between action
+	private final int toolTickCycle;
 
 	public boolean isHeating()
 	{

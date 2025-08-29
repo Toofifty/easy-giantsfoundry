@@ -121,13 +121,6 @@ public class HeatActionSolver
 	};
 
 
-	// index is stage, ordinal order
-	public static final int[] TOOL_TICK_CYCLE = new int[] {
-		5,
-		2,
-		2
-	};
-
 	public static final int MAX_INDEX = DX_1.length;
 	public static final int FAST_INDEX = 10;
 
@@ -222,7 +215,7 @@ public class HeatActionSolver
 		final boolean isStageHeating = stage.isHeating();
 		// adding tool cycle ticks because the first cycle at a tool is almost always nulled
 		// (unless manually reaching the tile, then clicking the tool)
-		final int toolDelay = TOOL_TICK_CYCLE[stage.ordinal()];
+		final int toolDelay = stage.getToolTickCycle();
 		final int travelTicks = solveTravelTicks(isRunning, stage, isActionHeating) + toolDelay;
 		final int travelDecay = (int) Math.ceil((double) travelTicks / 2);
 

@@ -8,7 +8,7 @@ import lombok.extern.slf4j.Slf4j;
  */
 @Slf4j
 @Data
-public class HeatActionStateMachine
+public class HeatChangerStateMachine
 {
 	/**
 	 * Tick counter for heating, -1 means not currently heating.
@@ -48,7 +48,7 @@ public class HeatActionStateMachine
 	 * The last action the player clicked on. Used for ui overlay to display.
 	 * When null, the state-machine will stop() and reset.
 	 */
-	String actionname = null;
+	String actionName = null;
 
 	private EasyGiantsFoundryState state;
 	private EasyGiantsFoundryConfig config;
@@ -62,7 +62,7 @@ public class HeatActionStateMachine
 	 * @param state        the current state of the foundry
 	 * @param config       the current configuration of the plugin
 	 * @param startingHeat the starting heat amount
-	 * @see HeatActionStateMachine#setup(boolean, boolean, String)
+	 * @see HeatChangerStateMachine#setup(boolean, boolean, String)
 	 */
 	public void start(EasyGiantsFoundryState state, EasyGiantsFoundryConfig config, int startingHeat)
 	{
@@ -107,7 +107,7 @@ public class HeatActionStateMachine
 	}
 
 	/**
-	 * Core logic. Runs once on {@link HeatActionStateMachine#start} and assumes synchronization with the game.
+	 * Core logic. Runs once on {@link HeatChangerStateMachine#start} and assumes synchronization with the game.
 	 * Calculate the estimated duration and goal heat amount of the heating/cooling action.
 	 */
 	public void updateEstimates()
@@ -140,9 +140,9 @@ public class HeatActionStateMachine
 	 */
 	public void setup(boolean isFast, boolean isHeating, String actionName)
 	{
-		actionFast = isFast;
-		actionHeating = isHeating;
-		actionname = actionName;
+		this.actionFast = isFast;
+		this.actionHeating = isHeating;
+		this.actionName = actionName;
 	}
 
 	/**
@@ -152,7 +152,7 @@ public class HeatActionStateMachine
 	{
 		heatingTicks = -1;
 		coolingTicks = -1;
-		actionname = null;
+		actionName = null;
 	}
 
 	/**
@@ -176,9 +176,14 @@ public class HeatActionStateMachine
 	}
 
 	/**
-	 * Check if the heating/cooling state is currently idle. Neither heating nor cooling.
-	 *
-	 * @return
+	 * @return Check if the state-machine is currently set-up and waiting to start.
+	 */
+	public boolean isPending() {
+		return actionName != null && heatingTicks < 0 && coolingTicks < 0;
+	}
+
+	/**
+	 * @return Check if the heating/cooling state is currently idle. Neither heating nor cooling.
 	 */
 	public boolean isIdle()
 	{
