@@ -2,9 +2,11 @@ package com.toofifty.easygiantsfoundry;
 
 import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryClientIDs.*;
 import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.getHeatColor;
+import static com.toofifty.easygiantsfoundry.EasyGiantsFoundryHelper.renderTextLocation;
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_1_VARBIT;
 import static com.toofifty.easygiantsfoundry.MouldHelper.SWORD_TYPE_2_VARBIT;
 import com.toofifty.easygiantsfoundry.enums.CommissionType;
+import com.toofifty.easygiantsfoundry.enums.FontType;
 import com.toofifty.easygiantsfoundry.enums.Heat;
 import com.toofifty.easygiantsfoundry.enums.Stage;
 
@@ -24,7 +26,6 @@ import net.runelite.api.coords.LocalPoint;
 import net.runelite.api.widgets.Widget;
 import net.runelite.client.ui.overlay.Overlay;
 import net.runelite.client.ui.overlay.OverlayPosition;
-import net.runelite.client.ui.overlay.OverlayUtil;
 import net.runelite.client.ui.overlay.outline.ModelOutlineRenderer;
 import org.apache.commons.lang3.StringUtils;
 
@@ -107,6 +108,11 @@ public class FoundryOverlay3D extends Overlay
 			return null;
 		}
 
+		if (config.dynamicOverlayFont() != FontType.DEFAULT)
+		{
+			graphics.setFont(config.dynamicOverlayFont().getFont());
+		}
+
 		if (config.highlightKovac())
 		{
 			drawKovacIfHandIn(graphics);
@@ -147,8 +153,6 @@ public class FoundryOverlay3D extends Overlay
 			return null;
 		}
 
-		drawActionOverlay(graphics, stageObject);
-
 		Heat heat = state.getCurrentHeat();
 		Color color = getObjectColor(stage, heat);
 		// TODO Config
@@ -185,6 +189,8 @@ public class FoundryOverlay3D extends Overlay
 				}
 			}
 		}
+
+		drawActionOverlay(graphics, stageObject);
 
 		return null;
 	}
@@ -274,7 +280,7 @@ public class FoundryOverlay3D extends Overlay
 
 		Color color = config.lavaWaterfallColour();
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		renderTextLocation(graphics, pos, text, color, config.textBackground(), config.textOutline());
 	}
 
 	private void drawHeatChangerOverlay(Graphics2D graphics, GameObject stageObject)
@@ -304,7 +310,7 @@ public class FoundryOverlay3D extends Overlay
 		Point pos = Perspective.getCanvasTextLocation(client, graphics, stageLoc, text, 50);
 		Color color = config.lavaWaterfallColour();
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		renderTextLocation(graphics, pos, text, color, config.textBackground(), config.textOutline());
 	}
 
 	private void drawHeatChangers(Graphics2D graphics)
@@ -382,7 +388,7 @@ public class FoundryOverlay3D extends Overlay
 		{
 			color = config.generalHighlight();
 		}
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		renderTextLocation(graphics, pos, text, color, config.textBackground(), config.textOutline());
 	}
 
 	private void drawMouldScoreIfMouldSet(Graphics2D graphics) {
@@ -405,7 +411,7 @@ public class FoundryOverlay3D extends Overlay
 		Point pos = Perspective.getCanvasTextLocation(client, graphics, mouldLoc, text, 115);
 		Color color = config.generalHighlight();
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		renderTextLocation(graphics, pos, text, color, config.textBackground(), config.textOutline());
 	}
 	private void drawPreformScoreIfPoured(Graphics2D graphics) {
 		if (client.getVarbitValue(VARBIT_GAME_STAGE) != 2)
@@ -425,7 +431,7 @@ public class FoundryOverlay3D extends Overlay
 
 		Color color = config.generalHighlight();
 
-		OverlayUtil.renderTextLocation(graphics, pos, text, color);
+		renderTextLocation(graphics, pos, text, color, config.textBackground(), config.textOutline());
 	}
 
 	private void drawCrucibleIfMouldSet(Graphics2D graphics)
@@ -438,8 +444,6 @@ public class FoundryOverlay3D extends Overlay
 		{
 			return;
 		}
-
-		drawCrucibleContent(graphics);
 
 		if (config.highlightStyle() == HighlightStyle.HIGHLIGHT_CLICKBOX)
 		{
@@ -473,6 +477,8 @@ public class FoundryOverlay3D extends Overlay
 			}
 			drawObjectOutline(graphics, crucible, color);
 		}
+
+		drawCrucibleContent(graphics);
 	}
 
 	private void drawMouldIfNotSet(Graphics2D graphics)
@@ -510,7 +516,7 @@ public class FoundryOverlay3D extends Overlay
 			textLocation = new LocalPoint(textLocation.getX(), textLocation.getY());
 			Point canvasLocation = Perspective.getCanvasTextLocation(client, graphics, textLocation, text, 100);
 			canvasLocation = new Point(canvasLocation.getX(), canvasLocation.getY() + 10);
-			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, config.generalHighlight());
+			renderTextLocation(graphics, canvasLocation, text, config.generalHighlight(), config.textBackground(), config.textOutline());
 		}
 	}
 
@@ -562,7 +568,7 @@ public class FoundryOverlay3D extends Overlay
 			{
 				return;
 			}
-			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft));
+			renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft), config.textBackground(), config.textOutline());
 		}
 		if (config.drawActionLeftOverlay())
 		// Draw actions left
@@ -575,8 +581,8 @@ public class FoundryOverlay3D extends Overlay
 			{
 				return;
 			}
-			canvasLocation = new Point(canvasLocation.getX(), canvasLocation.getY() + 10);
-			OverlayUtil.renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft));
+			canvasLocation = new Point(canvasLocation.getX(), canvasLocation.getY() + graphics.getFontMetrics().getHeight());
+			renderTextLocation(graphics, canvasLocation, text, getHeatColor(actionsLeft, heatLeft), config.textBackground(), config.textOutline());
 		}
 	}
 }
