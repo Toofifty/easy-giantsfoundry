@@ -67,4 +67,5 @@ Bonus Click Notification |  Information Panel
     * Integrated Smith's outfit effect
 - [Aiadan](https://github.com/Aiadan "Aiadan's github")
   * Added metal counter
-
+- [Rikten X](https://github.com/riktenx "Rikten X's github")
+  * Added configs to enhance text visibility
