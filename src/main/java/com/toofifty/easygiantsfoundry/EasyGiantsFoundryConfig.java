@@ -587,6 +587,18 @@ public interface EasyGiantsFoundryConfig extends Config
 	}
 
 	@ConfigItem(
+			position = 102,
+			keyName = "drawPlanner",
+			name = "Foundry planner",
+			description = "Show the best Giants' Foundry combo from your banked bars and equipment.",
+			section = infoPanelList
+	)
+	default boolean drawPlanner()
+	{
+		return false;
+	}
+
+	@ConfigItem(
 			position = 110,
 			keyName = "countOre",
 			name = "Metals: count ore",

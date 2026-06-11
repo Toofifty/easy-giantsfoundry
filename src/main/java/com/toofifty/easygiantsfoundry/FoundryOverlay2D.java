@@ -11,11 +11,14 @@ import javax.inject.Inject;
 import javax.inject.Singleton;
 
 import net.runelite.api.Client;
+import net.runelite.api.Skill;
 import net.runelite.client.ui.ColorScheme;
 import net.runelite.client.ui.overlay.OverlayPanel;
 import net.runelite.client.ui.overlay.OverlayPosition;
 import net.runelite.client.ui.overlay.components.LineComponent;
 import net.runelite.client.ui.overlay.components.TitleComponent;
+
+import java.util.Optional;
 
 @Singleton
 public class FoundryOverlay2D extends OverlayPanel
@@ -25,6 +28,7 @@ public class FoundryOverlay2D extends OverlayPanel
 	private final EasyGiantsFoundryPlugin plugin;
 	private final EasyGiantsFoundryState state;
 	private final MetalBarCounter metalBarCounter;
+	private final FoundryRecommendationPlanner recommendationPlanner;
 	private final EasyGiantsFoundryConfig config;
 
 	@Inject
@@ -33,12 +37,14 @@ public class FoundryOverlay2D extends OverlayPanel
 		EasyGiantsFoundryPlugin plugin,
 		EasyGiantsFoundryState state,
 		MetalBarCounter metalBarCounter,
+		FoundryRecommendationPlanner recommendationPlanner,
 		EasyGiantsFoundryConfig config)
 	{
 		this.client = client;
 		this.plugin = plugin;
 		this.state = state;
 		this.metalBarCounter = metalBarCounter;
+		this.recommendationPlanner = recommendationPlanner;
 		this.config = config;
 		this.setPosition(OverlayPosition.BOTTOM_LEFT);
 	}
@@ -85,6 +91,11 @@ public class FoundryOverlay2D extends OverlayPanel
 		if (config.drawMetals())
 		{
 			drawMetals(graphics);
+		}
+
+		if (config.drawPlanner())
+		{
+			drawPlanner();
 		}
 
 		if (swordPickedUp)
@@ -170,5 +181,51 @@ public class FoundryOverlay2D extends OverlayPanel
 							.build()
 			);
 		}
+	}
+
+	private void drawPlanner()
+	{
+		if (!metalBarCounter.isSeenBank())
+		{
+			panelComponent.getChildren().add(
+				LineComponent.builder()
+					.left("Planner: open bank")
+					.leftColor(Color.RED)
+					.build()
+			);
+			return;
+		}
+
+		Optional<FoundryRecommendation> recommendation = recommendationPlanner.recommend(client.getRealSkillLevel(Skill.SMITHING));
+		if (recommendation.isEmpty())
+		{
+			panelComponent.getChildren().add(
+				LineComponent.builder()
+					.left("Planner")
+					.right("no 28-metal combo")
+					.build()
+			);
+			return;
+		}
+
+		FoundryRecommendation best = recommendation.get();
+		panelComponent.getChildren().add(
+			LineComponent.builder()
+				.left("Best foundry")
+				.right(best.getRecipeText())
+				.build()
+		);
+		panelComponent.getChildren().add(
+			LineComponent.builder()
+				.left("Banked")
+				.right(best.getSwordsText())
+				.build()
+		);
+		panelComponent.getChildren().add(
+			LineComponent.builder()
+				.left("Score")
+				.right(Integer.toString(best.getMetalScore()))
+				.build()
+		);
 	}
 }

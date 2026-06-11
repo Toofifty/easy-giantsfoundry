@@ -36,6 +36,17 @@ public class MetalBarCounter
 		return count;
 	}
 
+	public int getFoundryInput(MetalBarType type)
+	{
+		int count = 0;
+		for (Map<MetalBarType, CountsBySource> counts : index.values())
+		{
+			count += counts.get(type).sumFoundryInput(config);
+		}
+
+		return count;
+	}
+
 	public void clear()
 	{
 		index.clear();
@@ -141,6 +152,13 @@ public class MetalBarCounter
 		{
 			int sum = config.countOre() ? ores : 0;
 			sum += config.countBars() ? bars : 0;
+			sum += config.countEquipment() ? equipment : 0;
+			return sum;
+		}
+
+		public int sumFoundryInput(EasyGiantsFoundryConfig config)
+		{
+			int sum = config.countBars() ? bars : 0;
 			sum += config.countEquipment() ? equipment : 0;
 			return sum;
 		}

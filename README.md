@@ -19,6 +19,9 @@ The "Easy Giants' Foundry" plugin is designed to optimize your performance in th
     * **Cyan:** Click tool again for bonus progress
 - **Alloy Quality and Crucible Content**
   - Overlays **current crucible contents** and the **quality of the alloy** being forged.
+- **Bank-Aware Foundry Planner**
+  - Suggests the best Giants' Foundry alloy from your banked bars and supported metal equipment.
+  - Shows banked sword count and metal score from the Info Panel.
 - **Best Mould Guidance**
   - Highlights the **best moulds to use** for your current task, guiding your selection process.
 - **Progress and Actions Tracking**
